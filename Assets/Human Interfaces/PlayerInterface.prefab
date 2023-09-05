@@ -28,13 +28,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 508783771476426658}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8173392622321068222
 MonoBehaviour:
@@ -106,55 +106,21 @@ MonoBehaviour:
       m_Action: Mkb Back
       m_Flags: 0
     m_Flags: 0
-  MkbIncreaseBuildHeight:
-    m_Name: Mkb Increase Build Height
+  MkbAction1:
+    m_Name: Mkb Action 1
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: 808b022d-2d82-43b8-a885-0944a9e560c1
+    m_Id: d91c3d07-334c-4bf5-a468-fe1031e5dcdf
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 
-      m_Id: 6e11afde-0851-4dc4-9e44-de523e7a2233
-      m_Path: <Keyboard>/w
+      m_Id: d7a11646-9276-4d37-b1a5-9a21f17aa611
+      m_Path: <Keyboard>/space
       m_Interactions: 
       m_Processors: 
       m_Groups: 
-      m_Action: Mkb Increase Build Height
-      m_Flags: 0
-    m_Flags: 0
-  MkbDecreaseBuildHeight:
-    m_Name: Mkb Decrease Build Height
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 9491a1d8-bc16-44c6-8342-effc5bdf3861
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: b59629aa-b8f3-460f-bda2-ff6526c9062a
-      m_Path: <Keyboard>/s
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Mkb Decrease Build Height
-      m_Flags: 0
-    m_Flags: 0
-  MkbSwitchBuildType:
-    m_Name: Mkb Switch Build Type
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 8c7441b9-0f9f-4505-8160-4826eb4de9b1
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: 
-      m_Id: add8f1c3-c2e1-4805-b599-c219f7bdff9e
-      m_Path: <Keyboard>/q
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Mkb Switch Build Type
+      m_Action: Mkb Action 1
       m_Flags: 0
     m_Flags: 0
   GamepadIncreaseBuildHeight:
@@ -312,6 +278,7 @@ MonoBehaviour:
     m_Flags: 0
 --- !u!120 &-7042395944091681749
 LineRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -399,16 +366,20 @@ LineRenderer:
       atime6: 0
       atime7: 0
       m_Mode: 0
+      m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
     numCapVertices: 0
     alignment: 0
     textureMode: 0
+    textureScale: {x: 1, y: 1}
     shadowBias: 0.5
     generateLightingData: 0
+  m_MaskInteraction: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+  m_ApplyActiveColorSpace: 0
 --- !u!114 &5760995616285781546
 MonoBehaviour:
   m_ObjectHideFlags: 0

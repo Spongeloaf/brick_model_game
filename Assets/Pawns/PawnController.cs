@@ -23,7 +23,7 @@ another one, I can roll dice to see if he knocks the other down.
 
 
 
-public class ModelController : MonoBehaviour
+public class PawnController : MonoBehaviour
 {
   // Start is called before the first frame update
   void Start()

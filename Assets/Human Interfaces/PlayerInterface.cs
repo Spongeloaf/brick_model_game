@@ -13,11 +13,9 @@ public enum ButtonEvents
 {
   commit,
   cancel,
-  increaseHeight,
-  decreaseheight,
+  action1,
   selectNext,
   selectPrev,
-  switchBuildType,
 }
 
 public enum InputType
@@ -40,9 +38,7 @@ public class PlayerInterface : MonoBehaviour
   public InputAction MkbMouseCursorMove;
   public InputAction MkbCommit;
   public InputAction MkbBack;
-  public InputAction MkbIncreaseBuildHeight;
-  public InputAction MkbDecreaseBuildHeight;
-  public InputAction MkbSwitchBuildType;
+  public InputAction MkbAction1;
 
   public InputAction GamepadIncreaseBuildHeight;
   public InputAction GamepadDecreaseBuildHeight;
@@ -289,21 +285,14 @@ public class PlayerInterface : MonoBehaviour
       inputs.Add(ButtonEvents.cancel);
 
     // Don't allow increase and decrease in the same frame!
-    if (MkbIncreaseBuildHeight.WasReleasedThisFrame() ||
-      GamepadIncreaseBuildHeight.WasReleasedThisFrame())
-      inputs.Add(ButtonEvents.increaseHeight);
-    else if (MkbDecreaseBuildHeight.WasReleasedThisFrame() ||
-      GamepadDecreaseBuildHeight.WasReleasedThisFrame())
-      inputs.Add(ButtonEvents.decreaseheight);
+    if (MkbAction1.WasReleasedThisFrame())
+      inputs.Add(ButtonEvents.action1);
 
     // Don't allow both at the tsame time!
     if (GamepadSelectNext.WasPressedThisFrame())
       inputs.Add(ButtonEvents.selectNext);
     else if (GamepadSelectPrev.WasPressedThisFrame())
       inputs.Add(ButtonEvents.selectPrev);
-
-    if (GamepadSwitchBuildType.WasReleasedThisFrame() || MkbSwitchBuildType.WasReleasedThisFrame())
-      inputs.Add(ButtonEvents.switchBuildType);
 
     return inputs;
   }
