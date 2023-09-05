@@ -1,3 +1,4 @@
+using GameManagerStates;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -11,29 +12,61 @@ internal enum ManagerState
   moveAction,
 }
 
+public enum PawnAction
+{
+  pass,
+  move,
+  attack,
+}
+
+namespace GameManagerStates
+{
+  public struct ActionPlan
+  {
+    public StateReturnCode returnCode;
+    public PawnController actor;
+    public PawnController[] target;
+    public Vector3 targetPoint;
+    public PawnAction pawnAction;
+  }
+
+  public enum StateReturnCode
+  {
+    idle,
+    execute,
+    abortState,
+  }
+
+  interface IGameState
+  {
+    ActionPlan DoUpdate(PlayerInputs inputs);
+    void Cleanup();
+  }
+
+} // namespace GameManagerStates
+
+
+// TODO: Make the statea use a virtual interface
+
 public class GameManager : MonoBehaviour
 {
   public GameObject m_SelectedUnit;
   public PlayerInputs m_PlayerInputs;
-  public ScreenDecorator m_ScreenDecorator;
 
-  private ManagerState m_ManagerState = ManagerState.idle;
+  private ManagerState m_ManagerState = ManagerState.idle;  // would be nice to get rid of this.
+  private IGameState m_GameState;
 
   // Start is called before the first frame update
   void Start()
   {
-    m_ScreenDecorator.Start();
+
   }
 
   // Update is called once per frame
   public void DoUpdate(PlayerInputs inputs)
   {
-    m_PlayerInputs = inputs;
     HandleInputs(inputs);
-
-    // Replace this with a table or somethin
-    if (m_ManagerState == ManagerState.moveAction)
-      StateMoveAction.CalculateMove(this);
+    m_GameState.DoUpdate(inputs);
   }
 
   private void HandleInputs(PlayerInputs inputs)
@@ -46,22 +79,22 @@ public class GameManager : MonoBehaviour
     if (inputs.actions.Contains(ButtonEvents.commit))
     {
       DoSelection(inputs.playerCursor);
-      
+
       // Don't allow other actions to be commited simultaneously!
       return;
     }
 
     if (inputs.actions.Contains(ButtonEvents.action1))
     {
-      m_ManagerState = ManagerState.moveAction;
+      m_GameState = new GameManagerStates.MoveAction(this);
     }
   }
 
   private void DoSelection(RaycastHit cursor)
   {
     UnSelectUnit();
-    
-    if (cursor.collider != null) 
+
+    if (cursor.collider != null)
       SelectUnit(cursor.collider.transform.gameObject);
   }
 
@@ -89,59 +122,11 @@ public class GameManager : MonoBehaviour
     m_SelectedUnit = controller.gameObject;
     PawnUtils.Appearance.SetHighlight(unit, UnityEngine.Color.green);
   }
-}
 
-internal static class StateMoveAction
-{
-  private static float m_NavmeshCutoffDistance = 1.0f;
-
-  public static bool IsGameManagerOK(GameManager manager)
+  private IGameState CreateMoveState()
   {
-    if (manager == null)
-      return false;
-
-    if (manager.m_SelectedUnit == null)
-    {
-      Debug.LogWarning("GameStateMoveAction cannot plot a move if no unit selected.");
-      return false;
-    }
-
-    if (manager.m_PlayerInputs == null)
-    {
-      Debug.LogWarning("GameStateMoveAction cannot plot a move without a cursor position.");
-      return false;
-    }
-
-    return true;
-  }
-
-  public static void CalculateMove(GameManager manager)
-  {
-    if (!IsGameManagerOK(manager))
-      return;
-
-    Vector3 destination;
-    NavMeshHit hit;
-    if (NavMesh.SamplePosition(manager.m_PlayerInputs.playerCursor.point, out hit, m_NavmeshCutoffDistance, NavMesh.AllAreas))
-    {
-      destination = hit.position;
-    }
-    else
-    {
-      return;
-    }
-
-    NavMeshAgent agent = PawnUtils.Navigation.GetNavAgent(manager.m_SelectedUnit);
-    if (agent == null)
-      return;
-
-    if (!agent.SetDestination(destination))
-      return;
-
-    // Not checking for this in IsGameManagerOK because we may not always have a screen decorator
-    if (manager.m_ScreenDecorator == null)
-      return;
-
-    manager.m_ScreenDecorator.DrawPath(agent.path.corners);
+    GameObject obj = new GameObject("GameManagerStates.MoveAction");
+    GameManagerStates.MoveAction component = obj.AddComponent<GameManagerStates.MoveAction>();
+    return component;
   }
 }

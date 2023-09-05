@@ -14,8 +14,6 @@ public class ScreenDecorator : MonoBehaviour
       Debug.LogError("ScreenDecorator could not find its line renderer");
       return;
     }
-
-    m_LineRenderer.sortingOrder = 1;
   }
 
   public void DrawPath(Vector3[] points)
@@ -24,5 +22,16 @@ public class ScreenDecorator : MonoBehaviour
       return;
 
     m_LineRenderer.SetPositions(points);
+    m_LineRenderer.positionCount = points.Length;
+  }
+
+  public void ClearAllDecorations()
+  {
+    if (m_LineRenderer == null)
+      return;
+
+    Vector3[] pts = new Vector3[0];
+    m_LineRenderer.SetPositions(pts);
+    m_LineRenderer.positionCount = 0;
   }
 }
