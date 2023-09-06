@@ -67,7 +67,7 @@ namespace GameManagerStates
         return plan;
       }
 
-      NavMeshAgent agent = PawnUtils.Navigation.GetNavAgent(m_GameManager.m_SelectedUnit);
+      NavMeshAgent agent = PawnUtils.Navigation.GetNavAgent(m_GameManager.m_SelectedUnit.gameObject);
       if (agent == null)
         return plan;
 
@@ -96,10 +96,10 @@ namespace GameManagerStates
 
     void PreparePlan(ref ActionPlan plan, in NavMeshPath path)
     {
-      Debug.LogWarning("Not Implemented!");
       plan.returnCode = PlanReturnCode.execute;
       plan.pawnAction = PawnAction.move;
       plan.path = path.corners;
+      plan.actor = m_GameManager.m_SelectedUnit;
     }
 
     void IActionPlanner.Cleanup()

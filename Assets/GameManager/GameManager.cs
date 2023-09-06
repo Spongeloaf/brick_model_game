@@ -59,7 +59,7 @@ namespace GameManagerStates
 
 public class GameManager : MonoBehaviour
 {
-  public GameObject m_SelectedUnit;
+  public PawnController m_SelectedUnit;
   public PlayerInputs m_PlayerInputs;
   public GameObject m_PrefabStateMove;
 
@@ -155,7 +155,10 @@ public class GameManager : MonoBehaviour
 
   private void UnSelectUnit()
   {
-    PawnUtils.Appearance.ClearHighlight(m_SelectedUnit);
+    if (m_SelectedUnit == null)
+      return;
+
+    PawnUtils.Appearance.ClearHighlight(m_SelectedUnit.gameObject);
     m_SelectedUnit = null;
   }
 
@@ -174,7 +177,7 @@ public class GameManager : MonoBehaviour
     if (controller == null)
       return;
 
-    m_SelectedUnit = controller.gameObject;
+    m_SelectedUnit = controller;
     PawnUtils.Appearance.SetHighlight(unit, UnityEngine.Color.green);
   }
 
