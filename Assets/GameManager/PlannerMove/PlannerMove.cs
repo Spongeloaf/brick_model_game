@@ -5,37 +5,27 @@ using UnityEngine.AI;
 
 namespace GameManagerStates
 {
-  public class MoveAction : MonoBehaviour, IGameState
+  public class PlannerMove : MonoBehaviour, IActionPlanner
   {
     private static float m_NavmeshCutoffDistance = 1.0f;
     private GameManager m_GameManager;
     private ScreenDecorator m_ScreenDecorator;
 
-    public static ActionPlan GetDefaultActionPlan()
+    public GameObject m_PrefabScreenDecorator;
+    
+    void Start()
     {
-      ActionPlan plan = new ActionPlan();
-      plan.returnCode = StateReturnCode.idle;
-      plan.actor = null;
-      plan.target = null;
-      plan.targetPoint = Vector3.negativeInfinity;
-      plan.pawnAction = PawnAction.pass;
-      return plan;
-    }
-
-    public MoveAction(GameManager manager)
-    {
-      if (manager == null)
-        Debug.LogError("StateMoveAction does not have a game manager ref!");
-
-      m_GameManager = manager;
-
-      m_ScreenDecorator = gameObject.AddComponent<ScreenDecorator>();
+      GameObject obj = Instantiate(m_PrefabScreenDecorator,transform);
+      m_ScreenDecorator = obj.GetComponent<ScreenDecorator>();
     }
 
     private bool IsGameManagerOK()
     {
       if (m_GameManager == null)
+      {
+        Debug.LogWarning("GameStateMoveAction does not have a game manager ref.");
         return false;
+      }
 
       if (m_GameManager.m_SelectedUnit == null)
       {
@@ -52,12 +42,19 @@ namespace GameManagerStates
       return true;
     }
 
-    ActionPlan IGameState.DoUpdate(PlayerInputs inputs)
+    ActionPlan IActionPlanner.DoUpdate()
     {
-      ActionPlan plan = GetDefaultActionPlan();
+      ActionPlan plan = StateUtils.GetDefaultActionPlan();
 
       if (!IsGameManagerOK())
         return plan;
+
+      if (m_GameManager.m_PlayerInputs.actions.Contains(ButtonEvents.cancel))
+      {
+        // abort!
+        plan.returnCode = PlanReturnCode.abortState;
+        return plan;
+      }  
 
       Vector3 destination;
       NavMeshHit hit;
@@ -74,26 +71,48 @@ namespace GameManagerStates
       if (agent == null)
         return plan;
 
+      agent.enabled = true;
       NavMeshPath path = new NavMeshPath();
       if (!agent.CalculatePath(destination, path))
+      {
+        agent.enabled = false;
         return plan;
+      }
 
-      // TODO: We now know the path is valid. Update the plan!
-      // TODO: in the future this should check for pawn AP, etc.
+      // TODO: Get obstacle component and disable it
+      agent.enabled = false;
 
       // Not checking for this in IsGameManagerOK because we may not always have a screen decorator
       if (m_ScreenDecorator == null)
         return plan;
 
       m_ScreenDecorator.DrawPath(path.corners);
+      
+      if (m_GameManager.m_PlayerInputs.actions.Contains(ButtonEvents.commit))
+        PreparePlan(ref plan, path);
+
       return plan;
     }
 
-    void IGameState.Cleanup()
+    void PreparePlan(ref ActionPlan plan, in NavMeshPath path)
+    {
+      Debug.LogWarning("Not Implemented!");
+      plan.returnCode = PlanReturnCode.execute;
+      plan.pawnAction = PawnAction.move;
+      plan.path = path.corners;
+    }
+
+    void IActionPlanner.Cleanup()
     {
       m_ScreenDecorator.ClearAllDecorations();
     }
+
+    void IActionPlanner.RegisterManager(GameManager manager)
+    {
+      m_GameManager = manager;
+      if (manager == null)
+        Debug.LogError("StateMoveAction does not have a game manager ref!");
+    }
   }
 
-  } // namespace GameManager
-  
+} // namespace GameManager
