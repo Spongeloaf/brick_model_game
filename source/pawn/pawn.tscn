@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://g2yhawrsxocj"]
+
+[ext_resource type="Script" path="res://source/pawn/pawn.cs" id="1_qqbra"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hq2io"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_aktih"]
+
+[node name="pawn" type="Node3D"]
+script = ExtResource("1_qqbra")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+shape = SubResource("CapsuleShape3D_hq2io")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_aktih")
