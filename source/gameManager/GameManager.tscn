@@ -1,9 +1,13 @@
-[gd_scene load_steps=3 format=3 uid="uid://ots1kf62gn0k"]
+[gd_scene load_steps=4 format=3 uid="uid://ots1kf62gn0k"]
 
 [ext_resource type="Script" path="res://source/gameManager/GameManager.cs" id="1_qs1fd"]
 [ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawn/pawn.tscn" id="2_8jvby"]
+[ext_resource type="Script" path="res://source/gameManager/PathRenderer.cs" id="3_ossf3"]
 
 [node name="GameManager" type="Node3D"]
 script = ExtResource("1_qs1fd")
 
 [node name="pawn" parent="." instance=ExtResource("2_8jvby")]
+
+[node name="PathRenderer" type="MeshInstance3D" parent="."]
+script = ExtResource("3_ossf3")
