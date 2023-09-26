@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://ots1kf62gn0k"]
+
+[ext_resource type="Script" path="res://source/gameManager/GameManager.cs" id="1_qs1fd"]
+[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawn/pawn.tscn" id="2_8jvby"]
+
+[node name="GameManager" type="Node3D"]
+script = ExtResource("1_qs1fd")
+
+[node name="pawn" parent="." instance=ExtResource("2_8jvby")]

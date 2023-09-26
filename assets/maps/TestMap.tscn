@@ -2,7 +2,7 @@
 
 [ext_resource type="Material" uid="uid://bf6te7t23qtp3" path="res://assets/materials/GridMat.tres" id="3_862a5"]
 
-[node name="Map" type="Node"]
+[node name="Map" type="Node3D"]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.21105, 0.573563, 2.89924)
