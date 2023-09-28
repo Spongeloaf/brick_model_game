@@ -14,7 +14,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28636, 4.79155, 14.5657)
 script = ExtResource("1_rcqg7")
 
 [node name="GameManager" parent="." instance=ExtResource("4_4b0aq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28137, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Map" parent="GameManager" instance=ExtResource("1_hp010")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0100708, -6.80692, -0.0147705)

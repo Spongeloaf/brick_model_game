@@ -35,10 +35,17 @@ public partial class GameManager : Node3D
     if (inputs.click)
     {
       m_waypoints = CalculatePath(inputs.cursorPosition);
+      if (m_PathRenderer != null)
+      {
+        Vector3[] globalPts = Math.GloablizePoints(m_waypoints, this);
+        m_PathRenderer.DrawPath_Global(m_waypoints);
+        NavigationAgent3D agent =  m_SelectedPawn.GetNode<NavigationAgent3D>("navAgent");
+        if (agent != null)
+        {
+          agent.TargetPosition = inputs.cursorPosition;
+        }
+      }
     }
-
-    if (m_PathRenderer != null)
-      m_PathRenderer.DrawPath(m_waypoints);
   }
 
   private Vector3[] CalculatePath(Vector3 point)

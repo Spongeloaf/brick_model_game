@@ -8,6 +8,7 @@
 script = ExtResource("1_qs1fd")
 
 [node name="pawn" parent="." instance=ExtResource("2_8jvby")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.76366, 0)
 
 [node name="PathRenderer" type="MeshInstance3D" parent="."]
 script = ExtResource("3_ossf3")
