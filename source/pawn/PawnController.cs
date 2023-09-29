@@ -2,6 +2,7 @@ using GameManagerStates;
 using Godot;
 using System;
 
+
 [GlobalClass, Icon("res://source/pawn/pawn.svg")]
 public partial class PawnController : CharacterBody3D
 {
@@ -23,7 +24,7 @@ public partial class PawnController : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		DoNavigation(delta);
+		//DoNavigation(delta);
 		Vector3 velocity = Velocity;
 
 		// Add the gravity.

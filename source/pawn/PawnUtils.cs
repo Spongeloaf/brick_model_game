@@ -9,41 +9,31 @@ public static class PawnUtils
 {
   public static class Appearance
   {
-    //public static void SetHighlight(List<GameObject> objects, UnityEngine.Color color)
-    //{
-    //  if (objects == null)
-    //    return;
+    public static void SetHighlight(PawnController pawn)
+    {
+      if (pawn == null) 
+        return;
 
-    //  foreach (GameObject obj in objects)
-    //    SetHighlight(obj, color);
-    //}
+      MeshInstance3D mesh = pawn.GetChild<MeshInstance3D>(1);
+      if (mesh == null)
+        return;
 
-    //public static void SetHighlight(GameObject pawn, UnityEngine.Color color)
-    //{
-    //  if (pawn == null) return;
+      Material material = mesh.MaterialOverride;
+      material.NextPass = ResourceLoader.Load("res://assets/materials/highlightshader.tres") as Material;
+    }
 
-    //  QuickOutline outline = pawn.GetComponentInChildren<QuickOutline>();
-    //  if (outline == null)
-    //    return;
+    public static void ClearHighlight(PawnController pawn)
+    {
+      if (pawn == null)
+        return;
 
-    //  outline.OutlineColor = color;
-    //  outline.enabled = true;
-    //  outline.OutlineWidth = PawnDecoration.OutlineWidth;
+      MeshInstance3D mesh = pawn.GetChild<MeshInstance3D>(1);
+      if (mesh == null)
+        return;
 
-    //  // We need this to support creating and drawing on a single frame.
-    //  outline.ForceUpdate();
-    //}
-
-    //public static void ClearHighlight(GameObject pawn)
-    //{
-    //  if (pawn == null) return;
-
-    //  QuickOutline outline = pawn.GetComponentInChildren<QuickOutline>();
-    //  if (outline == null)
-    //    return;
-
-    //  outline.enabled = false;
-    //}
+      Material material = mesh.MaterialOverride;
+      material.NextPass = null;
+    }
   }
 
   public static class Navigation

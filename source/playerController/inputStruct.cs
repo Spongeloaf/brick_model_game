@@ -3,6 +3,6 @@ using System;
 
 public struct InputActions
 {
-  public Vector3 cursorPosition;
+  public RaycastHit3D cursorPosition;
   public bool click; // replace with an action list
 }

@@ -3,7 +3,7 @@ using System;
 
 public partial class GameManager : Node3D
 {
-  Node3D m_SelectedPawn;
+  PawnController m_SelectedPawn;
   World3D m_world;
   PathRenderer m_PathRenderer;
   Vector3[] m_waypoints;
@@ -15,7 +15,6 @@ public partial class GameManager : Node3D
 
     try
     {
-      m_SelectedPawn = GetNode<Node3D>("pawn");
       m_world = GetWorld3D();
       m_PathRenderer = GetNode<PathRenderer>("PathRenderer");
     }
@@ -34,19 +33,7 @@ public partial class GameManager : Node3D
   public void DoUpdate(InputActions inputs)
   {
     if (inputs.click)
-    {
-      m_waypoints = CalculatePath(inputs.cursorPosition);
-      if (m_PathRenderer != null)
-      {
-        Vector3[] globalPts = Math.GloablizePoints(m_waypoints, this);
-        m_PathRenderer.DrawPath_Global(m_waypoints);
-        NavigationAgent3D agent =  m_SelectedPawn.GetNode<NavigationAgent3D>("navAgent");
-        if (agent != null)
-        {
-          agent.TargetPosition = inputs.cursorPosition;
-        }
-      }
-    }
+      SelectPawn(inputs.cursorPosition);
   }
 
   private Vector3[] CalculatePath(Vector3 point)
@@ -57,8 +44,46 @@ public partial class GameManager : Node3D
     return NavigationServer3D.MapGetPath(m_world.NavigationMap, m_SelectedPawn.Position, point, true);
   }
 
-  public PawnController TryToSelectUnit(RaycastHit3D hit)
+  private void SelectPawn(RaycastHit3D cursor)
   {
-    throw new NotImplementedException();
+    PawnController pawn = GetPawnUnderCursor(cursor);
+
+    if (pawn != m_SelectedPawn)
+      UnselectCurrentPawn();
+    
+    if (pawn == null)
+    {
+      return;
+    }
+
+    m_SelectedPawn = pawn;
+    PawnUtils.Appearance.SetHighlight(m_SelectedPawn);
+  }
+
+  private PawnController GetPawnUnderCursor(RaycastHit3D hit)
+  {
+    if (hit == null) 
+      return null;
+  
+    if (hit.collider == null)
+      return null;
+
+    Type objType = hit.collider.GetType();
+    if (objType == typeof(PawnController))
+      return (PawnController)hit.collider;
+
+    if (objType != typeof(CollisionShape3D))
+      return null;
+
+    CollisionShape3D collider = (CollisionShape3D)hit.collider;
+    return collider.GetParent<PawnController>();
+  }
+
+  private void UnselectCurrentPawn()
+  {
+    if (m_SelectedPawn == null)
+      return;
+
+    PawnUtils.Appearance.ClearHighlight(m_SelectedPawn);
   }
 }

@@ -25,18 +25,20 @@ public partial class PlayerController : Node
   public override void _PhysicsProcess(double delta)
   {
     InputActions inputActions = new InputActions();
-    inputActions.cursorPosition = GetMousePosition();
     if (Input.IsActionJustReleased("commit"))
+    {
       inputActions.click = true;
+      inputActions.cursorPosition = GetMousePosition();
+    }
 
     if (m_gameManager != null)
       m_gameManager.DoUpdate(inputActions);
   }
 
-  Vector3 GetMousePosition()
+  RaycastHit3D GetMousePosition()
   {
     if (m_camera == null)
-      return Vector3.Inf;
+      return null;
 
     Vector2 screenPos = GetViewport().GetMousePosition();
     Vector3 from = m_camera.ProjectRayOrigin(screenPos);
@@ -44,22 +46,6 @@ public partial class PlayerController : Node
     var spaceState = m_camera.GetWorld3D().DirectSpaceState;
     var query = PhysicsRayQueryParameters3D.Create(from, to);
     Dictionary result = spaceState.IntersectRay(query);
-
-    /* 
-    Results Dictionary:
-
-    position: Vector3 # point in world space for collision
-    normal: Vector3 # normal in world space for collision
-    collider: Object # Object collided or null (if unassociated)
-    collider_id: ObjectID # Object it collided against
-    rid: RID # RID it collided against
-    shape: int # shape index of collider
-    metadata: Variant() # metadata of collider 
-    */
-
-    if (result.Count > 0)
-      return (Vector3)result["position"];
-    
-    return Vector3.Inf;
+    return generalHelpers.ConstructRaycastHit3D(result);
   }
 }
