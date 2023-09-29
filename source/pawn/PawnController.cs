@@ -1,7 +1,9 @@
+using GameManagerStates;
 using Godot;
 using System;
 
-public partial class pawn : CharacterBody3D
+[GlobalClass, Icon("res://source/pawn/pawn.svg")]
+public partial class PawnController : CharacterBody3D
 {
 	public const float m_speed = 5.0f;
 	public const float m_jumpVelocity = 4.5f;
@@ -21,6 +23,7 @@ public partial class pawn : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		DoNavigation(delta);
 		Vector3 velocity = Velocity;
 
 		// Add the gravity.
@@ -28,20 +31,14 @@ public partial class pawn : CharacterBody3D
 			velocity.Y -= gravity * (float)delta;
 
 		Velocity = velocity;
-		DoNavigation(delta);
 
     MoveAndSlide();
 	}
 
-	private void DoNavigation(double delta)
+	public void StartMovement(ActionPlan plan)
 	{
-		if (m_navAgent == null)
-			return;
 
-		if (m_navAgent.IsNavigationFinished())
-			return;
-
-		// TODO next: Figure out how to make this move on command!
-		Math.LerpAlongPath(m_navAgent.GetCurrentNavigationPath(), 0.0f, 2f);
 	}
+
+	private void DoNavigation(double delta) { throw  new NotImplementedException(); }
 }

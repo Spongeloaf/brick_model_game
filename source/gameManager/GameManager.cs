@@ -30,6 +30,7 @@ public partial class GameManager : Node3D
   //{
   //}
 
+  // TODO: Clean this shit up
   public void DoUpdate(InputActions inputs)
   {
     if (inputs.click)
@@ -56,4 +57,8 @@ public partial class GameManager : Node3D
     return NavigationServer3D.MapGetPath(m_world.NavigationMap, m_SelectedPawn.Position, point, true);
   }
 
+  public PawnController TryToSelectUnit(RaycastHit3D hit)
+  {
+    throw new NotImplementedException();
+  }
 }

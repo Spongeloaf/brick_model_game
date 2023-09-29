@@ -1,18 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://g2yhawrsxocj"]
+[gd_scene load_steps=5 format=3 uid="uid://g2yhawrsxocj"]
 
-[ext_resource type="Script" path="res://source/pawn/pawn.cs" id="1_qqbra"]
+[ext_resource type="Script" path="res://source/pawn/PawnController.cs" id="1_2vd6u"]
+[ext_resource type="Material" uid="uid://cr1p64b4hnx8x" path="res://assets/materials/pawnMaterial.tres" id="2_p733o"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_aktih"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hq2io"]
 
-[node name="KinematicPawn" type="CharacterBody3D"]
-script = ExtResource("1_qqbra")
+[node name="PawnController" type="CharacterBody3D"]
+script = ExtResource("1_2vd6u")
 
 [node name="navAgent" type="NavigationAgent3D" parent="."]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+material_override = ExtResource("2_p733o")
 mesh = SubResource("CapsuleMesh_aktih")
 skeleton = NodePath("../..")
 
