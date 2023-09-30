@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://yjst8pui230n"]
+
+[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawn/PawnController.tscn" id="1_m08bi"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_olawj"]
+vertices = PackedVector3Array(-4.5, 0.5, -4.5, -4.5, 0.5, 4.5, 4.5, 0.5, 4.5, 4.5, 0.5, -4.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hc8l4"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_usmvr"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="PawnController" parent="." instance=ExtResource("1_m08bi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.53271, 0)
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_olawj")
+
+[node name="SimpleCollider" type="Area3D" parent="NavigationRegion3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/SimpleCollider"]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, -5, 0)
+shape = SubResource("BoxShape3D_hc8l4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/SimpleCollider"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+mesh = SubResource("PlaneMesh_usmvr")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.833944, 0.55185, 0, -0.55185, 0.833944, 0, 6.01898, 9.15546)

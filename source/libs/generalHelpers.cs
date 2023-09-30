@@ -50,4 +50,14 @@ public static class generalHelpers
 
     return hit;
   }
+
+  public static RaycastHit3D DoRaycast(World3D world, Vector3 from, Vector3 direction, 
+                                       float limit = Mathf.Inf, Array<Rid> excludes = null, uint collision_mask = 4294967295)
+  {
+    direction = direction.Normalized();
+    Vector3 to = from + direction * limit;
+    var query = PhysicsRayQueryParameters3D.Create(from, to, collision_mask, excludes);
+    Dictionary result = world.DirectSpaceState.IntersectRay(query);
+    return ConstructRaycastHit3D(result);
+  }
 }

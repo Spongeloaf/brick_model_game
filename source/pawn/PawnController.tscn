@@ -3,16 +3,15 @@
 [ext_resource type="Script" path="res://source/pawn/PawnController.cs" id="1_2vd6u"]
 [ext_resource type="Material" uid="uid://cr1p64b4hnx8x" path="res://assets/materials/pawnMaterial.tres" id="2_p733o"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_aktih"]
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hq2io"]
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_aktih"]
+
 [node name="PawnController" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("1_2vd6u")
 
 [node name="navAgent" type="NavigationAgent3D" parent="."]
-path_desired_distance = 0.5
-target_desired_distance = 0.5
 path_height_offset = 1.0
 avoidance_enabled = true
 debug_enabled = true
@@ -20,12 +19,10 @@ debug_use_custom = true
 debug_path_custom_color = Color(1, 0, 1, 1)
 debug_path_custom_point_size = 10.02
 
-[node name="mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="collider" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_hq2io")
+
+[node name="mesh" type="MeshInstance3D" parent="collider"]
 material_override = ExtResource("2_p733o")
 mesh = SubResource("CapsuleMesh_aktih")
-skeleton = NodePath("../..")
-
-[node name="collider" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("CapsuleShape3D_hq2io")
+skeleton = NodePath("../../..")
