@@ -27,6 +27,8 @@ public static class generalHelpers
 
     if (raycastDict.ContainsKey("position"))
       hit.position = (Vector3)raycastDict["position"];
+    else
+      hit.position = Vector3.Inf; // Standard practice for unknown Vector3 values
 
     if (raycastDict.ContainsKey("normal"))
       hit.normal = (Vector3)raycastDict["normal"];

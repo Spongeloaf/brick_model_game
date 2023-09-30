@@ -1,18 +1,17 @@
 using Godot;
 using System;
+using System.Linq;
 
 public partial class GameManager : Node3D
 {
   PawnController m_SelectedPawn;
   World3D m_world;
   PathRenderer m_PathRenderer;
-  Vector3[] m_waypoints;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
   {
-    m_waypoints = new Vector3[0];
-
+    m_SelectedPawn = null;
     try
     {
       m_world = GetWorld3D();
@@ -24,16 +23,34 @@ public partial class GameManager : Node3D
     }
   }
 
-  // Called every frame. 'delta' is the elapsed time since the previous frame.
-  //public override void _Process(double delta)
-  //{
-  //}
-
-  // TODO: Clean this shit up
   public void DoUpdate(InputActions inputs)
   {
-    if (inputs.click)
-      SelectPawn(inputs.cursorPosition);
+    if (inputs.LClick)
+    {
+      if (m_SelectedPawn == null)
+        SelectPawn(inputs.cursorPosition);
+      else
+        DoPawnMove(inputs.cursorPosition);
+    }
+
+    if (inputs.RClick)
+    {
+      UnselectCurrentPawn();
+    }
+  }
+
+  private void DoPawnMove(RaycastHit3D cursor)
+  {
+    if (cursor == null || cursor.position == Vector3.Inf)
+      return;
+
+    // this could be improved by moving the path calc into the pawn controller so it's nav agent
+    // everything, ensuring consistent behavior.
+    Vector3[] path = CalculatePath(cursor.position);
+    if (path.Length == 0 || m_SelectedPawn == null) 
+      return;
+
+    m_SelectedPawn.StartMovement(path.Last());
   }
 
   private Vector3[] CalculatePath(Vector3 point)

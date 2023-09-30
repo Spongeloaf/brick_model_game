@@ -27,9 +27,12 @@ public partial class PlayerController : Node
     InputActions inputActions = new InputActions();
     if (Input.IsActionJustReleased("commit"))
     {
-      inputActions.click = true;
+      inputActions.LClick = true;
       inputActions.cursorPosition = GetMousePosition();
     }
+
+    if (Input.IsActionJustReleased("commit"))
+      inputActions.RClick = true;
 
     if (m_gameManager != null)
       m_gameManager.DoUpdate(inputActions);
