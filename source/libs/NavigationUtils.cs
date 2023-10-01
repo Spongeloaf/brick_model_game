@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Godot.Collections;
+using System.Linq;
 
 public class RaycastHit3D
 {
@@ -15,7 +16,7 @@ public class RaycastHit3D
 }
 
 // Put stuff here until you find a better place for it
-public static class generalHelpers 
+public static class NavigationUtils 
 {
   public static RaycastHit3D ConstructRaycastHit3D(Dictionary raycastDict)
   {
@@ -60,4 +61,6 @@ public static class generalHelpers
     Dictionary result = world.DirectSpaceState.IntersectRay(query);
     return ConstructRaycastHit3D(result);
   }
-}
+
+
+} // generalHelpers

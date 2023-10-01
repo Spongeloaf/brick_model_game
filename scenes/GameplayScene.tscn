@@ -9,7 +9,7 @@
 
 [node name="PlayerController" parent="." instance=ExtResource("3_op8u5")]
 
-[node name="Camera3D" type="Camera3D" parent="PlayerController"]
+[node name="Camera3D2" type="Camera3D" parent="PlayerController"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.28636, 4.79155, 14.5657)
 script = ExtResource("1_rcqg7")
 

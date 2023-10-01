@@ -44,19 +44,19 @@ size = Vector3(55, 3, 1)
 material = ExtResource("3_862a5")
 
 [node name="CSGBox3D5" type="CSGBox3D" parent="colliders"]
-transform = Transform3D(-0.843984, -0.536342, -0.0052146, -0.536332, 0.844001, -0.00331375, 0.00617843, -3.16889e-10, -0.99998, 10.3494, 1.99632, 1.41695)
+transform = Transform3D(-0.843984, -0.536342, -0.0052146, -0.536332, 0.844001, -0.00331375, 0.00617843, -3.16889e-10, -0.99998, 10.3494, 1.99632, 12.6527)
 use_collision = true
 size = Vector3(4.60107, 0.502591, 14.107)
 material = ExtResource("3_862a5")
 
 [node name="CSGBox3D7" type="CSGBox3D" parent="colliders"]
-transform = Transform3D(0.849607, 0.527317, -0.0102242, -0.527376, 0.849622, -0.004133, 0.00650729, 0.00890342, 0.999939, 18.6499, 2.07674, 1.42846)
+transform = Transform3D(0.849607, 0.527317, -0.0102242, -0.527376, 0.849622, -0.004133, 0.00650729, 0.00890342, 0.999939, 18.6499, 2.07674, 12.6643)
 use_collision = true
 size = Vector3(4.60107, 0.502591, 14.0192)
 material = ExtResource("3_862a5")
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="colliders"]
-transform = Transform3D(-0.999963, -0.00595152, -0.00617832, -0.0059514, 0.999982, -3.67712e-05, 0.00617843, 0, -0.99998, 14.4541, 3.1768, 1.38929)
+transform = Transform3D(-0.999963, -0.00595152, -0.00617832, -0.0059514, 0.999982, -3.67712e-05, 0.00617843, 0, -0.99998, 14.4541, 3.1768, 12.6251)
 use_collision = true
 size = Vector3(4.60107, 0.502591, 14.107)
 material = ExtResource("3_862a5")

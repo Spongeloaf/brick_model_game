@@ -2,5 +2,7 @@
 
 [ext_resource type="Script" path="res://source/playerController/PlayerController.cs" id="1_ct3xi"]
 
-[node name="PlayerController" type="Node"]
+[node name="PlayerController" type="Node3D"]
 script = ExtResource("1_ct3xi")
+
+[node name="Camera3D" type="Camera3D" parent="."]
