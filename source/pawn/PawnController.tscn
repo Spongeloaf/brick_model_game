@@ -8,11 +8,9 @@
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_aktih"]
 
 [node name="PawnController" type="RigidBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("1_2vd6u")
 
 [node name="navAgent" type="NavigationAgent3D" parent="."]
-path_height_offset = 1.0
 avoidance_enabled = true
 debug_enabled = true
 debug_use_custom = true
@@ -20,6 +18,7 @@ debug_path_custom_color = Color(1, 0, 1, 1)
 debug_path_custom_point_size = 10.02
 
 [node name="collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_hq2io")
 
 [node name="mesh" type="MeshInstance3D" parent="collider"]

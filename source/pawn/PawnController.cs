@@ -97,38 +97,7 @@ public partial class PawnController : RigidBody3D
     Vector3 movement = m_navAgent.GetNextPathPosition();
     float speed = (float)timeDelta * m_speed;
     GlobalPosition = GlobalPosition.MoveToward(movement, speed);
-  }
-
-
-
-  private void DoNavigation_old(double timeDelta)
-  {
-    if (m_navAgent.IsNavigationFinished())
-      return;
-
-    //Vector3 movement = m_navAgent.GetNextPathPosition();
-    //float speed = (float)timeDelta * m_speed;
-    //  GlobalPosition = GlobalPosition.MoveToward(movement, speed);
-    //SnapMeshToGround();
-
-
-    // We have a few potential solutions:
-    //
-    // Option A:	MoveAndSlide() with physics. However, that is resulting in wierd rubber banding and may require tuning
-    //						to get it right. For example, waypoins in the middle may need higher distance tolerance and once we're
-    //						close to the end point, we may need to slow down.
-    //
-    // Option 2:	Go back to the GlobalPosition = GlobalPosition.MoveToward(movement, speed) option, but use a tether to
-    //						move the pawn. So the nav agent will move a dummy object, and then we'll raycast to ground from that
-    //						point and set the pawn there.
-    //
-    // Option C:	Hybrid. The move and slide method may produce smoother movement, but it does not solve the hovering
-    //						problem. Maybe combining the move and slide method with the raycaster will work?
-
-    // Moving pawn by physics forces. Very janky:
-    //Vector3 moveDelta = GlobalPosition.MoveToward(movement, speed) - GlobalPosition;
-    //Velocity = moveDelta;
-    //MoveAndSlide();
+    SnapMeshToGround();
   }
 
   private void SnapMeshToGround()
@@ -147,7 +116,11 @@ public partial class PawnController : RigidBody3D
     if (hit == null || hit.position == Vector3.Inf)
       return;
 
+    float difference = GlobalPosition.Y - hit.position.Y;
+    string str = string.Format("y diff: {0}", difference);
+    GD.Print(str);
+
     newPosition.Y = hit.position.Y;
-    m_collisionShape.GlobalPosition = newPosition;
+    GlobalPosition = newPosition;
   }
 }
