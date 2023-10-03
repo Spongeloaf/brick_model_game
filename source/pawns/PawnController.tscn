@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3 uid="uid://g2yhawrsxocj"]
+
+[ext_resource type="Script" path="res://source/pawns/PawnController.cs" id="1_fbsm2"]
+[ext_resource type="Material" uid="uid://cr1p64b4hnx8x" path="res://assets/materials/pawnMaterial.tres" id="2_xmans"]
+[ext_resource type="Script" path="res://source/pawns/statCard.cs" id="3_rbetx"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7lw0x"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_g0uok"]
+
+[node name="PawnController" type="RigidBody3D" node_paths=PackedStringArray("m_statCard")]
+script = ExtResource("1_fbsm2")
+m_statCard = NodePath("")
+
+[node name="navAgent" type="NavigationAgent3D" parent="."]
+avoidance_enabled = true
+debug_enabled = true
+debug_use_custom = true
+debug_path_custom_color = Color(1, 0, 1, 1)
+debug_path_custom_point_size = 10.02
+
+[node name="collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_7lw0x")
+
+[node name="mesh" type="MeshInstance3D" parent="collider"]
+material_override = ExtResource("2_xmans")
+mesh = SubResource("CapsuleMesh_g0uok")
+skeleton = NodePath("../../..")
+
+[node name="statCard" type="Node" parent="."]
+script = ExtResource("3_rbetx")
+moveDistance = 5

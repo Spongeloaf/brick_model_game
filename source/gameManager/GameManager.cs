@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 public partial class GameManager : Node3D
 {
@@ -25,15 +26,16 @@ public partial class GameManager : Node3D
 
   public void DoUpdate(InputActions inputs)
   {
-    if (inputs.LClick)
+    if (inputs.command == PlayerCommands.commit)
     {
       if (m_SelectedPawn == null)
         SelectPawn(inputs.cursorPosition);
       else
         DoPawnMove(inputs.cursorPosition);
+      return;
     }
 
-    if (inputs.RClick)
+    if (inputs.command == PlayerCommands.cancel)
     {
       UnselectCurrentPawn();
     }
@@ -102,5 +104,6 @@ public partial class GameManager : Node3D
       return;
 
     PawnUtils.Appearance.ClearHighlight(m_SelectedPawn);
+    m_SelectedPawn = null;
   }
 }

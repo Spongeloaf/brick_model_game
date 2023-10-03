@@ -1,6 +1,7 @@
 using Godot;
 using Godot.Collections;
 using System;
+using System.Collections.Generic;
 
 public partial class PlayerController : Node
 {
@@ -27,12 +28,11 @@ public partial class PlayerController : Node
     InputActions inputActions = new InputActions();
     if (Input.IsActionJustReleased("commit"))
     {
-      inputActions.LClick = true;
+      inputActions.command = PlayerCommands.commit;
       inputActions.cursorPosition = GetMousePosition();
     }
-
-    if (Input.IsActionJustReleased("commit"))
-      inputActions.RClick = true;
+    else if (Input.IsActionJustReleased("cancel"))
+      inputActions.command = PlayerCommands.cancel;
 
     if (m_gameManager != null)
       m_gameManager.DoUpdate(inputActions);

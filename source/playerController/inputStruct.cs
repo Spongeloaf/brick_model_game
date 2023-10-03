@@ -1,9 +1,11 @@
-using Godot;
-using System;
+public enum PlayerCommands
+{
+  commit,
+  cancel,
+}
 
 public struct InputActions
 {
   public RaycastHit3D cursorPosition;
-  public bool LClick; // replace with an action list
-  public bool RClick;
+  public PlayerCommands command;
 }

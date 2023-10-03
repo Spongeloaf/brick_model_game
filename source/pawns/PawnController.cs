@@ -28,16 +28,11 @@ using System.Linq;
 [GlobalClass, Icon("res://source/pawn/pawn.svg")]
 public partial class PawnController : RigidBody3D
 {
+  [Export] private float m_speed = 20f;
+  [Export] private float m_snapToGroundDistance = 5.0f;
+  [Export] public StatCard m_statCard;
 
-
-  // move speed target is 2.5 seconds to move 5 game units
-  // that works out to 2 meters per second.
-  [Export]
-  private float m_speed = 20f;
-
-  [Export]
-  private float m_snapToGroundDistance = 5.0f;
-
+  private const float m_angleTolerance = 0.0872665f; // equals roughly 5 degrees
   private NavigationAgent3D m_navAgent;
   private CollisionShape3D m_collisionShape;
 
@@ -57,6 +52,10 @@ public partial class PawnController : RigidBody3D
     m_collisionShape = GetNode<CollisionShape3D>("collider");
     if (m_collisionShape == null)
       GD.PrintErr("Failed to find collider!");
+
+    m_statCard = GetNode<StatCard>("statCard");
+    if (m_statCard == null)
+      GD.PrintErr("Failed to find statCard!");
   }
 
   public override void _PhysicsProcess(double delta)
@@ -66,7 +65,7 @@ public partial class PawnController : RigidBody3D
 
     if (m_navAgent.IsNavigationFinished())
     {
-      
+      FinishNavigation();
     }
 
     // Navigation requries the body be frozen.
@@ -87,6 +86,16 @@ public partial class PawnController : RigidBody3D
   {
     if (m_navAgent == null)
       return;
+
+    Vector3 facing = GlobalTransform.Basis.Y;
+    float angle = facing.AngleTo(Vector3.Up);
+
+    if (angle > m_angleTolerance)
+    {
+      Transform3D newTfm = GlobalTransform;
+      newTfm.Basis = Basis.Identity;
+      GlobalTransform = newTfm;
+    }
 
     Freeze = true;
     m_navAgent.TargetPosition = target;
