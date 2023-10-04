@@ -31,7 +31,14 @@ public partial class PlayerController : Node
       inputActions.command = PlayerCommands.commit;
       inputActions.cursorPosition = GetMousePosition();
     }
-    else if (Input.IsActionJustReleased("cancel"))
+
+    if (Input.IsActionJustReleased("move"))
+      inputActions.command = PlayerCommands.move;
+
+    if (Input.IsActionJustReleased("attack"))
+      inputActions.command = PlayerCommands.attack;
+
+    if (Input.IsActionJustReleased("cancel"))
       inputActions.command = PlayerCommands.cancel;
 
     if (m_gameManager != null)

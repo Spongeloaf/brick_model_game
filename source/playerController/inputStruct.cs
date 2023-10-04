@@ -3,6 +3,8 @@ public enum PlayerCommands
   commit,
   cancel,
   nothing,
+  move,
+  attack,
 }
 
 public struct InputActions

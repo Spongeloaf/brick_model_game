@@ -99,39 +99,31 @@ public partial class GameManager : Node3D
     return NavigationServer3D.MapGetPath(m_world.NavigationMap, m_SelectedPawn.Position, point, true);
   }
 
-  private void UpdatePlanner()
-  {
-    switch (m_GameState)
-    {
-      case GameState.move:
-        break;
-
-      case GameState.attack:
-        break;
-
-      default:
-      case GameState.selectPawn:
-        m_Planner = null;
-        m_Executor = null;
-        break;
-    }
-  }
-
   private void HandleInputs()
   {
-    if (m_InputActions.command == PlayerCommands.commit) 
+    switch (m_InputActions.command)
     {
-      SelectPawn(m_InputActions.cursorPosition);
-      return;
-    }
+      case PlayerCommands.commit:
+        SelectPawn(m_InputActions.cursorPosition);
+        break;
 
-    if (m_InputActions.command == PlayerCommands.cancel)
-    {
-      // PLanners handle cancel action on their own. We only want to process this while selecting pawns
-      if (m_Planner != null)
-        return;
+      case PlayerCommands.cancel:
+        if (m_Planner == null)
+          UnselectCurrentPawn();
+        break;
 
-      UnselectCurrentPawn();
+      case PlayerCommands.move:
+        m_Planner = new PlannerMove();
+        m_Executor = new ExecutorMove();
+        break;
+
+      case PlayerCommands.attack:
+        throw new NotImplementedException();
+        break;
+
+      case PlayerCommands.nothing:
+      default:
+        break;
     }
   }
 
