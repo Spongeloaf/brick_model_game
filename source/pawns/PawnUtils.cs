@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using GameManagerStates;
 using Godot;
 
 public static class PawnUtils
@@ -44,15 +46,18 @@ public static class PawnUtils
 
   public static class Navigation
   {
-    public static NavigationAgent3D GetNavAgent(PawnController pawn)
+    // Uses the Navigation server to get a nav path for the pawn's nav agent to the destination
+    // The "_global" postfix indicates that the argument must be a global position, not a local one.
+    public static Vector3[] GetNavigationPath(PawnController pawn, in Vector3 target_global)
     {
-      // TODO: We need a better way to do this. Add a function to PawnController???
-      NavigationAgent3D agent = pawn.GetNode<NavigationAgent3D>("navAgent");
+      if (pawn == null)
+        return new Vector3[0];
 
+      NavigationAgent3D agent = pawn.GetNavigationAgent3D();
       if (agent == null)
-        GD.PrintErr("GetNavAgent could not locate an agent for this pawn");
+        return new Vector3[0];
 
-      return agent;
+      return NavigationServer3D.MapGetPath(pawn.GetWorld3D().NavigationMap, pawn.GlobalPosition, target_global, true);
     }
   }
 }

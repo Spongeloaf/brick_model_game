@@ -4,27 +4,6 @@ using Godot.Collections;
 using System;
 using System.Linq;
 
-//internal class KinematicPathFollower
-//{
-//  public KinematicPathFollower(in Vector3[] global_Waypoints) { globalWaypoints = global_Waypoints; }
-
-//  public Vector3 GetMovementVector(Vector3 globalPosition)
-//  {
-//    // Plan:
-//    // Get the closest waypoint.
-//    // Find the next waypoint after that (unless last)
-//    // Set destination to that waypoint
-//    // Calculate direction based on target point
-//    // Calculate speed based on pawn characteristics.
-
-//    Vector3 result = NavigationUtils.GetNextGlobalWaypoint(globalWaypoints, globalPosition);
-
-//    return result;
-//  }
-
-//  public Vector3[] globalWaypoints;
-//}
-
 [GlobalClass, Icon("res://source/pawn/pawn.svg")]
 public partial class PawnController : RigidBody3D
 {
@@ -43,11 +22,13 @@ public partial class PawnController : RigidBody3D
   {
     FreezeMode = FreezeModeEnum.Kinematic;
     Freeze = false;
-    m_navAgent = GetNode<NavigationAgent3D>("navAgent");
     AddConstantCentralForce(new Vector3(0f, -gravity, 0f));
 
+    m_navAgent = GetNode<NavigationAgent3D>("navAgent");
     if (m_navAgent == null)
       GD.PrintErr("Missing nav agent!");
+
+    m_navAgent.AvoidanceEnabled = true;
 
     m_collisionShape = GetNode<CollisionShape3D>("collider");
     if (m_collisionShape == null)
@@ -90,6 +71,7 @@ public partial class PawnController : RigidBody3D
     Vector3 facing = GlobalTransform.Basis.Y;
     float angle = facing.AngleTo(Vector3.Up);
 
+    // Flip the pawn upright in case its lying down somehow
     if (angle > m_angleTolerance)
     {
       Transform3D newTfm = GlobalTransform;
@@ -132,4 +114,14 @@ public partial class PawnController : RigidBody3D
     newPosition.Y = hit.position.Y;
     GlobalPosition = newPosition;
   }
+
+  public bool IsNavigating()
+  {
+    if (m_navAgent == null)
+      return false;
+
+    return !m_navAgent.IsNavigationFinished();
+  }
+
+  public NavigationAgent3D GetNavigationAgent3D() { return m_navAgent; }
 }

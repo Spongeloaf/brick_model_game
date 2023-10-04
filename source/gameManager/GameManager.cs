@@ -15,7 +15,6 @@ public partial class GameManager : Node3D
 {
   private PawnController m_SelectedPawn;
   private World3D m_world;
-  private PathRenderer m_PathRenderer;
   private InputActions m_InputActions;
   private IActionPlanner m_Planner;
   private IActionExecutor m_Executor;
@@ -25,16 +24,7 @@ public partial class GameManager : Node3D
   public override void _Ready()
   {
     m_GameState = GameState.selectPawn;
-
-    try
-    {
-      m_world = GetWorld3D();
-      m_PathRenderer = GetNode<PathRenderer>("PathRenderer");
-    }
-    catch
-    {
-      GD.PrintErr("Selected pawn not found!");
-    }
+    m_world = GetWorld3D();
   }
 
   public void DoUpdate(InputActions inputs)

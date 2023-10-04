@@ -17,19 +17,34 @@ namespace GameManagerStates
     public ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn)
     {
       ActionPlan plan = new ActionPlan();
+      if (actions.cursorPosition == null)
+        return plan;
 
       if (selectedPawn == null)
         plan.returnCode = PlanReturnCode.abortState;
 
+      if (selectedPawn.m_statCard == null)
+      {
+        GD.PrintErr("Selected pawn has no stat card!");
+        return plan;
+      }
+
+
       // TODO next:
       //
-      // Figure out where to put the pawn move code. Into Pawn utils maybe?
       // Also put the pathfinding code there
       // Make sure we don't save the path into the nav agent (ask for path, then tell it to stop navigating)
       // Then Then refernce the stat card to see if we can go that far
       // update the plan
       // Hook up the move code to the executor
-      break the build! // So I know where to start later
+
+      Vector3[] path = PawnUtils.Navigation.GetNavigationPath(selectedPawn, actions.cursorPosition.position);
+      bool lengthOk = Math.GetPathLength(path) <= (float)selectedPawn.m_statCard.moveDistance;
+
+      if (lengthOk && actions.command == PlayerCommands.commit)
+        plan.returnCode = PlanReturnCode.execute;
+
+      // TODO: This where we should add in code to draw the move path
 
       return plan;
     }
@@ -63,6 +78,7 @@ namespace GameManagerStates
       //double travelTime = m_PathLength / m_TravelSpeed;
       //m_BeginMoveTime = Time.GetUnixTimeFromSystem();
       //m_FinishMoveTime = m_BeginMoveTime + travelTime;
+      throw new NotImplementedException();
     }
 
     ExecutorReturnCode IActionExecutor.DoUpdate()
@@ -75,6 +91,7 @@ namespace GameManagerStates
       //  return ExecutorReturnCode.finished;
 
       //return ExecutorReturnCode.running;
+      throw new NotImplementedException ();
     }
   }
 

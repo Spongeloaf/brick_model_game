@@ -3,6 +3,7 @@ using System;
 using Godot.Collections;
 using System.Linq;
 
+// This might be better off as a struct.....
 public class RaycastHit3D
 {
   // Note: Member names match the dictionary counterparts. DON'T CHANGE THEM!

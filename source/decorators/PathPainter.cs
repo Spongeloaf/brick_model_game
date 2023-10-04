@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class PathRenderer : MeshInstance3D
+public partial class PathPainter : MeshInstance3D
 {
   ImmediateMesh m_immediateMesh;
 
@@ -10,15 +10,15 @@ public partial class PathRenderer : MeshInstance3D
     m_immediateMesh = new ImmediateMesh();
   }
 
-  public void DrawPath_Global(in Vector3[] points)
+  public void DrawPath(in Vector3[] points_global)
   {
-    if (points.Length == 0)
+    if (points_global.Length == 0)
       return;
 
     m_immediateMesh.ClearSurfaces();
     m_immediateMesh.SurfaceBegin(Mesh.PrimitiveType.LineStrip);
 
-    foreach (Vector3 point in points)
+    foreach (Vector3 point in points_global)
     {
       Vector3 offset = point;
       //offset.Y += 1f;
