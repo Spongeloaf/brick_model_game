@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://yjst8pui230n"]
 
-[ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/PlayerInterface/PlayerInterface.tscn" id="1_blgpb"]
+[ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerInterface/playerInterface.tscn" id="1_blgpb"]
 [ext_resource type="PackedScene" uid="uid://ots1kf62gn0k" path="res://source/gameManager/GameManager.tscn" id="1_fjlo8"]
 [ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawns/PawnController.tscn" id="1_m08bi"]
 
@@ -13,6 +13,9 @@ polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 [sub_resource type="BoxMesh" id="BoxMesh_p4yfs"]
 
 [node name="Node3D" type="Node3D"]
+
+[node name="PlayerInterface" parent="." instance=ExtResource("1_blgpb")]
+transform = Transform3D(1, 0, 0, 0, 0.891655, 0.452715, 0, -0.452715, 0.891655, 0, 7.42969, 11.4581)
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
 navigation_mesh = SubResource("NavigationMesh_olawj")
@@ -30,5 +33,3 @@ mesh = SubResource("BoxMesh_p4yfs")
 
 [node name="PawnController" parent="GameManager" instance=ExtResource("1_m08bi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.53271, 0)
-
-[node name="PlayerInterface" parent="." instance=ExtResource("1_blgpb")]
