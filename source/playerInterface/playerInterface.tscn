@@ -1,9 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://bmvbhherkj57y"]
 
-[ext_resource type="Script" path="res://source/playerInterface/playerInterface.cs" id="1_ct3xi"]
+[ext_resource type="Script" path="res://source/PlayerInterface/PlayerInterface.cs" id="1_ct3xi"]
 [ext_resource type="Script" path="res://source/thirdParty/simple-free-look-camera-4-cf0bc21bfd15940b18ec42e3c6cae1ad385284c4/camera.gd" id="2_d43o6"]
 
-[node name="playerInterface" type="Node3D"]
+[node name="PlayerInterface" type="Node3D"]
 script = ExtResource("1_ct3xi")
 
 [node name="Camera3D" type="Camera3D" parent="."]
