@@ -1,15 +1,15 @@
 [gd_scene load_steps=6 format=3 uid="uid://bvnk83klfry1o"]
 
 [ext_resource type="PackedScene" uid="uid://cy7bqh5ukf3fo" path="res://assets/maps/TestMap.tscn" id="1_hp010"]
-[ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerInterface/playerInterface.tscn" id="3_op8u5"]
+[ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerController/PlayerController.tscn" id="3_op8u5"]
 [ext_resource type="PackedScene" uid="uid://ots1kf62gn0k" path="res://source/gameManager/GameManager.tscn" id="4_4b0aq"]
-[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawns/PawnController.tscn" id="4_ghkh3"]
+[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawn/PawnController.tscn" id="4_ghkh3"]
 [ext_resource type="PackedScene" uid="uid://biql3bjd6do3m" path="res://assets/props/physicsBox.tscn" id="5_ckupd"]
 
 [node name="sceneRoot" type="Node3D"]
 
-[node name="playerInterface" parent="." instance=ExtResource("3_op8u5")]
-transform = Transform3D(1, 0, 0, 0, 0.891655, 0.452715, 0, -0.452715, 0.891655, 0, 7.42969, 11.4581)
+[node name="PlayerController" parent="." instance=ExtResource("3_op8u5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.9827, 12.0476)
 
 [node name="GameManager" parent="." instance=ExtResource("4_4b0aq")]
 

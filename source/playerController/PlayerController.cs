@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 using System.Collections.Generic;
 
-public partial class PlayerInterface : Node3D
+public partial class PlayerController : Node
 {
   private float screenRayDepth = 100f;
   private GameManager m_gameManager;

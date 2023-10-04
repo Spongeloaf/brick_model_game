@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://yjst8pui230n"]
 
-[ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerInterface/playerInterface.tscn" id="1_blgpb"]
+[ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerController/PlayerController.tscn" id="1_blgpb"]
 [ext_resource type="PackedScene" uid="uid://ots1kf62gn0k" path="res://source/gameManager/GameManager.tscn" id="1_fjlo8"]
-[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawns/PawnController.tscn" id="1_m08bi"]
+[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawn/PawnController.tscn" id="1_m08bi"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_olawj"]
 vertices = PackedVector3Array(-4.5, 0.5, -4.5, -4.5, 0.5, 4.5, 4.5, 0.5, 4.5, 4.5, 0.5, -4.5)
@@ -14,7 +14,7 @@ polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
 
 [node name="Node3D" type="Node3D"]
 
-[node name="PlayerInterface" parent="." instance=ExtResource("1_blgpb")]
+[node name="PlayerController" parent="." instance=ExtResource("1_blgpb")]
 transform = Transform3D(1, 0, 0, 0, 0.891655, 0.452715, 0, -0.452715, 0.891655, 0, 7.42969, 11.4581)
 
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
