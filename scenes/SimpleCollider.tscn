@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerController/PlayerController.tscn" id="1_blgpb"]
 [ext_resource type="PackedScene" uid="uid://ots1kf62gn0k" path="res://source/gameManager/GameManager.tscn" id="1_fjlo8"]
-[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawn/PawnController.tscn" id="1_m08bi"]
+[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawns/PawnController.tscn" id="1_m08bi"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_olawj"]
 vertices = PackedVector3Array(-4.5, 0.5, -4.5, -4.5, 0.5, 4.5, 4.5, 0.5, 4.5, 4.5, 0.5, -4.5)

@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 
 public enum PawnAction
 {
@@ -11,9 +12,14 @@ namespace GameManagerStates
 {
   public class ActionPlan
   {
+    public ActionPlan() 
+    { 
+      returnCode = PlanReturnCode.idle;
+    }
+
     public PlanReturnCode returnCode;
     public PawnController actor;
-    public PawnController[] target;
+    public PawnController target;
     public Vector3 targetPoint;
     public PawnAction pawnAction;
     public Vector3[] path;
@@ -28,9 +34,9 @@ namespace GameManagerStates
 
   interface IActionPlanner
   {
-    ActionPlan DoUpdate();
+    ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn);
     void Cleanup();
-    void RegisterManager(GameManager manager);
+    void RegisterManager(GameManager manager); // do we still need this?
   }
 
   public enum ExecutorReturnCode

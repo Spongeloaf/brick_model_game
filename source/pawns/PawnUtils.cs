@@ -10,29 +10,19 @@ public static class PawnUtils
   {
     public static void SetHighlight(PawnController pawn)
     {
-      if (pawn == null)
-        return;
-
-      MeshInstance3D mesh = null;
-      try
-      {
-        mesh = pawn.GetNode<MeshInstance3D>("collider/mesh");
-        if (mesh == null)
-          return;
-      }
-      catch
-      {
-        GD.PrintErr("Exception raised while looking for child node inside SetHighlight()!");
-        return;
-      }
-
-      Material material = mesh.MaterialOverride;
-      material.NextPass = ResourceLoader.Load("res://assets/materials/highlightshader.tres") as Material;
+      Material mat = ResourceLoader.Load("res://assets/materials/pawnMaterialHighlighted.tres") as Material;
+      SetMaterial(pawn, mat);
     }
 
     public static void ClearHighlight(PawnController pawn)
     {
-      if (pawn == null)
+      Material mat = ResourceLoader.Load("res://assets/materials/pawnMaterial.tres") as Material;
+      SetMaterial(pawn, mat);
+    }
+
+    private static void SetMaterial(PawnController pawn, Material material)
+    {
+      if (pawn == null || material == null)
         return;
 
       MeshInstance3D mesh = null;
@@ -48,8 +38,7 @@ public static class PawnUtils
         return;
       }
 
-      Material material = mesh.MaterialOverride;
-      material.NextPass = null;
+      mesh.MaterialOverride = material;
     }
   }
 
