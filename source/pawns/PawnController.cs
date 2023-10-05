@@ -9,8 +9,8 @@ public partial class PawnController : RigidBody3D
 {
   [Export] private float m_speed = 20f;
   [Export] private float m_snapToGroundDistance = 5.0f;
-  [Export] public StatCard m_statCard;
 
+  public StatCard m_statCard;
   private const float m_angleTolerance = 0.0872665f; // equals roughly 5 degrees
   private NavigationAgent3D m_navAgent;
   private CollisionShape3D m_collisionShape;
@@ -34,9 +34,7 @@ public partial class PawnController : RigidBody3D
     if (m_collisionShape == null)
       GD.PrintErr("Failed to find collider!");
 
-    m_statCard = GetNode<StatCard>("statCard");
-    if (m_statCard == null)
-      GD.PrintErr("Failed to find statCard!");
+    m_statCard.moveDistance = 20;
   }
 
   public override void _PhysicsProcess(double delta)
@@ -104,7 +102,7 @@ public partial class PawnController : RigidBody3D
     RaycastHit3D hit = NavigationUtils.DoRaycast(
       GetWorld3D(), newPosition, Vector3.Down, m_snapToGroundDistance, exclusions);
 
-    if (hit == null || hit.position == Vector3.Inf)
+    if (hit.position == Vector3.Inf)
       return;
 
     float difference = GlobalPosition.Y - hit.position.Y;

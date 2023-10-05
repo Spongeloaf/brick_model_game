@@ -19,12 +19,14 @@ public partial class GameManager : Node3D
   private IActionPlanner m_Planner;
   private IActionExecutor m_Executor;
   private GameState m_GameState;
+  private PathPainter m_PathPainter;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
   {
     m_GameState = GameState.selectPawn;
     m_world = GetWorld3D();
+    m_PathPainter = GetNode<PathPainter>("PathPainter");
   }
 
   public void DoUpdate(InputActions inputs)
@@ -32,7 +34,10 @@ public partial class GameManager : Node3D
     if (m_Executor != null)
     {
       // TODO: handle return codes
-      m_Executor.DoUpdate();
+      ExecutorReturnCode code = m_Executor.DoUpdate();
+      if (code == ExecutorReturnCode.finished) 
+        m_Executor = null;
+
       return;
     }
 
@@ -55,38 +60,8 @@ public partial class GameManager : Node3D
     if (plan.returnCode == PlanReturnCode.idle)
       return;
 
-    if (m_Executor == null)
-    {
-      GD.PrintErr("Uh oh, you somehow have a planner but not an executor in GameManager.DoUpdate()!");
-      return;
-    }
-
     if (plan.returnCode == PlanReturnCode.execute)
-      m_Executor.ExecutePlan(plan);
-  }
-
-  // move into executor
-  private void DoPawnMove(RaycastHit3D cursor)
-  {
-    if (cursor == null || cursor.position == Vector3.Inf)
-      return;
-
-    // this could be improved by moving the path calc into the pawn controller so it's nav agent
-    // everything, ensuring consistent behavior.
-    Vector3[] path = CalculatePath(cursor.position);
-    if (path.Length == 0 || m_SelectedPawn == null)
-      return;
-
-    m_SelectedPawn.StartMovement(path.Last());
-  }
-
-  // move into pawn utils?
-  private Vector3[] CalculatePath(Vector3 point)
-  {
-    if (m_SelectedPawn == null || point.IsEqualApprox(Vector3.Inf))
-      return new Vector3[0];
-
-    return NavigationServer3D.MapGetPath(m_world.NavigationMap, m_SelectedPawn.Position, point, true);
+      ExecutePlan(plan);
   }
 
   private void HandleInputs()
@@ -104,11 +79,13 @@ public partial class GameManager : Node3D
 
       case PlayerCommands.move:
         m_Planner = new PlannerMove();
-        m_Executor = new ExecutorMove();
+        m_Planner.RegisterDecorator(m_PathPainter);
+        m_GameState = GameState.move;
         break;
 
       case PlayerCommands.attack:
         throw new NotImplementedException();
+        m_GameState = GameState.attack;
         break;
 
       case PlayerCommands.nothing:
@@ -145,11 +122,8 @@ public partial class GameManager : Node3D
     PawnUtils.Appearance.SetHighlight(m_SelectedPawn);
   }
 
-  private PawnController GetPawnUnderCursor(RaycastHit3D hit)
+  private PawnController GetPawnUnderCursor(in RaycastHit3D hit)
   {
-    if (hit == null)
-      return null;
-
     if (hit.collider == null)
       return null;
 
@@ -162,5 +136,25 @@ public partial class GameManager : Node3D
 
     CollisionShape3D collider = (CollisionShape3D)hit.collider;
     return collider.GetParent<PawnController>();
+  }
+
+  public void ExecutePlan(in ActionPlan plan)
+  {
+    switch (m_GameState)
+    {
+      case GameState.selectPawn:
+        // nothing to do
+        break;
+      case GameState.move:
+        m_Executor = new ExecutorMove();
+        break;
+      case GameState.attack:
+        break;
+      default:
+        break;
+    }
+
+    if (m_Executor != null)
+      m_Executor.ExecutePlan(plan);
   }
 }

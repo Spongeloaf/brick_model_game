@@ -1,9 +1,7 @@
 using Godot;
 using System;
 
-[GlobalClass]
-public partial class StatCard : Resource
+public struct StatCard
 {
-  [Export]
   public int moveDistance;
 }

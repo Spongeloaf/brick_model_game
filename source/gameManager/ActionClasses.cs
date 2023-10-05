@@ -36,7 +36,7 @@ namespace GameManagerStates
   {
     ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn);
     void Cleanup();
-    void RegisterManager(GameManager manager); // do we still need this?
+    void RegisterDecorator(PathPainter painter); // do we still need this?
   }
 
   public enum ExecutorReturnCode
@@ -47,7 +47,7 @@ namespace GameManagerStates
 
   interface IActionExecutor
   {
-    void ExecutePlan(ActionPlan plan);
+    void ExecutePlan(in ActionPlan plan);
     ExecutorReturnCode DoUpdate();
   }
 

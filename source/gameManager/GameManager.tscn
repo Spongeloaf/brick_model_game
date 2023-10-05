@@ -1,10 +1,9 @@
 [gd_scene load_steps=3 format=3 uid="uid://ots1kf62gn0k"]
 
 [ext_resource type="Script" path="res://source/gameManager/GameManager.cs" id="1_qs1fd"]
-[ext_resource type="Script" path="res://source/gameManager/PathRenderer.cs" id="3_ossf3"]
+[ext_resource type="PackedScene" uid="uid://bxp06cxm5w1r" path="res://source/decorators/PathPainter.tscn" id="2_pi30v"]
 
 [node name="GameManager" type="Node3D"]
 script = ExtResource("1_qs1fd")
 
-[node name="PathRenderer" type="MeshInstance3D" parent="."]
-script = ExtResource("3_ossf3")
+[node name="PathPainter" parent="." instance=ExtResource("2_pi30v")]

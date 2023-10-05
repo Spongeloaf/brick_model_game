@@ -33,3 +33,4 @@ mesh = SubResource("BoxMesh_p4yfs")
 
 [node name="PawnController" parent="GameManager" instance=ExtResource("1_m08bi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.53271, 0)
+m_statCard = null

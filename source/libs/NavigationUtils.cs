@@ -4,7 +4,7 @@ using Godot.Collections;
 using System.Linq;
 
 // This might be better off as a struct.....
-public class RaycastHit3D
+public struct RaycastHit3D
 {
   // Note: Member names match the dictionary counterparts. DON'T CHANGE THEM!
   public Vector3 position;          // point in world space for collision
@@ -25,7 +25,7 @@ public static class NavigationUtils
 
     // We return on a count of less than 6 because metadata is not always present
     if (raycastDict == null || raycastDict.Count < 6)
-      return null;
+      return hit;
 
     if (raycastDict.ContainsKey("position"))
       hit.position = (Vector3)raycastDict["position"];

@@ -11,7 +11,7 @@ public struct InputActions
 {
   public InputActions() 
   {
-    cursorPosition = null;
+    cursorPosition = new RaycastHit3D();
     command = PlayerCommands.nothing;
   }
 

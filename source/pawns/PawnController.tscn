@@ -1,16 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://g2yhawrsxocj"]
+[gd_scene load_steps=5 format=3 uid="uid://g2yhawrsxocj"]
 
 [ext_resource type="Script" path="res://source/pawns/PawnController.cs" id="1_fbsm2"]
 [ext_resource type="Material" uid="uid://cr1p64b4hnx8x" path="res://assets/materials/pawnMaterial.tres" id="2_xmans"]
-[ext_resource type="Script" path="res://source/pawns/statCard.cs" id="3_rbetx"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7lw0x"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0uok"]
 
-[node name="PawnController" type="RigidBody3D" node_paths=PackedStringArray("m_statCard")]
+[node name="PawnController" type="RigidBody3D"]
 script = ExtResource("1_fbsm2")
-m_statCard = NodePath("")
 
 [node name="navAgent" type="NavigationAgent3D" parent="."]
 avoidance_enabled = true
@@ -27,7 +25,3 @@ shape = SubResource("CapsuleShape3D_7lw0x")
 material_override = ExtResource("2_xmans")
 mesh = SubResource("CapsuleMesh_g0uok")
 skeleton = NodePath("../../..")
-
-[node name="statCard" type="Node" parent="."]
-script = ExtResource("3_rbetx")
-moveDistance = 5

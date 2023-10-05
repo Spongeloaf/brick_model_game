@@ -9,6 +9,8 @@ namespace GameManagerStates
 {
   public class PlannerMove : IActionPlanner
   {
+    PathPainter m_PathPainter;
+
     public void Cleanup()
     {
       // nothing to do
@@ -17,18 +19,8 @@ namespace GameManagerStates
     public ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn)
     {
       ActionPlan plan = new ActionPlan();
-      if (actions.cursorPosition == null)
-        return plan;
-
       if (selectedPawn == null)
         plan.returnCode = PlanReturnCode.abortState;
-
-      if (selectedPawn.m_statCard == null)
-      {
-        GD.PrintErr("Selected pawn has no stat card!");
-        return plan;
-      }
-
 
       // TODO next:
       //
@@ -38,20 +30,24 @@ namespace GameManagerStates
       // update the plan
       // Hook up the move code to the executor
 
-      Vector3[] path = PawnUtils.Navigation.GetNavigationPath(selectedPawn, actions.cursorPosition.position);
-      bool lengthOk = Math.GetPathLength(path) <= (float)selectedPawn.m_statCard.moveDistance;
+      plan.actor = selectedPawn;
+      plan.path = PawnUtils.Navigation.GetNavigationPath(selectedPawn, actions.cursorPosition.position);
+      float length = Math.GetPathLength(plan.path);
+      bool lengthOk = length <= (float)selectedPawn.m_statCard.moveDistance;
 
       if (lengthOk && actions.command == PlayerCommands.commit)
         plan.returnCode = PlanReturnCode.execute;
 
-      // TODO: This where we should add in code to draw the move path
+      Godot.Color color = lengthOk ? Colors.Green : Colors.Red;
+      if (m_PathPainter != null)
+        m_PathPainter.DrawPath(plan.path, color);
 
       return plan;
     }
 
-    public void RegisterManager(GameManager manager)
+    public void RegisterDecorator(PathPainter painter)
     {
-      // nothing to do
+      m_PathPainter = painter;
     }
   }
 
@@ -64,34 +60,30 @@ namespace GameManagerStates
     private double m_FinishMoveTime = 0f;
     private static double m_TravelSpeed = 5f; // This is a bullshit made up constant
 
-    void IActionExecutor.ExecutePlan(ActionPlan plan)
+    void IActionExecutor.ExecutePlan(in ActionPlan plan)
     {
-      //m_ActionPlan = plan;
+      if (plan.actor == null)
+        return;
 
-      //if (plan.path.Count() < 2)
-      //{
-      //  // todo
-      //  throw new System.NotImplementedException();
-      //}
+      m_ActionPlan = plan;
+      if (m_ActionPlan.path.Length == 0)
+      {
+        m_ActionPlan = null;
+        return;
+      }
 
-      //m_PathLength = Math.GetPathLength(m_ActionPlan.path);
-      //double travelTime = m_PathLength / m_TravelSpeed;
-      //m_BeginMoveTime = Time.GetUnixTimeFromSystem();
-      //m_FinishMoveTime = m_BeginMoveTime + travelTime;
-      throw new NotImplementedException();
+      m_ActionPlan.actor.StartMovement(m_ActionPlan.path.Last());
     }
 
     ExecutorReturnCode IActionExecutor.DoUpdate()
     {
-      // TODO: make this not have to getNode() every frame
-      //NavigationAgent3D navAgent = m_ActionPlan.actor.GetNode<NavigationAgent3D>("navAgent");
-      //Vector3 newPosition = Math.LerpAlongPath(navAgent.GetCurrentNavigationPath(), 0.0f, 2f);
+      if (m_ActionPlan == null || m_ActionPlan.actor == null)
+        return ExecutorReturnCode.finished;
 
-      //if (m_FinishMoveTime < Time.GetUnixTimeFromSystem())
-      //  return ExecutorReturnCode.finished;
+      if (m_ActionPlan.actor.IsNavigating())
+        return ExecutorReturnCode.running;
 
-      //return ExecutorReturnCode.running;
-      throw new NotImplementedException ();
+      return ExecutorReturnCode.finished;
     }
   }
 

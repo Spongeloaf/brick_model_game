@@ -26,11 +26,10 @@ public partial class PlayerController : Node
   public override void _PhysicsProcess(double delta)
   {
     InputActions inputActions = new InputActions();
+    inputActions.cursorPosition = GetMousePosition();
+
     if (Input.IsActionJustReleased("commit"))
-    {
       inputActions.command = PlayerCommands.commit;
-      inputActions.cursorPosition = GetMousePosition();
-    }
 
     if (Input.IsActionJustReleased("move"))
       inputActions.command = PlayerCommands.move;
@@ -48,7 +47,7 @@ public partial class PlayerController : Node
   RaycastHit3D GetMousePosition()
   {
     if (m_camera == null)
-      return null;
+      return new RaycastHit3D();
 
     Vector2 screenPos = GetViewport().GetMousePosition();
     Vector3 from = m_camera.ProjectRayOrigin(screenPos);
