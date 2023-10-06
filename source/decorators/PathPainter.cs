@@ -11,6 +11,11 @@ public partial class PathPainter : MeshInstance3D
     m_immediateMesh = new ImmediateMesh();
   }
 
+  public void ClearPath()
+  {
+    m_immediateMesh.ClearSurfaces();
+  }
+
   public void DrawPath(in Vector3[] points_global, Godot.Color color)
   {
     m_immediateMesh.ClearSurfaces();

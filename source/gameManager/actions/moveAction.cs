@@ -13,7 +13,7 @@ namespace GameManagerStates
 
     public void Cleanup()
     {
-      // nothing to do
+      m_PathPainter.ClearPath();
     }
 
     public ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn)

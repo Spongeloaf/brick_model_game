@@ -75,6 +75,8 @@ public partial class GameManager : Node3D
       case PlayerCommands.cancel:
         if (m_Planner == null)
           UnselectCurrentPawn();
+        else
+          RemovePlanner();
         break;
 
       case PlayerCommands.move:
@@ -84,14 +86,20 @@ public partial class GameManager : Node3D
         break;
 
       case PlayerCommands.attack:
-        throw new NotImplementedException();
         m_GameState = GameState.attack;
+        throw new NotImplementedException();
         break;
 
       case PlayerCommands.nothing:
       default:
         break;
     }
+  }
+
+  private void RemovePlanner() 
+  {
+    m_Planner.Cleanup();
+    m_Planner = null;
   }
 
   private void UnselectCurrentPawn()
@@ -105,7 +113,7 @@ public partial class GameManager : Node3D
 
   private void SelectPawn(RaycastHit3D cursor)
   {
-    PawnController pawn = GetPawnUnderCursor(cursor);
+    PawnController pawn = PawnUtils.GetPawnAtRaycastHit(cursor);
 
     if (pawn == null)
       return;
@@ -114,29 +122,13 @@ public partial class GameManager : Node3D
       UnselectCurrentPawn();
 
     if (pawn == null)
-    {
       return;
-    }
 
     m_SelectedPawn = pawn;
     PawnUtils.Appearance.SetHighlight(m_SelectedPawn);
   }
 
-  private PawnController GetPawnUnderCursor(in RaycastHit3D hit)
-  {
-    if (hit.collider == null)
-      return null;
-
-    Type objType = hit.collider.GetType();
-    if (objType == typeof(PawnController))
-      return (PawnController)hit.collider;
-
-    if (objType != typeof(CollisionShape3D))
-      return null;
-
-    CollisionShape3D collider = (CollisionShape3D)hit.collider;
-    return collider.GetParent<PawnController>();
-  }
+  
 
   public void ExecutePlan(in ActionPlan plan)
   {

@@ -8,6 +8,22 @@ using Godot;
 
 public static class PawnUtils
 {
+  public static PawnController GetPawnAtRaycastHit(in RaycastHit3D hit)
+  {
+    if (hit.collider == null)
+      return null;
+
+    Type objType = hit.collider.GetType();
+    if (objType == typeof(PawnController))
+      return (PawnController)hit.collider;
+
+    if (objType != typeof(CollisionShape3D))
+      return null;
+
+    CollisionShape3D collider = (CollisionShape3D)hit.collider;
+    return collider.GetParent<PawnController>();
+  }
+
   public static class Appearance
   {
     public static void SetHighlight(PawnController pawn)

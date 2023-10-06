@@ -9,8 +9,8 @@ public partial class PawnController : RigidBody3D
 {
   [Export] private float m_speed = 20f;
   [Export] private float m_snapToGroundDistance = 5.0f;
+  [Export] public StatCard m_statCard;
 
-  public StatCard m_statCard;
   private const float m_angleTolerance = 0.0872665f; // equals roughly 5 degrees
   private NavigationAgent3D m_navAgent;
   private CollisionShape3D m_collisionShape;
@@ -35,6 +35,9 @@ public partial class PawnController : RigidBody3D
       GD.PrintErr("Failed to find collider!");
 
     m_statCard.moveDistance = 20;
+    m_statCard.armor = 4;
+    m_statCard.skillDie = 6;
+    m_statCard.skillBonus = 0;
   }
 
   public override void _PhysicsProcess(double delta)
