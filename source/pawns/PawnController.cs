@@ -34,10 +34,16 @@ public partial class PawnController : RigidBody3D
     if (m_collisionShape == null)
       GD.PrintErr("Failed to find collider!");
 
-    m_statCard.moveDistance = 20;
-    m_statCard.armor = 4;
-    m_statCard.skillDie = 6;
-    m_statCard.skillBonus = 0;
+    m_statCard = GetNode<StatCard>("statCard");
+    if (m_statCard == null)
+    {
+      GD.PrintErr("Pawn stat card not found! Creating default.....");
+      m_statCard = new StatCard();
+      m_statCard.moveDistance = 20;
+      m_statCard.armor = 4;
+      m_statCard.skillDie = 6;
+      m_statCard.skillBonus = 0;
+    }
   }
 
   public override void _PhysicsProcess(double delta)

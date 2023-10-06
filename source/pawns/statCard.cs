@@ -1,9 +1,17 @@
 using Godot;
 using System;
 
-// This sucks, but I don't have a better solution right now.
-public partial class StatCard : Resource
+public enum WeaponType
 {
+  melee,
+  ranged
+}
+
+// This sucks, but I don't have a better solution right now.
+[GlobalClass, Icon("res://source/pawn/pawn.svg")]
+public partial class StatCard : Node
+{
+  [Export] public WeaponType weaponType;
   [Export] public uint moveDistance;
   [Export] public uint armor;
   [Export] public uint skillDie;   // Number of sides on the skill die. Example: 6
