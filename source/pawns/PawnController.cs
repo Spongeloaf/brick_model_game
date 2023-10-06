@@ -9,7 +9,7 @@ public partial class PawnController : RigidBody3D
 {
   [Export] private float m_speed = 20f;
   [Export] private float m_snapToGroundDistance = 5.0f;
-  [Export] public StatCard m_statCard;
+  [Export] public PawnStatCard m_statCard;
 
   private const float m_angleTolerance = 0.0872665f; // equals roughly 5 degrees
   private NavigationAgent3D m_navAgent;
@@ -34,11 +34,11 @@ public partial class PawnController : RigidBody3D
     if (m_collisionShape == null)
       GD.PrintErr("Failed to find collider!");
 
-    m_statCard = GetNode<StatCard>("statCard");
+    m_statCard = GetNode<PawnStatCard>("statCard");
     if (m_statCard == null)
     {
       GD.PrintErr("Pawn stat card not found! Creating default.....");
-      m_statCard = new StatCard();
+      m_statCard = new PawnStatCard();
       m_statCard.moveDistance = 20;
       m_statCard.armor = 4;
       m_statCard.skillDie = 6;
