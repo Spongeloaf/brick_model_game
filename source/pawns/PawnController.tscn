@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://g2yhawrsxocj"]
+[gd_scene load_steps=6 format=3 uid="uid://g2yhawrsxocj"]
 
 [ext_resource type="Script" path="res://source/pawns/PawnController.cs" id="1_fbsm2"]
 [ext_resource type="Material" uid="uid://cr1p64b4hnx8x" path="res://assets/materials/pawnMaterial.tres" id="2_xmans"]
+[ext_resource type="Script" path="res://source/CodeResources/StatCard.cs" id="3_r6y7r"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7lw0x"]
 
@@ -25,3 +26,6 @@ shape = SubResource("CapsuleShape3D_7lw0x")
 material_override = ExtResource("2_xmans")
 mesh = SubResource("CapsuleMesh_g0uok")
 skeleton = NodePath("../../..")
+
+[node name="StatCard" type="Node" parent="."]
+script = ExtResource("3_r6y7r")
