@@ -5,5 +5,6 @@
 public static class Globals
 {
   public static float navigationCloseEnough = 0.5f;
+  public static bool drawRawNavigationPaths = true;
 
 } // Globals

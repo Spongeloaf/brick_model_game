@@ -8,8 +8,9 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0uok"]
 
-[node name="PawnController" type="RigidBody3D"]
+[node name="PawnController" type="RigidBody3D" node_paths=PackedStringArray("m_statCard")]
 script = ExtResource("1_fbsm2")
+m_statCard = NodePath("StatCard")
 
 [node name="navAgent" type="NavigationAgent3D" parent="."]
 avoidance_enabled = true

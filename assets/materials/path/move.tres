@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c4qytbc7juuoa"]
+
+[ext_resource type="Shader" path="res://addons/vizpath/resources/shaders/move.gdshader" id="1_elh51"]
+
+[resource]
+render_priority = 15
+shader = ExtResource("1_elh51")

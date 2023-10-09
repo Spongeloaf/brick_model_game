@@ -1,6 +1,40 @@
-[gd_scene load_steps=2 format=3 uid="uid://bxp06cxm5w1r"]
+[gd_scene load_steps=9 format=3 uid="uid://bxp06cxm5w1r"]
 
 [ext_resource type="Script" path="res://source/decorators/PathPainter.cs" id="1_gyg0n"]
+[ext_resource type="Script" path="res://addons/vizpath/visualized_path.gd" id="2_co6dd"]
+[ext_resource type="Script" path="res://addons/vizpath/resources/spot.gd" id="3_8vhpp"]
+[ext_resource type="Material" uid="uid://c4qytbc7juuoa" path="res://assets/materials/path/move.tres" id="4_5hjlc"]
+[ext_resource type="Resource" uid="uid://ca6a3fjxcmbhc" path="res://addons/vizpath/resources/viz_head.tres" id="4_jx35g"]
+[ext_resource type="Resource" uid="uid://dnaxoh1d4t82c" path="res://addons/vizpath/resources/viz_tail.tres" id="5_mmpv7"]
 
-[node name="PathPainter" type="MeshInstance3D"]
+[sub_resource type="Resource" id="Resource_82j50"]
+script = ExtResource("3_8vhpp")
+point = Vector3(0, 0, 0)
+normal = Vector3(0, 1, 0)
+
+[sub_resource type="Resource" id="Resource_1s0rt"]
+script = ExtResource("3_8vhpp")
+point = Vector3(10, 0, 0)
+normal = Vector3(0, 1, 0)
+
+[node name="PathPainter" type="Node3D"]
 script = ExtResource("1_gyg0n")
+
+[node name="Path" type="Node3D" parent="."]
+script = ExtResource("2_co6dd")
+num_curve_segs = 4
+bend_segs = 4
+path_mat = ExtResource("4_5hjlc")
+path_head = ExtResource("4_jx35g")
+path_tail = ExtResource("5_mmpv7")
+
+[node name="Path_Example" type="Node3D" parent="."]
+visible = false
+script = ExtResource("2_co6dd")
+spots = Array[ExtResource("3_8vhpp")]([SubResource("Resource_82j50"), SubResource("Resource_1s0rt")])
+inner_curve_radius = 5.0
+num_curve_segs = 4
+bend_segs = 4
+path_mat = ExtResource("4_5hjlc")
+path_head = ExtResource("4_jx35g")
+path_tail = ExtResource("5_mmpv7")

@@ -1,40 +1,40 @@
 using Godot;
 using System;
-using System.Drawing;
 
-public partial class PathPainter : MeshInstance3D
+public partial class PathPainter : Node3D
 {
-  ImmediateMesh m_immediateMesh;
+  // Examples of C# -> GDScript
+  // myGDScriptNode.Call("print_array", argument);
+  // myGDScriptNode.Get("my_field");
+  // myGDScriptNode.Set("my_field", "FOO");
+  GodotObject m_pathObject;
+  PathPainter_Simple m_Debugger;
 
   public override void _Ready()
   {
-    m_immediateMesh = new ImmediateMesh();
+    //GDScript pathScript = (GDScript)GD.Load("res://addons/vizpath/visualized_path.gd");
+    m_pathObject = (GodotObject)GetChild(0);
+
+    m_Debugger = new PathPainter_Simple();
+    AddChild((Node)m_Debugger);
   }
 
   public void ClearPath()
   {
-    m_immediateMesh.ClearSurfaces();
+    m_pathObject.Call("DrawPathWithHead", new Vector3[0]);
+
+    if (m_Debugger != null && Globals.drawRawNavigationPaths)
+      m_Debugger.ClearPath();
   }
 
-  public void DrawPath(in Vector3[] points_global, Godot.Color color)
+  public void DrawPath(in Vector3[] points_global, uint lengthLimit = 0, bool printNodes = false)
   {
-    m_immediateMesh.ClearSurfaces();
-    if (points_global.Length == 0)
-      return;
+    m_pathObject.Call("DrawPathWithHead", points_global);
 
-    m_immediateMesh.SurfaceBegin(Mesh.PrimitiveType.LineStrip);
+    if (m_Debugger != null && Globals.drawRawNavigationPaths)
+      m_Debugger.DrawPath(points_global);
 
-    foreach (Vector3 point in points_global)
-    {
-      Vector3 offset = point;
-      //offset.Y += 1f;
-      m_immediateMesh.SurfaceSetNormal(new Vector3(0, 0, 1));
-      m_immediateMesh.SurfaceSetUV(new Vector2(0, 0));
-      m_immediateMesh.SurfaceAddVertex(point);
-      m_immediateMesh.SurfaceSetColor(color);
-    }
-
-    m_immediateMesh.SurfaceEnd();
-    Mesh = m_immediateMesh;
+    if (printNodes)
+      m_pathObject.Call("PrintDebugInfo");
   }
 }
