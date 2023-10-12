@@ -9,7 +9,7 @@ namespace GameManagerStates
 {
   public class PlannerMove : IActionPlanner
   {
-    PathPainter m_PathPainter;
+    ScreenDecorator m_PathPainter;
 
     public void Cleanup()
     {
@@ -43,7 +43,7 @@ namespace GameManagerStates
       return plan;
     }
 
-    public void RegisterDecorator(PathPainter painter)
+    public void RegisterDecorator(ScreenDecorator painter)
     {
       m_PathPainter = painter;
     }

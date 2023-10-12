@@ -15,6 +15,7 @@ public partial class PawnController : RigidBody3D
   private const float m_angleTolerance = 0.0872665f; // equals roughly 5 degrees
   private NavigationAgent3D m_navAgent;
   private CollisionShape3D m_collisionShape;
+  private Vector3[] m_targetPoints;
 
   // Get the gravity from the project settings to be synced with RigidBody nodes.
   public float gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
@@ -35,6 +36,7 @@ public partial class PawnController : RigidBody3D
     if (m_collisionShape == null)
       GD.PrintErr("Failed to find collider!");
 
+    m_targetPoints = FindTargetPointsInChildren();
     m_statCard = GetNode<StatCard>("statCard");
     if (m_statCard == null)
     {
@@ -135,7 +137,7 @@ public partial class PawnController : RigidBody3D
 
   // Target points are used to calculate aiming penalties to other pawns when targeting this pawn.
   // Returns the pawns global position if no targetting points found.
-  public Vector3[] GetTargetPoints()
+  public Vector3[] FindTargetPointsInChildren()
   {
     // TODO: Move this to the constructor and cache the result!
     // No need to do all this work for every call!
@@ -165,5 +167,10 @@ public partial class PawnController : RigidBody3D
     }
 
     return result.ToArray();
+  }
+
+  public Vector3[] GetTargetPoints()
+  {
+    return m_targetPoints;
   }
 }

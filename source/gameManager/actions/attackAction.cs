@@ -23,6 +23,7 @@ public class PlannerAttack : IActionPlanner
     if (selectedPawn == null || actions.command == PlayerCommands.cancel)
       plan.returnCode = PlanReturnCode.abortState;
 
+    plan.pawnAction = PawnAction.attack;
     plan.actor = selectedPawn;
     PawnController target = PawnUtils.GetPawnAtRaycastHit(actions.cursorPosition);
     if (target == null || target == selectedPawn)
@@ -38,7 +39,7 @@ public class PlannerAttack : IActionPlanner
     return plan;
   }
 
-  public void RegisterDecorator(PathPainter painter)
+  public void RegisterDecorator(ScreenDecorator painter)
   {
     throw new NotImplementedException();
   }

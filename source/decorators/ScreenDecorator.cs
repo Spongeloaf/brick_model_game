@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class PathPainter : Node3D
+public partial class ScreenDecorator : Node3D
 {
   // Examples of C# -> GDScript
   // myGDScriptNode.Call("print_array", argument);

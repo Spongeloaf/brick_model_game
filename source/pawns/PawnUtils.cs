@@ -26,6 +26,8 @@ public static class PawnUtils
 
   public static class Appearance
   {
+    private static PackedScene m_labelTemplate = ResourceLoader.Load<PackedScene>("res://source/pawns/decorators/TextLabel.tscn");
+
     public static void SetHighlightGreen(PawnController pawn)
     {
       Material mat = ResourceLoader.Load("res://assets/materials/pawnMaterialHighlighted_Green.tres") as Material;
@@ -63,6 +65,17 @@ public static class PawnUtils
       }
 
       mesh.MaterialOverride = material;
+    }
+  
+    public static void SetOverheadText(PawnController pawn, in string text)
+    {
+      if (pawn == null) 
+        return;
+
+      Node labelNode = m_labelTemplate.Instantiate();
+      pawn.AddChild(labelNode);
+      GodotObject obj = (GodotObject)labelNode;
+      obj.Set("text", text);
     }
   }
 

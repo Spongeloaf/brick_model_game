@@ -19,14 +19,14 @@ public partial class GameManager : Node3D
   private IActionPlanner m_Planner;
   private IActionExecutor m_Executor;
   private GameState m_GameState;
-  private PathPainter m_PathPainter;
+  private ScreenDecorator m_PathPainter;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
   {
     m_GameState = GameState.selectPawn;
     m_world = GetWorld3D();
-    m_PathPainter = GetNode<PathPainter>("PathPainter");
+    m_PathPainter = GetNode<ScreenDecorator>("ScreenDecorator");
   }
 
   public void DoUpdate(InputActions inputs)

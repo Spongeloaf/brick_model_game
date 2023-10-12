@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://bxp06cxm5w1r"]
 
-[ext_resource type="Script" path="res://source/decorators/PathPainter.cs" id="1_gyg0n"]
+[ext_resource type="Script" path="res://source/decorators/ScreenDecorator.cs" id="1_gyg0n"]
 [ext_resource type="Script" path="res://addons/vizpath/visualized_path.gd" id="2_co6dd"]
 [ext_resource type="Script" path="res://addons/vizpath/resources/spot.gd" id="3_8vhpp"]
 [ext_resource type="Material" uid="uid://c4qytbc7juuoa" path="res://assets/materials/path/move.tres" id="4_5hjlc"]
@@ -17,7 +17,7 @@ script = ExtResource("3_8vhpp")
 point = Vector3(10, 0, 0)
 normal = Vector3(0, 1, 0)
 
-[node name="PathPainter" type="Node3D"]
+[node name="ScreenDecorator" type="Node3D"]
 script = ExtResource("1_gyg0n")
 
 [node name="Path" type="Node3D" parent="."]

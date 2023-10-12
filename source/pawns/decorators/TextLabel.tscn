@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://8vdywckiplcv"]
+
+[ext_resource type="Script" path="res://source/pawns/decorators/TextLabel.gd" id="1_q4v0i"]
+
+[node name="TextLabel" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_q4v0i")
