@@ -8,6 +8,11 @@ func _init(p_begin : VisualizationSpot, p_end : VisualizationSpot, p_width : flo
 	_simple_leg = VizSimpleLeg.new(p_begin, p_end, p_width, p_bend_lip)
 	if _simple_leg.is_invalid():
 		_compound_leg = VizCompoundLeg.new(p_begin, p_end, p_width, p_bend_lip)
+	
+	if _simple_leg.is_invalid():
+		pass
+	if _compound_leg != null && _compound_leg.is_invalid():
+		pass
 
 func is_invalid() -> bool:
 	if _simple_leg.is_invalid():

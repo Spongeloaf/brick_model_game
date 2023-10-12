@@ -4,6 +4,9 @@ using System;
 
 public class PlannerAttack : IActionPlanner
 {
+  PawnController m_currentTarget;
+
+
   public void Cleanup()
   {
     throw new NotImplementedException();
@@ -11,17 +14,27 @@ public class PlannerAttack : IActionPlanner
 
   public ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn)
   {
+    // Ensure we only draw the red highlight for one frame,
+    // otherwise targeting a different pawn would highlight both.
+    if (m_currentTarget != null)
+      PawnUtils.Appearance.ClearHighlight(m_currentTarget);
+
     ActionPlan plan = new ActionPlan();
-    if (selectedPawn == null)
+    if (selectedPawn == null || actions.command == PlayerCommands.cancel)
       plan.returnCode = PlanReturnCode.abortState;
 
     plan.actor = selectedPawn;
     PawnController target = PawnUtils.GetPawnAtRaycastHit(actions.cursorPosition);
-    if (target != null || target == selectedPawn)
+    if (target == null || target == selectedPawn)
       return plan;
 
-    if (selectedPawn == null)
     plan.target = target;
+    m_currentTarget = target;
+    PawnUtils.Appearance.SetHighlightRed(m_currentTarget);
+
+    if (actions.command == PlayerCommands.commit)
+      plan.returnCode = PlanReturnCode.execute;
+
     return plan;
   }
 

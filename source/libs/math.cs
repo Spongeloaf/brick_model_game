@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 public static class Math
@@ -116,5 +117,39 @@ public static class Math
       result[i] = new PathSegment(path[i], path[i+1]);
 
     return result;
+  }
+
+  public static Vector3[] GetPathLimitedToLength(in Vector3[] path, in float length)
+  {
+    if (path.Length < 2)
+      return path;
+
+    if (GetPathLength(path) <= length)
+      return path;
+
+    // Assumes sane values were passed in, i.e. distance is less than total path length
+    // It is the responsibility of the caller to ensure this!
+    float distanceMeasured = 0f;
+    List<Vector3> result = new List<Vector3>();
+
+    PathSegment[] pathSegments = GetPathSegments(path);
+    foreach (PathSegment segment in pathSegments)
+    {
+      float segmentLength = segment.p0.DistanceTo(segment.p1);
+      distanceMeasured += segmentLength;
+
+      if (distanceMeasured < length)
+      {
+        result.Add(segment.p0);
+        continue;
+      }
+
+      // At this point, we've found the segment we want
+      float distanceAlongSegment = length - (distanceMeasured - segmentLength);
+      result.Add(segment.p0.MoveToward(segment.p1, distanceAlongSegment));
+      break;
+    }
+
+    return result.ToArray();
   }
 }

@@ -32,9 +32,13 @@ func DrawPathWithHead(points : Array[Vector3]):
 		return
 	
 	var newSpots : Array[VisualizationSpot]
-	for point in points:
+	for index in range(0, points.size() -1):
 		var spot = VisualizationSpot.new()
-		spot.point = point
+		spot.point = points[index]
+		
+		# This is a problem. We need to concot a better way to calculate normals
+		# so these render correctly. Right now, the normals don't work for short
+		# line segments at steep angles. 
 		spot.normal = Vector3.UP
 		newSpots.append(spot)
 	spots = newSpots
@@ -186,6 +190,7 @@ func _rebuild():
 	var segments : Array[VizSegment] = []
 	for idx in range(1, spots.size()):
 		segments.push_back(VizSegment.new(spots[idx-1], spots[idx], path_width, bend_lip))
+
 	for idx in range(1, segments.size()):
 		if segments[idx-1].is_invalid():
 			_errors.push_back(segments[idx-1].get_error())
@@ -202,6 +207,7 @@ func _rebuild():
 			u = _add_tail(segments[idx-1], u)
 		u = segments[idx-1].update_mesh(_mesh_instance, u, bend_segs, bend_sharpness, path_mat)
 		u = midpoint.update_mesh(_mesh_instance, u, num_curve_segs, path_mat)
+	
 	if _errors.size() == 0:
 		if segments[segments.size()-1].is_invalid():
 			_errors.push_back(segments[segments.size()-1].get_error())
@@ -209,6 +215,9 @@ func _rebuild():
 			if segments.size() == 1:
 				u = _add_tail(segments[0], u)
 			_add_head(segments[segments.size()-1], u)
+	else:
+		pass
+	
 	update_configuration_warnings()
 	changed_layout.emit()
 

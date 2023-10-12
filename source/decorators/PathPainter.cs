@@ -14,6 +14,12 @@ public partial class PathPainter : Node3D
   {
     //GDScript pathScript = (GDScript)GD.Load("res://addons/vizpath/visualized_path.gd");
     m_pathObject = (GodotObject)GetChild(0);
+    m_pathObject.Set("path_width", 0.5);
+    m_pathObject.Set("inner_curve_radius", 0.005);
+    m_pathObject.Set("num_curve_segs", 8);
+    m_pathObject.Set("bend_segs", 8);
+    m_pathObject.Set("bend_lip", 0.005);
+    m_pathObject.Set("bend_sharpness", 0.01);
 
     m_Debugger = new PathPainter_Simple();
     AddChild((Node)m_Debugger);
@@ -27,14 +33,14 @@ public partial class PathPainter : Node3D
       m_Debugger.ClearPath();
   }
 
-  public void DrawPath(in Vector3[] points_global, uint lengthLimit = 0, bool printNodes = false)
+  public void DrawPath(in Vector3[] points_global, uint lengthLimit = 0)
   {
-    m_pathObject.Call("DrawPathWithHead", points_global);
+    // Disabled the nice path painter because I need to calculate normals somehow.
+    // m_pathObject.Call("DrawPathWithHead", points_global);
+    // if (m_Debugger != null && Globals.drawRawNavigationPaths)
+    //    m_Debugger.DrawPath(points_global);
 
-    if (m_Debugger != null && Globals.drawRawNavigationPaths)
+    if (m_Debugger != null )
       m_Debugger.DrawPath(points_global);
-
-    if (printNodes)
-      m_pathObject.Call("PrintDebugInfo");
   }
 }

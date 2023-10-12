@@ -5,8 +5,12 @@
 [ext_resource type="Script" path="res://source/CodeResources/StatCard.cs" id="3_r6y7r"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7lw0x"]
+radius = 0.25
+height = 1.0
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_g0uok"]
+radius = 0.25
+height = 1.0
 
 [node name="PawnController" type="RigidBody3D" node_paths=PackedStringArray("m_statCard")]
 script = ExtResource("1_fbsm2")
@@ -20,7 +24,7 @@ debug_path_custom_color = Color(1, 0, 1, 1)
 debug_path_custom_point_size = 10.02
 
 [node name="collider" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_7lw0x")
 
 [node name="mesh" type="MeshInstance3D" parent="collider"]
@@ -30,3 +34,19 @@ skeleton = NodePath("../../..")
 
 [node name="StatCard" type="Node" parent="."]
 script = ExtResource("3_r6y7r")
+
+[node name="Target Points" type="Node3D" parent="."]
+
+[node name="0" type="Node3D" parent="Target Points"]
+
+[node name="0_25" type="Node3D" parent="Target Points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+
+[node name="0_5" type="Node3D" parent="Target Points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="0_75" type="Node3D" parent="Target Points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+
+[node name="1" type="Node3D" parent="Target Points"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

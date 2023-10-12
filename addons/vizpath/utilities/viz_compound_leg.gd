@@ -58,8 +58,6 @@ func adjust_end(distance : float):
 	_end = new_end
 	_calc_intermediate_normal()
 
-var test_mat : Material = load("res://example/common/materials/white.tres")
-
 func update_mesh(mesh_node : Node3D, u : float, segs : int, sharpness : float, mat : Material) -> float:
 	var leg1 := VizSimpleLeg.new(_begin, _intermediate_spot, _width, _bend_lip)
 	if leg1.is_invalid():

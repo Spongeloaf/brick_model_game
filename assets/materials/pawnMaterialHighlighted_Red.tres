@@ -1,6 +1,6 @@
 [gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://be1sr3pwroj2l"]
 
-[ext_resource type="Material" uid="uid://dq0bhe6f5wc55" path="res://assets/materials/highlightshader.tres" id="1_p35kv"]
+[ext_resource type="Material" uid="uid://dwcc545lcvij6" path="res://assets/materials/highlightshader.tres" id="1_p35kv"]
 
 [resource]
 next_pass = ExtResource("1_p35kv")

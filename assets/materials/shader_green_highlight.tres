@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dwcc545lcvij6"]
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dtgrpsgg800vh"]
 
 [ext_resource type="Shader" path="res://assets/shaders/outline.gdshader" id="1_w6pgb"]
 
@@ -6,7 +6,7 @@
 render_priority = 0
 shader = ExtResource("1_w6pgb")
 shader_parameter/border_width = 0.079
-shader_parameter/color = Color(1, 0, 0.0156863, 1)
+shader_parameter/color = Color(0.0509804, 1, 0, 1)
 shader_parameter/pattern = null
 shader_parameter/line_number = null
 shader_parameter/line_sharpness = null

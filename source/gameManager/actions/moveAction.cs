@@ -32,15 +32,13 @@ namespace GameManagerStates
 
       plan.actor = selectedPawn;
       plan.path = PawnUtils.Navigation.GetNavigationPath(selectedPawn, actions.cursorPosition.position);
-      float length = Math.GetPathLength(plan.path);
-      bool lengthOk = length <= (float)selectedPawn.m_statCard.moveDistance;
-      bool commit = actions.command == PlayerCommands.commit;
-      if (lengthOk && commit)
+      plan.path = Math.GetPathLimitedToLength(plan.path, selectedPawn.m_statCard.moveDistance);
+
+      if (actions.command == PlayerCommands.commit)
         plan.returnCode = PlanReturnCode.execute;
 
-      Godot.Color color = lengthOk ? Colors.Green : Colors.Red;
       if (m_PathPainter != null)
-        m_PathPainter.DrawPath(plan.path, selectedPawn.m_statCard.moveDistance, commit);
+        m_PathPainter.DrawPath(plan.path, selectedPawn.m_statCard.moveDistance);
 
       return plan;
     }

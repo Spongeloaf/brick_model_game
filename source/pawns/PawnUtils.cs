@@ -26,9 +26,15 @@ public static class PawnUtils
 
   public static class Appearance
   {
-    public static void SetHighlight(PawnController pawn)
+    public static void SetHighlightGreen(PawnController pawn)
     {
-      Material mat = ResourceLoader.Load("res://assets/materials/pawnMaterialHighlighted.tres") as Material;
+      Material mat = ResourceLoader.Load("res://assets/materials/pawnMaterialHighlighted_Green.tres") as Material;
+      SetMaterial(pawn, mat);
+    }
+
+    public static void SetHighlightRed(PawnController pawn)
+    {
+      Material mat = ResourceLoader.Load("res://assets/materials/pawnMaterialHighlighted_Red.tres") as Material;
       SetMaterial(pawn, mat);
     }
 

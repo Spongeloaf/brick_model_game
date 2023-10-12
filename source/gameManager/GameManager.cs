@@ -42,6 +42,9 @@ public partial class GameManager : Node3D
     }
 
     m_InputActions = inputs;
+    
+    // I had a good reason for running this function even if there is a planner active,
+    // but I bloody well don't remember what it was.
     HandleInputs();
 
     // Expected to be null during pawn selection
@@ -69,7 +72,8 @@ public partial class GameManager : Node3D
     switch (m_InputActions.command)
     {
       case PlayerCommands.commit:
-        SelectPawn(m_InputActions.cursorPosition);
+        if (m_Planner == null)
+          SelectPawn(m_InputActions.cursorPosition);
         break;
 
       case PlayerCommands.cancel:
@@ -86,8 +90,8 @@ public partial class GameManager : Node3D
         break;
 
       case PlayerCommands.attack:
+        m_Planner = new PlannerAttack();
         m_GameState = GameState.attack;
-        throw new NotImplementedException();
         break;
 
       case PlayerCommands.nothing:
@@ -125,7 +129,7 @@ public partial class GameManager : Node3D
       return;
 
     m_SelectedPawn = pawn;
-    PawnUtils.Appearance.SetHighlight(m_SelectedPawn);
+    PawnUtils.Appearance.SetHighlightGreen(m_SelectedPawn);
   }
 
   
@@ -141,6 +145,7 @@ public partial class GameManager : Node3D
         m_Executor = new ExecutorMove();
         break;
       case GameState.attack:
+        m_Executor = new ExecutorAttack();
         break;
       default:
         break;
