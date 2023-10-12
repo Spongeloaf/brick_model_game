@@ -2,6 +2,7 @@ using GameManagerStates;
 using Godot;
 using Godot.Collections;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 [GlobalClass, Icon("res://source/pawn/pawn.svg")]
@@ -131,4 +132,38 @@ public partial class PawnController : RigidBody3D
   }
 
   public NavigationAgent3D GetNavigationAgent3D() { return m_navAgent; }
+
+  // Target points are used to calculate aiming penalties to other pawns when targeting this pawn.
+  // Returns the pawns global position if no targetting points found.
+  public Vector3[] GetTargetPoints()
+  {
+    // TODO: Move this to the constructor and cache the result!
+    // No need to do all this work for every call!
+    
+    List<Vector3> result = new List<Vector3>();
+    result.Add(GlobalPosition);
+    Node3D pointsParent = GetNode<Node3D>("targetPoints");
+    if (pointsParent == null)
+      return result.ToArray();
+
+    Array<Node> pointNodes = pointsParent.GetChildren();
+    if (pointNodes.Count < 1)
+      return result.ToArray();
+
+    result.Clear();
+    foreach (Node node in pointNodes)
+    {
+      try
+      {
+        Node3D n = (Node3D)node;
+        result.Add(n.GlobalPosition);
+      }
+      catch
+      {
+        GD.PrintErr("PawnController.GetTargetPoints found non-3D nodes as children of the targetting node!");
+      };
+    }
+
+    return result.ToArray();
+  }
 }
