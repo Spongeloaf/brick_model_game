@@ -17,7 +17,10 @@ public class PlannerAttack : IActionPlanner
     // Ensure we only draw the red highlight for one frame,
     // otherwise targeting a different pawn would highlight both.
     if (m_currentTarget != null)
+    {
+      PawnUtils.Appearance.ClearOverheadText(m_currentTarget);
       PawnUtils.Appearance.ClearHighlight(m_currentTarget);
+    }
 
     ActionPlan plan = new ActionPlan();
     if (selectedPawn == null || actions.command == PlayerCommands.cancel)
@@ -32,6 +35,7 @@ public class PlannerAttack : IActionPlanner
     plan.target = target;
     m_currentTarget = target;
     PawnUtils.Appearance.SetHighlightRed(m_currentTarget);
+    PawnUtils.Appearance.SetOverheadText(m_currentTarget, "ATTACK");
 
     if (actions.command == PlayerCommands.commit)
       plan.returnCode = PlanReturnCode.execute;

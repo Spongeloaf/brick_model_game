@@ -66,18 +66,28 @@ public static class PawnUtils
 
       mesh.MaterialOverride = material;
     }
-  
+
     public static void SetOverheadText(PawnController pawn, in string text)
     {
-      if (pawn == null) 
+      if (pawn == null)
         return;
 
       Node labelNode = m_labelTemplate.Instantiate();
       pawn.AddChild(labelNode);
+
       GodotObject obj = (GodotObject)labelNode;
       obj.Set("text", text);
     }
-  }
+
+    public static void ClearOverheadText(PawnController pawn)
+    {
+      if (pawn == null)
+        return;
+
+      // todo
+    }
+
+  } // class Appearance
 
   public static class Navigation
   {
@@ -94,5 +104,6 @@ public static class PawnUtils
 
       return NavigationServer3D.MapGetPath(pawn.GetWorld3D().NavigationMap, pawn.GlobalPosition, target_global, true);
     }
-  }
+  } // class Navigation
+
 }
