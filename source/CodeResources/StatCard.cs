@@ -11,11 +11,13 @@ public struct Weapon
 {
   private const uint defaultUseRating = 3;
   private const WeaponTypes defaultWeaponTypes = WeaponTypes.melee;
+  private const string defaultRangedProjectile = "res://source/equipment/basicProjectile.tscn";
 
   public Weapon() { }
 
   [Export] public WeaponTypes WeaponType { get; set; } = defaultWeaponTypes;
   [Export] public uint useRating { get; set; } = defaultUseRating;
+  [Export] public string projectileScene { get; set; } = defaultRangedProjectile;
 }
 
 [GlobalClass]
@@ -26,12 +28,6 @@ public partial class StatCard : Node
   private const uint defaultSkillDie = 6;
   private const uint defaultSkillBonus = 0;
 
-  public override void _Ready()
-  {
-    int i = 0;
-  }
-
-  // 
   public Weapon weapon { get; set; } = new Weapon();
   [Export] public uint moveDistance { get; set; } = defaultMoveDistance;
   [Export] public uint armor { get; set; } = defaultArmor;

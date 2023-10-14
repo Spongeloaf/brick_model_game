@@ -1,19 +1,46 @@
-[gd_scene format=3 uid="uid://c7d444q5ns47w"]
+[gd_scene load_steps=6 format=3 uid="uid://c7d444q5ns47w"]
+
+[ext_resource type="PackedScene" uid="uid://cy7bqh5ukf3fo" path="res://assets/maps/TestMap.tscn" id="1_7xvns"]
+[ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawns/PawnController.tscn" id="2_24roe"]
+[ext_resource type="PackedScene" uid="uid://cytsevnhe26jd" path="res://source/equipment/basicProjectile.tscn" id="3_iaexb"]
+
+[sub_resource type="Animation" id="Animation_gxn86"]
+resource_name = "RangedAttack_Template"
+length = 0.2
+step = 0.01
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("basicProjectile")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, -1.56712, 2.36198, 14.8768, 0.2, 1, 2.51899, 2.36198, 14.8768)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7m1ds"]
+_data = {
+"RangedAttack_Template": SubResource("Animation_gxn86")
+}
 
 [node name="FunctionTest" type="Node3D"]
 
-[node name="child1" type="Node" parent="."]
+[node name="NavigationRegion3D" parent="." instance=ExtResource("1_7xvns")]
 
-[node name="child1_1" type="Node" parent="child1"]
+[node name="MockGameMangaer" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.71032, 0, 0)
 
-[node name="child1" type="Node" parent="child1/child1_1"]
+[node name="Camera3D" type="Camera3D" parent="MockGameMangaer"]
+transform = Transform3D(1, 0, 0, 0, 0.967414, 0.253201, 0, -0.253201, 0.967414, 0, 4.76797, 19.3049)
 
-[node name="confused" type="Node" parent="child1/child1_1/child1"]
+[node name="PawnController" parent="MockGameMangaer" instance=ExtResource("2_24roe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.79076, 1.71858, 14.8906)
 
-[node name="child2" type="Node" parent="."]
+[node name="PawnController2" parent="MockGameMangaer" instance=ExtResource("2_24roe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69904, 1.67953, 14.8855)
 
-[node name="child2_1" type="Node" parent="child2"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="MockGameMangaer"]
+libraries = {
+"": SubResource("AnimationLibrary_7m1ds")
+}
 
-[node name="child2_2" type="Node" parent="child2"]
-
-[node name="Node3" type="Node" parent="."]
+[node name="basicProjectile" parent="MockGameMangaer" instance=ExtResource("3_iaexb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.51899, 2.36198, 14.8768)

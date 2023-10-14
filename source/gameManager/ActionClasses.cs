@@ -47,7 +47,7 @@ namespace GameManagerStates
 
   interface IActionExecutor
   {
-    void ExecutePlan(in ActionPlan plan);
+    void ExecutePlan(in ActionPlan plan, in GameManager manager);
     ExecutorReturnCode DoUpdate();
   }
 

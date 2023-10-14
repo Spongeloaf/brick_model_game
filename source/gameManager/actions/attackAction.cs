@@ -6,7 +6,6 @@ public class PlannerAttack : IActionPlanner
 {
   PawnController m_currentTarget;
 
-
   public void Cleanup()
   {
     ClearCurrentTarget();
@@ -70,33 +69,54 @@ public class PlannerAttack : IActionPlanner
     if (actor == null || target == null)
       return "ACTOR OR TARGET NULL!";
 
-    StatCard actorStatCard = actor.GetStatCard();
-    int penalty = PawnUtils.Combat.CalculateAimPenalty(actor, target, actor.GetWorld3D());
-    int useRating = (int)actorStatCard.weapon.useRating;
-    useRating += penalty; // The penalty is 0 or negative, so don't subtract it here!
-    
-    if (useRating < 0)
-      useRating = 0;
+    PawnUtils.Combat.AttackCalculations calculations = PawnUtils.Combat.CalculateRangedAttack(actor, target, actor.GetWorld3D());
+    if (calculations.canAttack == false)
+      return "No line of sight!";
 
-    int dieValue = (int)actorStatCard.skillBonus + (int)actorStatCard.skillDie;
-    return "Hit chance: " + useRating + "/" + dieValue;
+    StatCard actorStatCard = actor.GetStatCard();
+    
+    // TODO: figure out a better place and system for this.
+    string die = "1d" + actorStatCard.skillDie;
+    if (actorStatCard.skillBonus > 0)
+      die += " +" + actorStatCard.skillBonus;
+    else if (actorStatCard.skillBonus < 0)
+      die += " " + actorStatCard.skillBonus;
+
+    return PawnUtils.Combat.GetSkillCheckString((int)actorStatCard.weapon.useRating, calculations.modifier, die);
   }
 
   public void RegisterDecorator(ScreenDecorator painter)
   {
-    throw new NotImplementedException();
+    // decorator not needed here
   }
 }
 
 public class ExecutorAttack : IActionExecutor
 {
+  ActionPlan m_plan;
+
   public ExecutorReturnCode DoUpdate()
   {
-    throw new NotImplementedException();
+    if (m_plan == null)
+      return ExecutorReturnCode.finished;
+
+    // ????
+    return ExecutorReturnCode.running;
   }
 
   public void ExecutePlan(in ActionPlan plan)
   {
-    throw new NotImplementedException();
+    m_plan = plan;
+
+    if (m_plan == null)
+      GD.PrintErr("WARNING: ExecutorAttack got a null action plan!");
+
+    // Create projectile
+    // calculate travel time
+  }
+
+  void CompletePlan() 
+  { 
+    // resolve damage roll on target
   }
 }

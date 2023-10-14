@@ -129,42 +129,67 @@ public static class PawnUtils
 
   public static class Combat
   {
-    // Returns a penalty value from 0 to -2, based on the proportion of
-    // the target array that is visible from the origin point.
-    public static int CalculateAimPenalty(PawnController actor, PawnController target, World3D world) 
+    public struct AttackCalculations
     {
+      public AttackCalculations()
+      {
+        canAttack = false;
+        modifier = 0;
+        targetPoint = Vector3.Inf;
+      }
+
+      public bool canAttack;        // Attacker has LoS, is in melee range, has an action available, has ammo, etc.
+      public int modifier;          // Positive or negative value to add to the skill roll
+      public Vector3 targetPoint;   // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
+    }
+
+    // Returns set of attack calculations that contains a bool flag for line of sight, and
+    // a penalty value from 0 to -2, based on the proportion of/ the target array that is visible
+    // from the sight point of the attacker.
+    public static AttackCalculations CalculateRangedAttack(PawnController actor, PawnController target, World3D world) 
+    {
+      AttackCalculations result = new AttackCalculations();
       if (actor == null || target == null) 
-        return 0;
+        return result;
 
       Vector3[] targetArray = target.GetTargetPoints();
       Vector3 sightPoint = GetSightPoint(actor);
       
       if (targetArray.Length == 0 || sightPoint == Vector3.Inf)
-        return 0;
+        return result;
 
-      int visiblePoints = 0;
+      List<Vector3> visiblePoints = new List<Vector3>();
 
       foreach (Vector3 point in targetArray)
       {
         RaycastHit3D hit = NavigationUtils.DoRaycastPointToPoint(world, sightPoint, point);
         if (hit.collider == target)
-          visiblePoints++;
+          visiblePoints.Add(point);
       }
 
-      float percentVisible = (float)visiblePoints / (float)targetArray.Length;
-      int penalty = 0;
-      float percentFloor = 1.0f / (float)targetArray.Length;
+      if (visiblePoints.Count > 0)
+        result.canAttack = true;
 
-      if (percentVisible < 0.66)
-        penalty = -1;
+      if (visiblePoints.Count == 1)
+        result.modifier = 2;
 
-      if (percentVisible < 0.33)
-        penalty = -2;
+      if (visiblePoints.Count == 2)
+        result.modifier = 1;
 
-      if (percentVisible <= percentFloor)
-        penalty = -100;
+      result.targetPoint = GetCentroidPoint(visiblePoints);
+      return result;
+    }
 
-      return penalty;
+    public static Vector3 GetCentroidPoint(List<Vector3> points)
+    {
+      Vector3 result = Vector3.Zero;
+      if (points == null || points.Count == 0) 
+        return result;
+
+      foreach (Vector3 point in points)
+        result += point;
+
+      return result / points.Count;
     }
 
     public static Vector3 GetSightPoint(PawnController pawn)
@@ -177,6 +202,49 @@ public static class PawnUtils
         return pawn.GlobalPosition;
 
       return sightPoint.GlobalPosition;
+    }
+
+    public static Vector3 GetRangedAttackOriginPoint(PawnController pawn)
+    {
+      // TODO: Make this find the barrel of the weapon
+      return GetSightPoint(pawn);
+    }
+
+    public static string GetSkillCheckString(int useRating, int modifiers, string die)
+    {
+      string result = "Skill Check: " + useRating;
+      if (modifiers > 0)
+        result += " +" + modifiers;
+
+      else if (modifiers < 0)
+        result += " " + modifiers;
+
+      result += " on " + die;
+      return result;
+    }
+
+    // This function is basically a simple math operation (t = d / v), but it has sanity checking 
+    // and smart fallback values, so please use this everywhere instead of doing the math yourself.
+    public static float GetProjectileDirectFlightTime(in Vector3 from, in Vector3 to, in float speed)
+    {
+      // Picked this default value so if something goes wrong with the calculation
+      // things will move slowly enough that it will cause an investiagtion, but not
+      // so slow that the game is unplayeable (imagine a 10,000 second duration!).
+      float result = 5.0f;
+
+      if (speed < 0)
+        return result;
+
+      float distance = from.DistanceTo(to);
+      float time = distance / speed;
+
+      // time equal to or less than 0 should never happen, but keep the default if it does.
+      if (time > 0)
+        result = time;
+      else
+        GD.PrintErr("GetProjectileDirectFlightTime somehow got a negative result");
+
+      return result;
     }
   } // class Combat
 }
