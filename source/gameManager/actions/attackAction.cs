@@ -9,19 +9,11 @@ public class PlannerAttack : IActionPlanner
 
   public void Cleanup()
   {
-    throw new NotImplementedException();
+    ClearCurrentTarget();
   }
 
   public ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn)
   {
-    // Ensure we only draw the red highlight for one frame,
-    // otherwise targeting a different pawn would highlight both.
-    if (m_currentTarget != null)
-    {
-      PawnUtils.Appearance.ClearOverheadText(m_currentTarget);
-      PawnUtils.Appearance.ClearHighlight(m_currentTarget);
-    }
-
     ActionPlan plan = new ActionPlan();
     if (selectedPawn == null || actions.command == PlayerCommands.cancel)
       plan.returnCode = PlanReturnCode.abortState;
@@ -30,17 +22,64 @@ public class PlannerAttack : IActionPlanner
     plan.actor = selectedPawn;
     PawnController target = PawnUtils.GetPawnAtRaycastHit(actions.cursorPosition);
     if (target == null || target == selectedPawn)
+    {
+      ClearCurrentTarget();
       return plan;
+    }
+
+    if (target != m_currentTarget)
+    {
+      ClearCurrentTarget();
+      SetCurtrentTarget(plan.actor, target);
+    }
 
     plan.target = target;
-    m_currentTarget = target;
-    PawnUtils.Appearance.SetHighlightRed(m_currentTarget);
-    PawnUtils.Appearance.SetOverheadText(m_currentTarget, "ATTACK");
 
     if (actions.command == PlayerCommands.commit)
       plan.returnCode = PlanReturnCode.execute;
 
     return plan;
+  }
+
+  private void ClearCurrentTarget()
+  {
+    if (m_currentTarget == null)
+      return;
+
+    PawnUtils.Decoration.ClearOverheadText(m_currentTarget);
+    PawnUtils.Decoration.ClearHighlight(m_currentTarget);
+    m_currentTarget = null;
+    // GD.Print("TARGET CLEARED");  // for debugging
+  }
+
+  private void SetCurtrentTarget(PawnController actor, PawnController target)
+  {
+    m_currentTarget = target;
+
+    if (m_currentTarget == null || actor == null)
+      return;
+
+    string hitString = CalculateHitOdds(actor, target);
+    PawnUtils.Decoration.SetOverheadText(m_currentTarget, hitString);
+    PawnUtils.Decoration.SetHighlightRed(m_currentTarget);
+    // GD.Print("TARGET SET");  // for debugging
+  }
+
+  public static string CalculateHitOdds(PawnController actor, PawnController target)
+  {
+    if (actor == null || target == null)
+      return "ACTOR OR TARGET NULL!";
+
+    StatCard actorStatCard = actor.GetStatCard();
+    int penalty = PawnUtils.Combat.CalculateAimPenalty(actor, target, actor.GetWorld3D());
+    int useRating = (int)actorStatCard.weapon.useRating;
+    useRating += penalty; // The penalty is 0 or negative, so don't subtract it here!
+    
+    if (useRating < 0)
+      useRating = 0;
+
+    int dieValue = (int)actorStatCard.skillBonus + (int)actorStatCard.skillDie;
+    return "Hit chance: " + useRating + "/" + dieValue;
   }
 
   public void RegisterDecorator(ScreenDecorator painter)

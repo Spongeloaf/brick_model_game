@@ -40,7 +40,17 @@ public partial class ScreenDecorator : Node3D
     // if (m_Debugger != null && Globals.drawRawNavigationPaths)
     //    m_Debugger.DrawPath(points_global);
 
-    if (m_Debugger != null )
+    if (m_Debugger != null)
       m_Debugger.DrawPath(points_global);
+  }
+
+  public void SetTextLabel(PawnController pawn, in string text)
+  {
+    // This drawing operation is done in this class rather than a static
+    // pawn utils library becasue we need a refernce to a camera.
+    if (pawn == null) 
+      return;
+
+
   }
 }

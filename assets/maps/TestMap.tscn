@@ -164,3 +164,39 @@ transform = Transform3D(-0.999963, -0.00595152, -0.00617832, -0.0059514, 0.99998
 use_collision = true
 size = Vector3(0.392448, 0.135761, 14.107)
 material = ExtResource("3_862a5")
+
+[node name="_CSGBox3D12_21676" type="CSGBox3D" parent="colliders"]
+transform = Transform3D(2.94138e-07, -1, -3.67765e-05, 0.999924, -1.48443e-07, 0.0123565, -0.0123565, -3.67775e-05, 0.999924, -0.0251079, 1.71371, -15.0004)
+use_collision = true
+size = Vector3(0.392448, 0.135761, 14.107)
+material = ExtResource("3_862a5")
+
+[node name="_CSGBox3D12_21677" type="CSGBox3D" parent="colliders"]
+transform = Transform3D(2.94138e-07, -1, -3.67765e-05, 0.999924, -1.48443e-07, 0.0123565, -0.0123565, -3.67775e-05, 0.999924, -0.0251079, 2.09689, -18.0706)
+use_collision = true
+size = Vector3(0.392448, 0.135761, 14.107)
+material = ExtResource("3_862a5")
+
+[node name="_CSGBox3D12_21678" type="CSGBox3D" parent="colliders"]
+transform = Transform3D(2.94138e-07, -1, -3.67765e-05, 0.999924, -1.48443e-07, 0.0123565, -0.0123565, -3.67775e-05, 0.999924, -0.0251079, 2.47611, -21.0025)
+use_collision = true
+size = Vector3(0.392448, 0.135761, 14.107)
+material = ExtResource("3_862a5")
+
+[node name="_CSGBox3D12_21679" type="CSGBox3D" parent="colliders"]
+transform = Transform3D(2.94138e-07, -1, -3.67765e-05, 0.999924, -1.48443e-07, 0.0123565, -0.0123565, -3.67775e-05, 0.999924, -0.0251079, 2.86111, -23.6181)
+use_collision = true
+size = Vector3(0.392448, 0.135761, 14.107)
+material = ExtResource("3_862a5")
+
+[node name="_CSGBox3D12_21680" type="CSGBox3D" parent="colliders"]
+transform = Transform3D(2.94138e-07, -1, -3.67765e-05, 0.999924, -1.48443e-07, 0.0123565, -0.0123565, -3.67775e-05, 0.999924, -0.0251079, 3.25519, -25.7319)
+use_collision = true
+size = Vector3(0.392448, 0.135761, 14.107)
+material = ExtResource("3_862a5")
+
+[node name="_CSGBox3D12_21681" type="CSGBox3D" parent="colliders"]
+transform = Transform3D(2.94138e-07, -1, -3.67765e-05, 0.999924, -1.48443e-07, 0.0123565, -0.0123565, -3.67775e-05, 0.999924, -0.0251079, 3.6214, -27.5247)
+use_collision = true
+size = Vector3(0.392448, 0.135761, 14.107)
+material = ExtResource("3_862a5")

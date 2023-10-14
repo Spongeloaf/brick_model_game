@@ -1,3 +1,19 @@
 [gd_scene format=3 uid="uid://c7d444q5ns47w"]
 
 [node name="FunctionTest" type="Node3D"]
+
+[node name="child1" type="Node" parent="."]
+
+[node name="child1_1" type="Node" parent="child1"]
+
+[node name="child1" type="Node" parent="child1/child1_1"]
+
+[node name="confused" type="Node" parent="child1/child1_1/child1"]
+
+[node name="child2" type="Node" parent="."]
+
+[node name="child2_1" type="Node" parent="child2"]
+
+[node name="child2_2" type="Node" parent="child2"]
+
+[node name="Node3" type="Node" parent="."]

@@ -24,7 +24,7 @@ public static class PawnUtils
     return collider.GetParent<PawnController>();
   }
 
-  public static class Appearance
+  public static class Decoration
   {
     private static PackedScene m_labelTemplate = ResourceLoader.Load<PackedScene>("res://source/pawns/decorators/TextLabel.tscn");
 
@@ -72,8 +72,12 @@ public static class PawnUtils
       if (pawn == null)
         return;
 
+      Node3D anchor = GetLabelPoint(pawn);
+      if (anchor == null) 
+        return;
+
       Node labelNode = m_labelTemplate.Instantiate();
-      pawn.AddChild(labelNode);
+      anchor.AddChild(labelNode);
 
       GodotObject obj = (GodotObject)labelNode;
       obj.Set("text", text);
@@ -84,7 +88,24 @@ public static class PawnUtils
       if (pawn == null)
         return;
 
-      // todo
+      Node3D anchor = GetLabelPoint(pawn);
+      if (anchor == null)
+        return;
+
+      Node label = anchor.GetChild(0);
+      if (label == null)
+        return;
+
+      //anchor.RemoveChild(label);
+      label.QueueFree();
+    }
+
+    public static Node3D GetLabelPoint(PawnController pawn)
+    {
+      if (pawn == null)
+        return null;
+
+      return pawn.GetNode<Node3D>("LabelPoint");
     }
 
   } // class Appearance
@@ -106,4 +127,56 @@ public static class PawnUtils
     }
   } // class Navigation
 
+  public static class Combat
+  {
+    // Returns a penalty value from 0 to -2, based on the proportion of
+    // the target array that is visible from the origin point.
+    public static int CalculateAimPenalty(PawnController actor, PawnController target, World3D world) 
+    {
+      if (actor == null || target == null) 
+        return 0;
+
+      Vector3[] targetArray = target.GetTargetPoints();
+      Vector3 sightPoint = GetSightPoint(actor);
+      
+      if (targetArray.Length == 0 || sightPoint == Vector3.Inf)
+        return 0;
+
+      int visiblePoints = 0;
+
+      foreach (Vector3 point in targetArray)
+      {
+        RaycastHit3D hit = NavigationUtils.DoRaycastPointToPoint(world, sightPoint, point);
+        if (hit.collider == target)
+          visiblePoints++;
+      }
+
+      float percentVisible = (float)visiblePoints / (float)targetArray.Length;
+      int penalty = 0;
+      float percentFloor = 1.0f / (float)targetArray.Length;
+
+      if (percentVisible < 0.66)
+        penalty = -1;
+
+      if (percentVisible < 0.33)
+        penalty = -2;
+
+      if (percentVisible <= percentFloor)
+        penalty = -100;
+
+      return penalty;
+    }
+
+    public static Vector3 GetSightPoint(PawnController pawn)
+    {
+      if (pawn == null)
+        return Vector3.Inf;
+
+      Node3D sightPoint = pawn.GetNode<Node3D>("SightPoint");
+      if (sightPoint == null)
+        return pawn.GlobalPosition;
+
+      return sightPoint.GlobalPosition;
+    }
+  } // class Combat
 }

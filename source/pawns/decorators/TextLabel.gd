@@ -6,7 +6,6 @@ const MARGIN = 8
 @onready var camera = get_viewport().get_camera_3d()
 @onready var parent = get_parent()
 @onready var label = $Label
-@onready var marker = $Marker
 
 # The waypoint's text.
 @export var text = "Waypoint":

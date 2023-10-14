@@ -111,7 +111,7 @@ public partial class GameManager : Node3D
     if (m_SelectedPawn == null)
       return;
 
-    PawnUtils.Appearance.ClearHighlight(m_SelectedPawn);
+    PawnUtils.Decoration.ClearHighlight(m_SelectedPawn);
     m_SelectedPawn = null;
   }
 
@@ -129,7 +129,7 @@ public partial class GameManager : Node3D
       return;
 
     m_SelectedPawn = pawn;
-    PawnUtils.Appearance.SetHighlightGreen(m_SelectedPawn);
+    PawnUtils.Decoration.SetHighlightGreen(m_SelectedPawn);
   }
 
   

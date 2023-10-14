@@ -3,7 +3,7 @@ using System;
 using Godot.Collections;
 using System.Linq;
 
-// This might be better off as a struct.....
+
 public struct RaycastHit3D
 {
   // Note: Member names match the dictionary counterparts. DON'T CHANGE THEM!
@@ -15,6 +15,7 @@ public struct RaycastHit3D
   public int shape;                 // shape index of collider
   public Variant metadata;   // metadata of collider
 }
+
 
 // Put stuff here until you find a better place for it
 public static class NavigationUtils 
@@ -53,11 +54,19 @@ public static class NavigationUtils
     return hit;
   }
 
-  public static RaycastHit3D DoRaycast(World3D world, Vector3 from, Vector3 direction, 
+  public static RaycastHit3D DoRaycastInDirection(World3D world, Vector3 from, Vector3 direction, 
                                        float limit = Mathf.Inf, Array<Rid> excludes = null, uint collision_mask = 4294967295)
   {
     direction = direction.Normalized();
     Vector3 to = from + direction * limit;
+    var query = PhysicsRayQueryParameters3D.Create(from, to, collision_mask, excludes);
+    Dictionary result = world.DirectSpaceState.IntersectRay(query);
+    return ConstructRaycastHit3D(result);
+  }
+
+  public static RaycastHit3D DoRaycastPointToPoint(World3D world, Vector3 from, Vector3 to,
+                                       float limit = Mathf.Inf, Array<Rid> excludes = null, uint collision_mask = 4294967295)
+  {
     var query = PhysicsRayQueryParameters3D.Create(from, to, collision_mask, excludes);
     Dictionary result = world.DirectSpaceState.IntersectRay(query);
     return ConstructRaycastHit3D(result);
