@@ -9,7 +9,7 @@
 [node name="sceneRoot" type="Node3D"]
 
 [node name="PlayerController" parent="." instance=ExtResource("3_op8u5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.9827, 12.0476)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 6.84726, 3.05106, -9.3349)
 
 [node name="GameManager" parent="." instance=ExtResource("4_4b0aq")]
 

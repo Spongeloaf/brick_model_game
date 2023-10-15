@@ -159,7 +159,6 @@ public static class PawnUtils
         return result;
 
       List<Vector3> visiblePoints = new List<Vector3>();
-
       foreach (Vector3 point in targetArray)
       {
         RaycastHit3D hit = NavigationUtils.DoRaycastPointToPoint(world, sightPoint, point);
@@ -176,20 +175,34 @@ public static class PawnUtils
       if (visiblePoints.Count == 2)
         result.modifier = 1;
 
-      result.targetPoint = GetCentroidPoint(visiblePoints);
+      // If the enemy is not visible at all, use the centroid of their target points. That way,
+      // even if we can't attack, any attempt to aim or point at the target will make sense because
+      // it points to the center of mass.
+      //
+      // If the enemy is visible, aim for the center of the exposed area. 
+      if (visiblePoints.Count > 0)
+        result.targetPoint = GetCentroidPoint(visiblePoints);
+      else
+        result.targetPoint = GetCentroidPoint(targetArray);
+
       return result;
     }
 
     public static Vector3 GetCentroidPoint(List<Vector3> points)
     {
+      return GetCentroidPoint(points.ToArray());
+    }
+
+    public static Vector3 GetCentroidPoint(in Vector3[] points)
+    {
       Vector3 result = Vector3.Zero;
-      if (points == null || points.Count == 0) 
+      if (points == null || points.Length == 0) 
         return result;
 
       foreach (Vector3 point in points)
         result += point;
 
-      return result / points.Count;
+      return result / points.Length;
     }
 
     public static Vector3 GetSightPoint(PawnController pawn)

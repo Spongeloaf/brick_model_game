@@ -94,29 +94,41 @@ public class PlannerAttack : IActionPlanner
 public class ExecutorAttack : IActionExecutor
 {
   ActionPlan m_plan;
+  AnimationPlayer m_player;
+  Node m_parent;
+
+  public void Cleanup()
+  {
+    if (m_player != null)
+    {
+      Godot.Collections.Array<Node> children = m_player.GetChildren();
+      foreach (Node node in children) 
+        node.QueueFree();
+
+      m_player.QueueFree();
+    }
+
+    m_plan = null;
+  }
 
   public ExecutorReturnCode DoUpdate()
   {
-    if (m_plan == null)
+    if (m_plan == null || m_player == null)
       return ExecutorReturnCode.finished;
 
-    // ????
-    return ExecutorReturnCode.running;
+    if (m_player.IsPlaying())
+      return ExecutorReturnCode.running;
+
+    return ExecutorReturnCode.finished;
   }
 
-  public void ExecutePlan(in ActionPlan plan)
+  public void ExecutePlan(in ActionPlan plan, Node parent)
   {
     m_plan = plan;
+    m_parent = parent;
+    if (m_plan == null || m_parent == null)
+      GD.PrintErr("WARNING: ExecutorAttack got a null action plan or parent!");
 
-    if (m_plan == null)
-      GD.PrintErr("WARNING: ExecutorAttack got a null action plan!");
-
-    // Create projectile
-    // calculate travel time
-  }
-
-  void CompletePlan() 
-  { 
-    // resolve damage roll on target
+    m_player = AnimationUtils.CreateRangedAttackAnimation(m_plan, m_parent);
   }
 }

@@ -51,14 +51,22 @@ namespace GameManagerStates
 
   public class ExecutorMove : IActionExecutor
   {
-    private GameManager m_GameManager;
     private ActionPlan m_ActionPlan;
-    private double m_PathLength = 0f;
-    private double m_BeginMoveTime = 0f;
-    private double m_FinishMoveTime = 0f;
-    private static double m_TravelSpeed = 5f; // This is a bullshit made up constant
 
-    void IActionExecutor.ExecutePlan(in ActionPlan plan)
+    ~ExecutorMove() { }
+
+    ExecutorReturnCode IActionExecutor.DoUpdate()
+    {
+      if (m_ActionPlan == null || m_ActionPlan.actor == null)
+        return ExecutorReturnCode.finished;
+
+      if (m_ActionPlan.actor.IsNavigating())
+        return ExecutorReturnCode.running;
+
+      return ExecutorReturnCode.finished;
+    }
+
+    public void ExecutePlan(in ActionPlan plan, Node parent)
     {
       if (plan.actor == null)
         return;
@@ -73,15 +81,9 @@ namespace GameManagerStates
       m_ActionPlan.actor.StartMovement(m_ActionPlan.path.Last());
     }
 
-    ExecutorReturnCode IActionExecutor.DoUpdate()
+    public void Cleanup()
     {
-      if (m_ActionPlan == null || m_ActionPlan.actor == null)
-        return ExecutorReturnCode.finished;
-
-      if (m_ActionPlan.actor.IsNavigating())
-        return ExecutorReturnCode.running;
-
-      return ExecutorReturnCode.finished;
+      throw new NotImplementedException();
     }
   }
 

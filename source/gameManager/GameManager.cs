@@ -33,11 +33,11 @@ public partial class GameManager : Node3D
   {
     if (m_Executor != null)
     {
-      // TODO: handle return codes
       ExecutorReturnCode code = m_Executor.DoUpdate();
-      if (code == ExecutorReturnCode.finished) 
-        m_Executor = null;
+      if (code == ExecutorReturnCode.finished)
+        OnFinishedExecution();
 
+      // Don't let other actions run while executing!
       return;
     }
 
@@ -65,6 +65,13 @@ public partial class GameManager : Node3D
 
     if (plan.returnCode == PlanReturnCode.execute)
       ExecutePlan(plan);
+  }
+
+  private void OnFinishedExecution()
+  {
+    RemoveExecutor();
+    RemovePlanner();
+    UnselectCurrentPawn();
   }
 
   private void HandleInputs()
@@ -100,8 +107,20 @@ public partial class GameManager : Node3D
     }
   }
 
+  private void RemoveExecutor()
+  {
+    if (m_Executor == null)
+      return;
+
+    m_Executor.Cleanup();
+    m_Executor = null;
+  }
+
   private void RemovePlanner() 
   {
+    if (m_Planner == null)
+      return;
+
     m_Planner.Cleanup();
     m_Planner = null;
   }
@@ -152,6 +171,6 @@ public partial class GameManager : Node3D
     }
 
     if (m_Executor != null)
-      m_Executor.ExecutePlan(plan);
+      m_Executor.ExecutePlan(plan, this);
   }
 }

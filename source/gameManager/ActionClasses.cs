@@ -47,8 +47,9 @@ namespace GameManagerStates
 
   interface IActionExecutor
   {
-    void ExecutePlan(in ActionPlan plan, in GameManager manager);
+    void ExecutePlan(in ActionPlan plan, Node parent);  // Parent: Any nodes created during execution will be children of this node.
     ExecutorReturnCode DoUpdate();
+    void Cleanup();
   }
 
 } // namespace GameManagerStates
