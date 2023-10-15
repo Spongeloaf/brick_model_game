@@ -3,6 +3,7 @@ using Godot;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace GameManagerStates
@@ -20,15 +21,10 @@ namespace GameManagerStates
     {
       ActionPlan plan = new ActionPlan();
       if (selectedPawn == null)
+      {
         plan.returnCode = PlanReturnCode.abortState;
-
-      // TODO next:
-      //
-      // Also put the pathfinding code there
-      // Make sure we don't save the path into the nav agent (ask for path, then tell it to stop navigating)
-      // Then Then refernce the stat card to see if we can go that far
-      // update the plan
-      // Hook up the move code to the executor
+        return plan;
+      }
 
       plan.actor = selectedPawn;
       plan.path = PawnUtils.Navigation.GetNavigationPath(selectedPawn, actions.cursorPosition.position);
@@ -53,8 +49,6 @@ namespace GameManagerStates
   {
     private ActionPlan m_ActionPlan;
 
-    ~ExecutorMove() { }
-
     ExecutorReturnCode IActionExecutor.DoUpdate()
     {
       if (m_ActionPlan == null || m_ActionPlan.actor == null)
@@ -68,22 +62,19 @@ namespace GameManagerStates
 
     public void ExecutePlan(in ActionPlan plan, Node parent)
     {
-      if (plan.actor == null)
+      if (plan == null || parent == null) 
+        return;
+
+      if (plan.actor == null || plan.path.Length == 0)
         return;
 
       m_ActionPlan = plan;
-      if (m_ActionPlan.path.Length == 0)
-      {
-        m_ActionPlan = null;
-        return;
-      }
-
-      m_ActionPlan.actor.StartMovement(m_ActionPlan.path.Last());
+      m_ActionPlan.actor.StartNavigation(m_ActionPlan.path.Last());
     }
 
     public void Cleanup()
     {
-      throw new NotImplementedException();
+
     }
   }
 

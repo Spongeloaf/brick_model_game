@@ -8,30 +8,21 @@ using System.Linq;
 [GlobalClass, Icon("res://source/pawn/pawn.svg")]
 public partial class PawnController : RigidBody3D
 {
-  [Export] private float m_speed = 10f;
+  [Export] private float m_speed = 5f;
   [Export] private float m_snapToGroundDistance = 5.0f;
   [Export] public StatCard m_statCard;
+  [Export] public bool m_useAvoidance = true;
 
   private const float m_angleTolerance = 0.0872665f; // equals roughly 5 degrees
   private NavigationAgent3D m_navAgent;
+  private NavigationObstacle3D m_obstacle;
   private CollisionShape3D m_collisionShape;
   private List<Node3D> m_targetPoints;
-
   // Get the gravity from the project settings to be synced with RigidBody nodes.
   public float gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
   public override void _Ready()
   {
-    FreezeMode = FreezeModeEnum.Kinematic;
-    Freeze = false;
-    AddConstantCentralForce(new Vector3(0f, -gravity, 0f));
-
-    m_navAgent = GetNode<NavigationAgent3D>("navAgent");
-    if (m_navAgent == null)
-      GD.PrintErr("Missing nav agent!");
-
-    m_navAgent.AvoidanceEnabled = true;
-
     m_collisionShape = GetNode<CollisionShape3D>("collider");
     if (m_collisionShape == null)
       GD.PrintErr("Failed to find collider!");
@@ -47,10 +38,26 @@ public partial class PawnController : RigidBody3D
       m_statCard.skillDie = 6;
       m_statCard.skillBonus = 0;
     }
+
+    AddConstantCentralForce(new Vector3(0f, -gravity, 0f));
+    m_navAgent = GetNode<NavigationAgent3D>("NavigationAgent3D");
+    if (m_navAgent != null)
+    {
+    m_navAgent.AvoidanceEnabled = false;
+    m_navAgent.VelocityComputed += OnVelocityComputed;
+    }
+
+    m_obstacle = GetNode<NavigationObstacle3D>("navObstacle");
+    if (m_obstacle != null) 
+    {
+      m_obstacle.AvoidanceEnabled = true;
+    }
   }
 
   public override void _PhysicsProcess(double delta)
   {
+    ////// There is a note on Trello about improving the movment!
+
     if (m_navAgent == null)
       return;
 
@@ -60,8 +67,30 @@ public partial class PawnController : RigidBody3D
     }
 
     // Navigation requries the body be frozen.
-    if (Freeze) 
-      DoNavigation_StaticMode(delta);
+    if (Freeze)
+      GuessNextVelocity(delta);
+  }
+
+  private void GuessNextVelocity(double delta)
+  {
+    // This computes the expected movement and passes it to the nav agent. It will call us back 
+    // in a little while with a corrected movement for avoidance.
+    Vector3 currentPosition = GlobalPosition;
+    Vector3 nextWaypoint = m_navAgent.GetNextPathPosition();
+    Vector3 expectedMovement = (nextWaypoint - currentPosition).Normalized() * m_speed * (float)delta;
+    nextWaypoint.Y = GlobalPosition.Y;
+    LookAt(nextWaypoint, Vector3.Up, true);
+
+    if (m_navAgent.AvoidanceEnabled)
+      m_navAgent.Velocity = expectedMovement;
+    else
+      OnVelocityComputed(expectedMovement);
+  }
+
+  public void OnVelocityComputed(Vector3 navigationVelocity)
+  {
+    GlobalPosition += navigationVelocity;
+    SnapMeshToGround();
   }
 
   private void FinishNavigation()
@@ -71,9 +100,13 @@ public partial class PawnController : RigidBody3D
 
     Freeze = false;
     LinearVelocity = Vector3.Zero;
+    m_navAgent.AvoidanceEnabled = false;
+    
+    if (m_obstacle != null)
+      m_obstacle.AvoidanceEnabled = true;
   }
 
-  public void StartMovement(in Vector3 target)
+  public void StartNavigation(in Vector3 target)
   {
     if (m_navAgent == null)
       return;
@@ -91,14 +124,12 @@ public partial class PawnController : RigidBody3D
 
     Freeze = true;
     m_navAgent.TargetPosition = target;
-  }
+    
+    if (m_useAvoidance)
+      m_navAgent.AvoidanceEnabled = true;
 
-  private void DoNavigation_StaticMode(double timeDelta)
-  {
-    Vector3 movement = m_navAgent.GetNextPathPosition();
-    float speed = (float)timeDelta * m_speed;
-    GlobalPosition = GlobalPosition.MoveToward(movement, speed);
-    SnapMeshToGround();
+    if (m_obstacle != null)
+      m_obstacle.AvoidanceEnabled = false;
   }
 
   private void SnapMeshToGround()
@@ -139,7 +170,7 @@ public partial class PawnController : RigidBody3D
   // Returns the pawns global position if no targetting points found. This function is not in the
   // PawnUtils library only because it caches the points.
   public List<Node3D> FindTargetPointsInChildren()
-  { 
+  {
     List<Node3D> result = new List<Node3D>();
     result.Add(this);
     Node3D pointsParent = GetNode<Node3D>("targetPoints");
@@ -175,7 +206,7 @@ public partial class PawnController : RigidBody3D
   public Vector3[] GetTargetPoints()
   {
     List<Vector3> result = new List<Vector3>();
-    foreach(Node3D node in m_targetPoints)
+    foreach (Node3D node in m_targetPoints)
       result.Add(((Node3D)node).GlobalPosition);
 
     return result.ToArray();

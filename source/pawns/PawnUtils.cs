@@ -119,10 +119,6 @@ public static class PawnUtils
       if (pawn == null)
         return new Vector3[0];
 
-      NavigationAgent3D agent = pawn.GetNavigationAgent3D();
-      if (agent == null)
-        return new Vector3[0];
-
       return NavigationServer3D.MapGetPath(pawn.GetWorld3D().NavigationMap, pawn.GlobalPosition, target_global, true);
     }
   } // class Navigation
