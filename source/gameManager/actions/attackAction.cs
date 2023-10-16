@@ -1,10 +1,12 @@
 using GameManagerStates;
 using Godot;
 using System;
+using System.Numerics;
 
 public class PlannerAttack : IActionPlanner
 {
   PawnController m_currentTarget;
+  ActionPlan m_plan; 
 
   public void Cleanup()
   {
@@ -13,31 +15,32 @@ public class PlannerAttack : IActionPlanner
 
   public ActionPlan DoUpdate(in InputActions actions, PawnController selectedPawn)
   {
-    ActionPlan plan = new ActionPlan();
+    if (m_plan == null) 
+      m_plan = new ActionPlan(); 
+    
     if (selectedPawn == null || actions.command == PlayerCommands.cancel)
-      plan.returnCode = PlanReturnCode.abortState;
+      m_plan.returnCode = PlanReturnCode.abortState;
 
-    plan.pawnAction = PawnAction.attack;
-    plan.actor = selectedPawn;
+    m_plan.pawnAction = PawnAction.attack;
+    m_plan.actor = selectedPawn;
     PawnController target = PawnUtils.GetPawnAtRaycastHit(actions.cursorPosition);
     if (target == null || target == selectedPawn)
     {
       ClearCurrentTarget();
-      return plan;
+      return m_plan;
     }
 
     if (target != m_currentTarget)
     {
       ClearCurrentTarget();
-      SetCurtrentTarget(plan.actor, target);
+      SetCurtrentTarget(m_plan.actor, target);
     }
 
-    plan.target = target;
-
+    m_plan.target = target;
     if (actions.command == PlayerCommands.commit)
-      plan.returnCode = PlanReturnCode.execute;
+      m_plan.returnCode = PlanReturnCode.execute;
 
-    return plan;
+    return m_plan;
   }
 
   private void ClearCurrentTarget()
@@ -58,31 +61,11 @@ public class PlannerAttack : IActionPlanner
     if (m_currentTarget == null || actor == null)
       return;
 
-    string hitString = CalculateHitOdds(actor, target);
+    m_plan.calculations = PawnUtils.Combat.CalculateRangedAttack(actor, target, actor.GetWorld3D());
+    string hitString = _Utils.CreateSkillString(actor, target, m_plan.calculations);
     PawnUtils.Decoration.SetOverheadText(m_currentTarget, hitString);
     PawnUtils.Decoration.SetHighlightRed(m_currentTarget);
     // GD.Print("TARGET SET");  // for debugging
-  }
-
-  public static string CalculateHitOdds(PawnController actor, PawnController target)
-  {
-    if (actor == null || target == null)
-      return "ACTOR OR TARGET NULL!";
-
-    PawnUtils.Combat.AttackCalculations calculations = PawnUtils.Combat.CalculateRangedAttack(actor, target, actor.GetWorld3D());
-    if (calculations.canAttack == false)
-      return "No line of sight!";
-
-    StatCard actorStatCard = actor.GetStatCard();
-    
-    // TODO: figure out a better place and system for this.
-    string die = "1d" + actorStatCard.skillDie;
-    if (actorStatCard.skillBonus > 0)
-      die += " +" + actorStatCard.skillBonus;
-    else if (actorStatCard.skillBonus < 0)
-      die += " " + actorStatCard.skillBonus;
-
-    return PawnUtils.Combat.GetSkillCheckString((int)actorStatCard.weapon.useRating, calculations.modifier, die);
   }
 
   public void RegisterDecorator(ScreenDecorator painter)
@@ -129,6 +112,34 @@ public class ExecutorAttack : IActionExecutor
     if (m_plan == null || m_parent == null)
       GD.PrintErr("WARNING: ExecutorAttack got a null action plan or parent!");
 
+    // Do the math!
+
     m_player = AnimationUtils.CreateRangedAttackAnimation(m_plan, m_parent);
   }
+
+} // class ExecutorAttack
+
+internal static class _Utils
+{
+  public static string CreateSkillString(PawnController actor, PawnController target, ActionCalculations calculations)
+  {
+    if (actor == null || target == null)
+      return "ACTOR OR TARGET NULL!";
+
+  
+    if (calculations.canPerform == false)
+      return "No line of sight!";
+
+    StatCard actorStatCard = actor.GetStatCard();
+
+    // TODO: figure out a better place and system for this.
+    string die = "1d" + actorStatCard.skillDie;
+    if (actorStatCard.skillBonus > 0)
+      die += " +" + actorStatCard.skillBonus;
+    else if (actorStatCard.skillBonus < 0)
+      die += " " + actorStatCard.skillBonus;
+
+    return PawnUtils.Combat.GetSkillCheckString((int)actorStatCard.weapon.useRating, calculations.useModifier, die);
+  }
+
 }

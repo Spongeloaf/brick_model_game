@@ -17,7 +17,7 @@ public static class AnimationUtils
     if (player == null)
       return null;
 
-    PawnUtils.Combat.AttackCalculations calcs = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target, plan.actor.GetWorld3D());
+    ActionCalculations calcs = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target, plan.actor.GetWorld3D());
     StatCard statCard = plan.actor.GetStatCard();
     Animation animation = new Animation();
     

@@ -125,26 +125,13 @@ public static class PawnUtils
 
   public static class Combat
   {
-    public struct AttackCalculations
-    {
-      public AttackCalculations()
-      {
-        canAttack = false;
-        modifier = 0;
-        targetPoint = Vector3.Inf;
-      }
-
-      public bool canAttack;        // Attacker has LoS, is in melee range, has an action available, has ammo, etc.
-      public int modifier;          // Positive or negative value to add to the skill roll
-      public Vector3 targetPoint;   // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
-    }
 
     // Returns set of attack calculations that contains a bool flag for line of sight, and
     // a penalty value from 0 to -2, based on the proportion of/ the target array that is visible
     // from the sight point of the attacker.
-    public static AttackCalculations CalculateRangedAttack(PawnController actor, PawnController target, World3D world) 
+    public static ActionCalculations CalculateRangedAttack(PawnController actor, PawnController target, World3D world) 
     {
-      AttackCalculations result = new AttackCalculations();
+      ActionCalculations result = new ActionCalculations();
       if (actor == null || target == null) 
         return result;
 
@@ -163,13 +150,13 @@ public static class PawnUtils
       }
 
       if (visiblePoints.Count > 0)
-        result.canAttack = true;
+        result.canPerform = true;
 
       if (visiblePoints.Count == 1)
-        result.modifier = 2;
+        result.useModifier = 2;
 
       if (visiblePoints.Count == 2)
-        result.modifier = 1;
+        result.useModifier = 1;
 
       // If the enemy is not visible at all, use the centroid of their target points. That way,
       // even if we can't attack, any attempt to aim or point at the target will make sense because
@@ -256,4 +243,9 @@ public static class PawnUtils
       return result;
     }
   } // class Combat
+
+  //public static class Skills
+  //{
+  //  public static bool MakeASkillCheck(in ActionPlan) { }
+  //}
 }

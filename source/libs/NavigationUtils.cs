@@ -2,7 +2,7 @@ using Godot;
 using System;
 using Godot.Collections;
 using System.Linq;
-
+using GameManagerStates;
 
 public struct RaycastHit3D
 {
@@ -72,5 +72,15 @@ public static class NavigationUtils
     return ConstructRaycastHit3D(result);
   }
 
+  public static ulong CalculateMoveTimeInMsec(in ActionPlan plan)
+  {
+    if (plan == null || plan.actor == null)
+      return 0;
 
+    if (plan.actor.m_statCard == null || plan.path.Length == 0)
+      return 0;
+
+    ulong travelTimeInSeconds = (ulong)(Math.GetPathLength(plan.path) / plan.actor.m_statCard.moveSpeed);
+    return travelTimeInSeconds * 1000;
+  }
 } // generalHelpers

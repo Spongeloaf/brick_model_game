@@ -10,6 +10,20 @@ public enum PawnAction
 
 namespace GameManagerStates
 {
+  public struct ActionCalculations
+  {
+    public ActionCalculations()
+    {
+      canPerform = false;
+      useModifier = 0;
+      targetPoint = Vector3.Inf;
+    }
+
+    public bool canPerform;        // Attacker has LoS, is in melee range, has an action available, has ammo, etc.
+    public int useModifier;       // Positive or negative value to add to change the difficulty of the skill check
+    public Vector3 targetPoint;   // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
+  }
+
   public class ActionPlan
   {
     public ActionPlan() 
@@ -17,6 +31,7 @@ namespace GameManagerStates
       returnCode = PlanReturnCode.idle;
     }
 
+    public ActionCalculations calculations;
     public PlanReturnCode returnCode;
     public PawnController actor;
     public PawnController target;
@@ -47,6 +62,14 @@ namespace GameManagerStates
 
   interface IActionExecutor
   {
+    internal struct SkillCheck
+    {
+      public int useRating;
+      public int useModifiers;
+      public int skillDie;
+      public int skillDieModifiers;
+    }
+
     void ExecutePlan(in ActionPlan plan, Node parent);  // Parent: Any nodes created during execution will be children of this node.
     ExecutorReturnCode DoUpdate();
     void Cleanup();

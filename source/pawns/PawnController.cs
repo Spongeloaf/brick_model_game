@@ -8,7 +8,6 @@ using System.Linq;
 [GlobalClass, Icon("res://source/pawn/pawn.svg")]
 public partial class PawnController : RigidBody3D
 {
-  [Export] private float m_speed = 5f;
   [Export] private float m_snapToGroundDistance = 5.0f;
   [Export] public StatCard m_statCard;
   [Export] public bool m_useAvoidance = true;
@@ -33,10 +32,6 @@ public partial class PawnController : RigidBody3D
     {
       GD.PrintErr("Pawn stat card not found! Creating default.....");
       m_statCard = new StatCard();
-      m_statCard.moveDistance = 20;
-      m_statCard.armor = 4;
-      m_statCard.skillDie = 6;
-      m_statCard.skillBonus = 0;
     }
 
     AddConstantCentralForce(new Vector3(0f, -gravity, 0f));
@@ -77,7 +72,8 @@ public partial class PawnController : RigidBody3D
     // in a little while with a corrected movement for avoidance.
     Vector3 currentPosition = GlobalPosition;
     Vector3 nextWaypoint = m_navAgent.GetNextPathPosition();
-    Vector3 expectedMovement = (nextWaypoint - currentPosition).Normalized() * m_speed * (float)delta;
+    float speed =m_statCard.moveSpeed * (float)delta;
+    Vector3 expectedMovement = (nextWaypoint - currentPosition).Normalized() * speed;
     nextWaypoint.Y = GlobalPosition.Y;
     LookAt(nextWaypoint, Vector3.Up, true);
 
@@ -93,7 +89,7 @@ public partial class PawnController : RigidBody3D
     SnapMeshToGround();
   }
 
-  private void FinishNavigation()
+  public void FinishNavigation()
   {
     if (Freeze == false)
       return;
@@ -101,6 +97,7 @@ public partial class PawnController : RigidBody3D
     Freeze = false;
     LinearVelocity = Vector3.Zero;
     m_navAgent.AvoidanceEnabled = false;
+    m_navAgent.TargetPosition = GlobalPosition;
     
     if (m_obstacle != null)
       m_obstacle.AvoidanceEnabled = true;

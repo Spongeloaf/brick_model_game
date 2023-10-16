@@ -48,10 +48,16 @@ namespace GameManagerStates
   public class ExecutorMove : IActionExecutor
   {
     private ActionPlan m_ActionPlan;
+    private ulong m_timeout;
+    private const ulong m_timepadding = 5000; // # milliseconds to pad the time estimation.
 
     ExecutorReturnCode IActionExecutor.DoUpdate()
     {
       if (m_ActionPlan == null || m_ActionPlan.actor == null)
+        return ExecutorReturnCode.finished;
+
+      // The pawn probably got stuck if the timer expired.
+      if (Time.GetTicksMsec() > m_timeout)
         return ExecutorReturnCode.finished;
 
       if (m_ActionPlan.actor.IsNavigating())
@@ -70,11 +76,17 @@ namespace GameManagerStates
 
       m_ActionPlan = plan;
       m_ActionPlan.actor.StartNavigation(m_ActionPlan.path.Last());
+      ulong millisecondsToMove = NavigationUtils.CalculateMoveTimeInMsec(plan);
+      
+      // In case the pawn gets stuck while moving, we set the timeout for however long
+      // we think the move will take, plus a standard padding amount.
+      m_timeout = Time.GetTicksMsec() + millisecondsToMove + m_timepadding;
     }
 
     public void Cleanup()
     {
-
+      if (m_ActionPlan != null && m_ActionPlan.actor != null)
+        m_ActionPlan.actor.FinishNavigation();
     }
   }
 
