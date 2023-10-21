@@ -62,14 +62,6 @@ namespace GameManagerStates
 
   interface IActionExecutor
   {
-    internal struct SkillCheck
-    {
-      public int useRating;
-      public int useModifiers;
-      public int skillDie;
-      public int skillDieModifiers;
-    }
-
     void ExecutePlan(in ActionPlan plan, Node parent);  // Parent: Any nodes created during execution will be children of this node.
     ExecutorReturnCode DoUpdate();
     void Cleanup();

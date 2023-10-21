@@ -125,7 +125,6 @@ internal static class _Utils
   {
     if (actor == null || target == null)
       return "ACTOR OR TARGET NULL!";
-
   
     if (calculations.canPerform == false)
       return "No line of sight!";
