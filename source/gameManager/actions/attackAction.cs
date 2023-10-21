@@ -112,7 +112,8 @@ public class ExecutorAttack : IActionExecutor
     if (m_plan == null || m_parent == null)
       GD.PrintErr("WARNING: ExecutorAttack got a null action plan or parent!");
 
-    // Do the math!
+    bool success = SkillCheck.Do(plan.calculations.paramters);
+    // what now?
 
     m_player = AnimationUtils.CreateRangedAttackAnimation(m_plan, m_parent);
   }

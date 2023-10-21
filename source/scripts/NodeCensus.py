@@ -3,11 +3,12 @@ import typing
 import pathlib
 import re
 
+dude, why not just do this in GD script?
 
 kNodePrefix = "[node name=\""
 kNodeNameRegex = "/(?<=node name=\").*(?=\" type)/gm"
 kNodeParentRegex = "/(?<=parent=\").*(?=\"])/gm"
-
+gNodeSet = set()
 
 def IsSceneFile(file: str):
    extension = pathlib.Path(file).suffix
@@ -17,8 +18,23 @@ def IsSceneFile(file: str):
 def LineContainsNode(line : str):
    return line.startswith(kNodePrefix)
 
-def GetNodeName(line : str)
+
+def GetNodeName(line : str):
+   """ TODO: Search for thing """
    name = re.search()
+
+
+
+
+
+def GetNodePath(line: str):
+   cleanLine = line.strip()
+   cleanLine = line.strip("[node ")
+   cleanLine = line.strip("]")
+   tokens = cleanLine.split()
+
+
+
 
 def ProcessSceneFile(filePath: str):
    file = open(filePath, "r")
@@ -28,6 +44,8 @@ def ProcessSceneFile(filePath: str):
    for line in lines:
       if not LineContainsNode(line):
         continue
+
+      gNodeSet.add(GetNodePath(line))
 
 
 def ProcessFile(file: str):

@@ -13,6 +13,13 @@
       "commandLineArgs": "--path . --verbose res://scenes/SimpleCollider.tscn",
       "workingDirectory": ".",
       "nativeDebugging": true
+    },
+    "UnitTests": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Godot_v4.1.1-stable_mono_win64\\Godot_v4.1.1-stable_mono_win64.exe",
+      "commandLineArgs": "--path . --verbose res://testScenes/UnitTestScene.tscn",
+      "workingDirectory": ".",
+      "nativeDebugging": true
     }
   }
 }

@@ -15,13 +15,13 @@ namespace GameManagerStates
     public ActionCalculations()
     {
       canPerform = false;
-      useModifier = 0;
       targetPoint = Vector3.Inf;
+      paramters = new SkillCheck.Paramters();
     }
 
-    public bool canPerform;        // Attacker has LoS, is in melee range, has an action available, has ammo, etc.
-    public int useModifier;       // Positive or negative value to add to change the difficulty of the skill check
-    public Vector3 targetPoint;   // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
+    public bool canPerform;                   // Attacker has LoS, is in melee range, has an action available, has ammo, etc.
+    public Vector3 targetPoint;               // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
+    public SkillCheck.Paramters paramters;    // Skill check 
   }
 
   public class ActionPlan

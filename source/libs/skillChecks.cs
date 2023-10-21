@@ -5,20 +5,33 @@ public static class SkillCheck
 {
   public struct Paramters
   {
-    public uint useRating;
+    public int useRating;
     public int useModifiers;
-    public uint skillDie;
+    public int skillDie;
   }
+
+  private static RandomNumberGenerator m_dieRoller = new RandomNumberGenerator();
 
   // All skill checks can fail on a roll of 1, so the use rating MUST reflect that.
   // Also, since skill check passes if the roll is equal or higher, the hard floor
   // for use ratings is 2.
   private const int kUseRatingFloor = 2;
 
-  public static bool DoCheck(Paramters parameters)
+  public static bool Do(Paramters parameters)
   {
     SanitizeParameters(ref parameters);
-    return true;
+    int roll = m_dieRoller.RandiRange(1, parameters.skillDie);
+
+    // There is ALWAYS a chance to fail
+    if (roll == 1)
+      return false;
+
+    // There is ALWAYS a chance to succeed
+    if (roll == parameters.skillDie)
+      return true;
+
+    int modifiedRoll = roll + parameters.useModifiers;
+    return modifiedRoll >= parameters.useRating;
   }
 
   private static void SanitizeParameters(ref Paramters pms)

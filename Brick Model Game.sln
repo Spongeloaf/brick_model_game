@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brick Model Game", "Brick Model Game.csproj", "{79518C77-4BA1-4DF4-80D6-0C5153E30A2C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Brick Model Game", "Brick Model Game.csproj", "{FA23AD25-B194-4863-8915-B7DAAE6F1723}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{79518C77-4BA1-4DF4-80D6-0C5153E30A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{79518C77-4BA1-4DF4-80D6-0C5153E30A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{79518C77-4BA1-4DF4-80D6-0C5153E30A2C}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{79518C77-4BA1-4DF4-80D6-0C5153E30A2C}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{79518C77-4BA1-4DF4-80D6-0C5153E30A2C}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{79518C77-4BA1-4DF4-80D6-0C5153E30A2C}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{FA23AD25-B194-4863-8915-B7DAAE6F1723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA23AD25-B194-4863-8915-B7DAAE6F1723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA23AD25-B194-4863-8915-B7DAAE6F1723}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{FA23AD25-B194-4863-8915-B7DAAE6F1723}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{FA23AD25-B194-4863-8915-B7DAAE6F1723}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{FA23AD25-B194-4863-8915-B7DAAE6F1723}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
 	EndGlobalSection
 EndGlobal
