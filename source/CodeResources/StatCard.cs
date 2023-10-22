@@ -12,7 +12,7 @@ public struct Weapon
   private const uint defaultUseRating = 3;
   private const WeaponTypes defaultWeaponTypes = WeaponTypes.melee;
   private const string defaultRangedProjectile = "res://source/equipment/basicProjectile.tscn";
-  private const float defaultProjectileSpeed = 5f;
+  private const float defaultProjectileSpeed = 30f;
 
   public Weapon() { }
 

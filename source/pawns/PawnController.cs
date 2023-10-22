@@ -136,10 +136,8 @@ public partial class PawnController : RigidBody3D
 
     Vector3 newPosition = GlobalPosition;
     newPosition.Y += 1;
-    Array<Rid> exclusions = new Array<Rid>();
-    exclusions.Add(GetRid());
-
-    RaycastHit3D hit = NavigationUtils.DoRaycastInDirection(
+    Rid[] exclusions = { GetRid() };
+    RaycastHit3D hit = GameWorldUtils.DoRaycastInDirection(
       GetWorld3D(), newPosition, Vector3.Down, m_snapToGroundDistance, exclusions);
 
     if (hit.position == Vector3.Inf)

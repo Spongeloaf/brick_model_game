@@ -17,13 +17,12 @@ public static class AnimationUtils
     if (player == null)
       return null;
 
-    ActionCalculations calcs = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target, plan.actor.GetWorld3D());
     StatCard statCard = plan.actor.GetStatCard();
     Animation animation = new Animation();
     
     // after this point we have enough to at least let an empty animation play, which is better than returrning null;
     Vector3 attackOrigin = PawnUtils.Combat.GetRangedAttackOriginPoint(plan.actor);
-    animation.Length = PawnUtils.Combat.GetProjectileDirectFlightTime(attackOrigin, calcs.targetPoint, statCard.weapon.projectileSpeed);
+    animation.Length = PawnUtils.Combat.GetProjectileDirectFlightTime(attackOrigin, plan.calculations.impactPoint, statCard.weapon.projectileSpeed);
 
     PackedScene projectileScene = ResourceLoader.Load<PackedScene>(statCard.weapon.projectileScene);
     Node3D projectile = projectileScene.Instantiate<Node3D>();
@@ -37,15 +36,15 @@ public static class AnimationUtils
     parent.AddChild(player);
     player.Name = "AttackAnimationPlayer";
     projectile.GlobalPosition = attackOrigin;
-    projectile.LookAt(calcs.targetPoint);
+    projectile.LookAt(plan.calculations.impactPoint);
     string pathProjectile = player.Name + "/" + projectile.Name + ":global_position";
 
     int trackIndex = animation.AddTrack(Animation.TrackType.Position3D);
     animation.TrackSetPath(trackIndex, pathProjectile);
     animation.TrackInsertKey(trackIndex, 0.0f, attackOrigin);
-    animation.TrackInsertKey(trackIndex, animation.Length, calcs.targetPoint);
+    animation.TrackInsertKey(trackIndex, animation.Length, plan.calculations.impactPoint);
     string animName = Time.GetTimeStringFromSystem();
-    animName.Replace(':', '_');
+    animName = animName.Replace(':', '_');
 
     Error err = m_Library.AddAnimation(animName, animation);
     if (err != Error.Ok)

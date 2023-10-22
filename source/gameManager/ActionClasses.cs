@@ -15,13 +15,15 @@ namespace GameManagerStates
     public ActionCalculations()
     {
       canPerform = false;
-      targetPoint = Vector3.Inf;
-      paramters = new SkillCheck.Paramters();
+      impactPoint = Vector3.Inf;
+      shotOrigin = Vector3.Inf;
+      skillCheck = new SkillCheck.Paramters();
     }
 
     public bool canPerform;                   // Attacker has LoS, is in melee range, has an action available, has ammo, etc.
-    public Vector3 targetPoint;               // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
-    public SkillCheck.Paramters paramters;    // Skill check 
+    public Vector3 impactPoint;               // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
+    public Vector3 shotOrigin;                // Position from which the projectile will spawn (if the attack uses a projectile)
+    public SkillCheck.Paramters skillCheck;   // Skill check 
   }
 
   public class ActionPlan
@@ -31,11 +33,14 @@ namespace GameManagerStates
       returnCode = PlanReturnCode.idle;
     }
 
+    // Please consider moving the calculations out of this class.
+    // None of these calcs should ever be run outside of an executor.
+    // The "Can perform" flag should be moved into the ActionPlan.
     public ActionCalculations calculations;
     public PlanReturnCode returnCode;
     public PawnController actor;
     public PawnController target;
-    public Vector3 targetPoint;
+    public Vector3 cursorPoint;
     public PawnAction pawnAction;
     public Vector3[] path;
   }

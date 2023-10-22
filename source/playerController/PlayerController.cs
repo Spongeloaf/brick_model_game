@@ -55,6 +55,6 @@ public partial class PlayerController : Node
     var spaceState = m_camera.GetWorld3D().DirectSpaceState;
     var query = PhysicsRayQueryParameters3D.Create(from, to);
     Dictionary result = spaceState.IntersectRay(query);
-    return NavigationUtils.ConstructRaycastHit3D(result);
+    return GameWorldUtils.ConstructRaycastHit3D(result);
   }
 }

@@ -1,7 +1,7 @@
 using GameManagerStates;
 using Godot;
 using System;
-using System.Numerics;
+using System.Linq;
 
 public class PlannerAttack : IActionPlanner
 {
@@ -112,8 +112,26 @@ public class ExecutorAttack : IActionExecutor
     if (m_plan == null || m_parent == null)
       GD.PrintErr("WARNING: ExecutorAttack got a null action plan or parent!");
 
-    bool success = SkillCheck.Do(plan.calculations.paramters);
-    // what now?
+    m_plan.calculations = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target, plan.actor.GetWorld3D());
+    bool success = false;
+    //bool success = SkillCheck.Do(plan.calculations.skillCheck);
+    if (!success)
+    {
+      Vector3 missPoint = PawnUtils.Combat.GetMissedShotPoint(plan.target, plan.calculations.shotOrigin);
+      Vector3 shotDirection = missPoint - plan.calculations.shotOrigin;
+      Rid[] excludeSelf = { plan.actor.GetRid() };
+      
+      // We take the miss offset point and raycast it into the world to see what actually gets hit.
+      RaycastHit3D hit = GameWorldUtils.DoRaycastInDirection(
+        plan.actor.GetWorld3D(),
+        plan.calculations.shotOrigin,
+        shotDirection,
+        Globals.projectileMaxDistance,
+        excludeSelf);
+
+      // At some point in the future, we should see if we hit another pawn instead.
+      m_plan.calculations.impactPoint = hit.position;
+    }
 
     m_player = AnimationUtils.CreateRangedAttackAnimation(m_plan, m_parent);
   }
@@ -139,7 +157,7 @@ internal static class _Utils
     else if (actorStatCard.skillBonus < 0)
       die += " " + actorStatCard.skillBonus;
 
-    return PawnUtils.Combat.GetSkillCheckString((int)actorStatCard.weapon.useRating, calculations.useModifier, die);
+    return PawnUtils.Combat.GetSkillCheckString((int)actorStatCard.weapon.useRating, calculations.skillCheck.useRating, die);
   }
 
 }

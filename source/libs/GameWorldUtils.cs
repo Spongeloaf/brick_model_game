@@ -18,11 +18,12 @@ public struct RaycastHit3D
 
 
 // Put stuff here until you find a better place for it
-public static class NavigationUtils 
+public static class GameWorldUtils 
 {
   public static RaycastHit3D ConstructRaycastHit3D(Dictionary raycastDict)
   {
     RaycastHit3D hit = new RaycastHit3D();
+    hit.position = Vector3.Inf;
 
     // We return on a count of less than 6 because metadata is not always present
     if (raycastDict == null || raycastDict.Count < 6)
@@ -55,13 +56,23 @@ public static class NavigationUtils
   }
 
   public static RaycastHit3D DoRaycastInDirection(World3D world, Vector3 from, Vector3 direction, 
-                                       float limit = Mathf.Inf, Array<Rid> excludes = null, uint collision_mask = 4294967295)
+                                       float length = Mathf.Inf, Rid[] excludes = null, uint collision_mask = 4294967295)
   {
     direction = direction.Normalized();
-    Vector3 to = from + direction * limit;
-    var query = PhysicsRayQueryParameters3D.Create(from, to, collision_mask, excludes);
+    Vector3 to = from + direction * length;
+    Array<Rid> excludes_array = new Array<Rid>();
+    foreach (Rid id in excludes)
+      excludes_array.Add(id);
+    var query = PhysicsRayQueryParameters3D.Create(from, to, collision_mask, excludes_array);
+    query.CollideWithAreas = true;
     Dictionary result = world.DirectSpaceState.IntersectRay(query);
-    return ConstructRaycastHit3D(result);
+    RaycastHit3D hit = ConstructRaycastHit3D(result);
+
+    // Always return the point limited to 'length' argument
+    if (hit.position == Vector3.Inf)
+      hit.position = to;
+
+    return hit;
   }
 
   public static RaycastHit3D DoRaycastPointToPoint(World3D world, Vector3 from, Vector3 to,

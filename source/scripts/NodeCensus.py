@@ -3,7 +3,16 @@ import typing
 import pathlib
 import re
 
-dude, why not just do this in GD script?
+# dude, why not just do this in GD script?
+# because I hate GD script. There's no way to do it that doesn't involve
+# strange get_node() functions that never return what I expect.
+# Plus doing it outside GDscript means we don't have to instaniate scenes
+# Also the IDE and debugger for python is just better than GDscript in
+# the godot editor or in VSCode.
+
+# I'm a curmudgeon. Make it yourself in GD script if you feel that stroingly about it.
+
+# To continue work on this: Just download that python tree lib and go for it.
 
 kNodePrefix = "[node name=\""
 kNodeNameRegex = "/(?<=node name=\").*(?=\" type)/gm"

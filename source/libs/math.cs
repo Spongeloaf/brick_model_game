@@ -152,4 +152,21 @@ public static class Math
 
     return result.ToArray();
   }
+
+  public static Vector3 GetCentroidPoint(List<Vector3> points)
+  {
+    return GetCentroidPoint(points.ToArray());
+  }
+
+  public static Vector3 GetCentroidPoint(in Vector3[] points)
+  {
+    Vector3 result = Vector3.Zero;
+    if (points == null || points.Length == 0)
+      return result;
+
+    foreach (Vector3 point in points)
+      result += point;
+
+    return result / points.Length;
+  }
 }

@@ -76,7 +76,7 @@ namespace GameManagerStates
 
       m_ActionPlan = plan;
       m_ActionPlan.actor.StartNavigation(m_ActionPlan.path.Last());
-      ulong millisecondsToMove = NavigationUtils.CalculateMoveTimeInMsec(plan);
+      ulong millisecondsToMove = GameWorldUtils.CalculateMoveTimeInMsec(plan);
       
       // In case the pawn gets stuck while moving, we set the timeout for however long
       // we think the move will take, plus a standard padding amount.
