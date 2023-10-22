@@ -24,6 +24,22 @@ public static class PawnUtils
     return collider.GetParent<PawnController>();
   }
 
+  public static PawnController GetPawnAtRaycastHit2(in RaycastHit3D hit)
+  {
+    if (hit.collider == null)
+      return null;
+
+    Type objType = hit.collider.GetType();
+    if (objType == typeof(PawnController))
+      return (PawnController)hit.collider;
+
+    if (objType != typeof(CollisionShape3D))
+      return null;
+
+    CollisionShape3D collider = (CollisionShape3D)hit.collider;
+    return collider.GetParent<PawnController>();
+  }
+
   public static class Decoration
   {
     private static PackedScene m_labelTemplate = ResourceLoader.Load<PackedScene>("res://source/pawns/decorators/TextLabel.tscn");

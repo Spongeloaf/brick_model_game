@@ -80,6 +80,7 @@ public class ExecutorAttack : IActionExecutor
   ActionPlan m_plan;
   AnimationPlayer m_player;
   Node m_parent;
+  bool m_attack_success;
 
   public void Cleanup()
   {
@@ -102,6 +103,9 @@ public class ExecutorAttack : IActionExecutor
     if (m_player.IsPlaying())
       return ExecutorReturnCode.running;
 
+    if (m_plan.target != null && m_attack_success)
+      m_plan.target.QueueFree();
+
     return ExecutorReturnCode.finished;
   }
 
@@ -113,9 +117,9 @@ public class ExecutorAttack : IActionExecutor
       GD.PrintErr("WARNING: ExecutorAttack got a null action plan or parent!");
 
     ActionCalculations m_calculations = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target);
-    bool success = false;
-    //bool success = SkillCheck.Do(plan.calculations.skillCheck);
-    if (!success)
+    m_attack_success = SkillCheck.Do(plan.calculations.skillCheck);
+    m_attack_success = true;
+    if (!m_attack_success)
       CalculateMissedShot();
 
     // I hate that we pass in a parent node, and still have to return a value.
@@ -135,6 +139,14 @@ public class ExecutorAttack : IActionExecutor
       shotDirection,
       Globals.projectileMaxDistance,
       excludeSelf);
+
+    // Figure out if we hit another pawn instead
+    PawnController pawn = PawnUtils.GetPawnAtRaycastHit2(hit);
+    if (pawn != null)
+    {
+      m_attack_success = true;
+      m_plan.target = pawn;
+    }
 
     // At some point in the future, we should see if we hit another pawn instead.
     m_plan.calculations.impactPoint = hit.position;

@@ -8,6 +8,7 @@ using System.Linq;
 [GlobalClass, Icon("res://source/pawn/pawn.svg")]
 public partial class PawnController : RigidBody3D
 {
+  // The number variables in this class should get moved into stat cards or global values
   [Export] private float m_snapToGroundDistance = 5.0f;
   [Export] public StatCard m_statCard;
   [Export] public bool m_useAvoidance = true;

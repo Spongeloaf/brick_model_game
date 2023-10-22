@@ -9,7 +9,7 @@
 [node name="sceneRoot" type="Node3D"]
 
 [node name="PlayerController" parent="." instance=ExtResource("3_op8u5")]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 2.26154, 3.05106, -2.98952)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 2.26582, 3.05106, -2.99251)
 
 [node name="GameManager" parent="." instance=ExtResource("4_4b0aq")]
 
@@ -38,35 +38,264 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.01757, 1.86821, -12.9988)
 mass = 50.0
 
 [node name="PawnController5" parent="GameManager" instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0549041, 1.86821, -11.2851)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.409218, 1.86821, 5.77245)
 mass = 50.0
 
 [node name="PawnController6" parent="GameManager" instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0411803, 1.86821, -14.4469)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.422942, 1.86821, 2.61065)
 mass = 50.0
 
 [node name="PawnController7" parent="GameManager" instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0549041, 1.86821, -12.8604)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.409218, 1.86821, 4.19715)
 mass = 50.0
 
 [node name="PawnController8" parent="GameManager" instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0911075, 1.86821, -12.1035)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.373015, 1.86821, 4.95405)
 mass = 50.0
 
 [node name="PawnController" parent="GameManager" instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00900542, 1.86821, -13.6301)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.455117, 1.86821, 3.42745)
 mass = 50.0
 
 [node name="PawnController9" parent="GameManager" instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0411803, 1.86821, -15.2526)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.422942, 1.86821, 1.80495)
 mass = 50.0
 
 [node name="PawnController10" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.117862, 1.86821, -3.83377)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.71202, 1.86821, 4.10318)
 mass = 50.0
+angular_damp = 0.0
 m_statCard = NodePath("../PawnController2/StatCard")
 
 [node name="PawnController11" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.77366, 3.32959, -3.83377)
 mass = 50.0
+m_statCard = NodePath("../PawnController2/StatCard")
+
+[node name="PawnController12" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.849516, 1.86821, 6.14852)
+mass = 50.0
+m_statCard = NodePath("../PawnController5/StatCard")
+
+[node name="PawnController13" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.86324, 1.86821, 2.98672)
+mass = 50.0
+m_statCard = NodePath("../PawnController6/StatCard")
+
+[node name="PawnController14" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.849516, 1.86821, 4.57322)
+mass = 50.0
+m_statCard = NodePath("../PawnController7/StatCard")
+
+[node name="PawnController15" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.813312, 1.86821, 5.33012)
+mass = 50.0
+m_statCard = NodePath("../PawnController8/StatCard")
+
+[node name="PawnController16" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.895414, 1.86821, 3.80352)
+mass = 50.0
+m_statCard = NodePath("../PawnController/StatCard")
+
+[node name="PawnController17" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.86324, 1.86821, 2.18102)
+mass = 50.0
+m_statCard = NodePath("../PawnController9/StatCard")
+
+[node name="PawnController18" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.48335, 2.72556, 5.76032)
+mass = 50.0
+m_statCard = NodePath("../PawnController5/StatCard")
+
+[node name="PawnController19" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.49707, 2.72556, 2.59852)
+mass = 50.0
+m_statCard = NodePath("../PawnController6/StatCard")
+
+[node name="PawnController20" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.48335, 2.72556, 4.18502)
+mass = 50.0
+m_statCard = NodePath("../PawnController7/StatCard")
+
+[node name="PawnController21" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.44714, 2.72556, 4.94192)
+mass = 50.0
+m_statCard = NodePath("../PawnController8/StatCard")
+
+[node name="PawnController22" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.52925, 2.72556, 3.41532)
+mass = 50.0
+m_statCard = NodePath("../PawnController/StatCard")
+
+[node name="PawnController23" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.49707, 2.72556, 1.79282)
+mass = 50.0
+m_statCard = NodePath("../PawnController9/StatCard")
+
+[node name="PawnController24" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.92365, 2.72556, 6.13639)
+mass = 50.0
+m_statCard = NodePath("../PawnController5/StatCard")
+
+[node name="PawnController25" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.93737, 2.72556, 2.97459)
+mass = 50.0
+m_statCard = NodePath("../PawnController6/StatCard")
+
+[node name="PawnController26" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.92365, 2.72556, 4.56109)
+mass = 50.0
+m_statCard = NodePath("../PawnController7/StatCard")
+
+[node name="PawnController27" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.88744, 2.72556, 5.31799)
+mass = 50.0
+m_statCard = NodePath("../PawnController8/StatCard")
+
+[node name="PawnController28" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.96954, 2.72556, 3.79139)
+mass = 50.0
+m_statCard = NodePath("../PawnController/StatCard")
+
+[node name="PawnController29" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.93737, 2.72556, 2.16889)
+mass = 50.0
+m_statCard = NodePath("../PawnController9/StatCard")
+
+[node name="PawnController30" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.18154, 2.72222, 5.77245)
+mass = 50.0
+m_statCard = NodePath("../PawnController5/StatCard")
+
+[node name="PawnController31" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19527, 2.72222, 2.61065)
+mass = 50.0
+m_statCard = NodePath("../PawnController6/StatCard")
+
+[node name="PawnController32" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.18154, 2.72222, 4.19715)
+mass = 50.0
+m_statCard = NodePath("../PawnController7/StatCard")
+
+[node name="PawnController33" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.14534, 2.72222, 4.95405)
+mass = 50.0
+m_statCard = NodePath("../PawnController8/StatCard")
+
+[node name="PawnController34" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.22744, 2.72222, 3.42745)
+mass = 50.0
+m_statCard = NodePath("../PawnController/StatCard")
+
+[node name="PawnController35" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.19527, 2.72222, 1.80495)
+mass = 50.0
+m_statCard = NodePath("../PawnController9/StatCard")
+
+[node name="PawnController36" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.62184, 2.72222, 6.14852)
+mass = 50.0
+m_statCard = NodePath("../PawnController5/StatCard")
+
+[node name="PawnController37" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.63556, 2.72222, 2.98672)
+mass = 50.0
+m_statCard = NodePath("../PawnController6/StatCard")
+
+[node name="PawnController38" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.62184, 2.72222, 4.57322)
+mass = 50.0
+m_statCard = NodePath("../PawnController7/StatCard")
+
+[node name="PawnController39" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.58564, 2.72222, 5.33012)
+mass = 50.0
+m_statCard = NodePath("../PawnController8/StatCard")
+
+[node name="PawnController40" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.66774, 2.72222, 3.80352)
+mass = 50.0
+m_statCard = NodePath("../PawnController/StatCard")
+
+[node name="PawnController41" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.63556, 2.72222, 2.18102)
+mass = 50.0
+m_statCard = NodePath("../PawnController9/StatCard")
+
+[node name="PawnController42" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.25567, 3.57957, 5.76032)
+mass = 50.0
+m_statCard = NodePath("../PawnController5/StatCard")
+
+[node name="PawnController43" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2694, 3.57957, 2.59852)
+mass = 50.0
+m_statCard = NodePath("../PawnController6/StatCard")
+
+[node name="PawnController44" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.25567, 3.57957, 4.18502)
+mass = 50.0
+m_statCard = NodePath("../PawnController7/StatCard")
+
+[node name="PawnController45" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.21947, 3.57957, 4.94192)
+mass = 50.0
+m_statCard = NodePath("../PawnController8/StatCard")
+
+[node name="PawnController46" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.30157, 3.57957, 3.41532)
+mass = 50.0
+m_statCard = NodePath("../PawnController/StatCard")
+
+[node name="PawnController47" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2694, 3.57957, 1.79282)
+mass = 50.0
+m_statCard = NodePath("../PawnController9/StatCard")
+
+[node name="PawnController48" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.69597, 3.57957, 6.13639)
+mass = 50.0
+m_statCard = NodePath("../PawnController5/StatCard")
+
+[node name="PawnController49" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.70969, 3.57957, 2.97459)
+mass = 50.0
+m_statCard = NodePath("../PawnController6/StatCard")
+
+[node name="PawnController50" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.69597, 3.57957, 4.56109)
+mass = 50.0
+m_statCard = NodePath("../PawnController7/StatCard")
+
+[node name="PawnController51" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.65977, 3.57957, 5.31799)
+mass = 50.0
+m_statCard = NodePath("../PawnController8/StatCard")
+
+[node name="PawnController52" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.74187, 3.57957, 3.79139)
+mass = 50.0
+m_statCard = NodePath("../PawnController/StatCard")
+
+[node name="PawnController53" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.70969, 3.57957, 2.16889)
+mass = 50.0
+m_statCard = NodePath("../PawnController9/StatCard")
+
+[node name="PawnController54" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.71202, 1.86821, -4.54392)
+mass = 50.0
+angular_damp = 0.0
+m_statCard = NodePath("../PawnController2/StatCard")
+
+[node name="PawnController55" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.191907, 1.86821, -4.54392)
+mass = 50.0
+angular_damp = 0.0
+m_statCard = NodePath("../PawnController2/StatCard")
+
+[node name="PawnController56" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.191907, 1.86821, -6.00715)
+mass = 50.0
+angular_damp = 0.0
 m_statCard = NodePath("../PawnController2/StatCard")

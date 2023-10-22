@@ -1,7 +1,5 @@
 using GameManagerStates;
 using Godot;
-using System;
-using static Godot.Projection;
 
 public static class AnimationUtils
 {
@@ -18,12 +16,8 @@ public static class AnimationUtils
       return null;
 
     StatCard statCard = plan.actor.GetStatCard();
-    Animation animation = new Animation();
     
     // after this point we have enough to at least let an empty animation play, which is better than returrning null;
-    Vector3 attackOrigin = PawnUtils.Combat.GetRangedAttackOriginPoint(plan.actor);
-    animation.Length = PawnUtils.Combat.GetProjectileDirectFlightTime(attackOrigin, plan.calculations.impactPoint, statCard.weapon.projectileSpeed);
-
     PackedScene projectileScene = ResourceLoader.Load<PackedScene>(statCard.weapon.projectileScene);
     Node3D projectile = projectileScene.Instantiate<Node3D>();
     if (projectile == null) 
@@ -35,23 +29,20 @@ public static class AnimationUtils
     player.AddChild(projectile);
     parent.AddChild(player);
     player.Name = "AttackAnimationPlayer";
-    projectile.GlobalPosition = attackOrigin;
+    projectile.GlobalPosition = plan.calculations.shotOrigin;
     projectile.LookAt(plan.calculations.impactPoint);
-    string pathProjectile = player.Name + "/" + projectile.Name + ":global_position";
 
-    int trackIndex = animation.AddTrack(Animation.TrackType.Position3D);
-    animation.TrackSetPath(trackIndex, pathProjectile);
-    animation.TrackInsertKey(trackIndex, 0.0f, attackOrigin);
-    animation.TrackInsertKey(trackIndex, animation.Length, plan.calculations.impactPoint);
-    string animName = Time.GetTimeStringFromSystem();
-    animName = animName.Replace(':', '_');
+    Animation animation = new Animation();
+    ComposeTracks(animation, plan, projectile);
 
+    string animName = "fire";
     Error err = m_Library.AddAnimation(animName, animation);
     if (err != Error.Ok)
     {
       GD.PrintErr("Failed to add animation to library!");
       return player;
     }
+
 
     err = player.AddAnimationLibrary(ProgrammaticAnimations, m_Library);
     if (err != Error.Ok)
@@ -62,6 +53,33 @@ public static class AnimationUtils
 
     player.Play(ProgrammaticAnimations + "/" + animName);
     return player;
+  }
+
+  private static void ComposeTracks(Animation animation, ActionPlan plan, Node3D projectile)
+  {
+    StatCard statCard = plan.actor.GetStatCard();
+    float poseLength = CalculatePawnRotationTime(plan.actor, plan.calculations.impactPoint);
+    Transform3D actorPoseTfm = plan.actor.Transform.LookingAt(plan.calculations.impactPoint, Vector3.Up);
+
+    // These paths connect the animation tracks to the node in the scene tree
+    string pathProjectile = projectile.GetPath() + ":global_position";
+    string pathActor = plan.actor.GetPath() + ":rotation";
+
+    int trackIndex = animation.AddTrack(Animation.TrackType.Rotation3D);
+    animation.TrackSetPath(trackIndex, pathActor);
+    animation.TrackInsertKey(trackIndex, 0.0f, plan.actor.Transform.Basis.GetRotationQuaternion());
+    animation.TrackInsertKey(trackIndex, poseLength, actorPoseTfm.Basis.GetRotationQuaternion());
+
+    float shotTime = PawnUtils.Combat.GetProjectileDirectFlightTime(
+      plan.calculations.shotOrigin,
+      plan.calculations.impactPoint,
+      statCard.weapon.projectileSpeed);
+
+    trackIndex = animation.AddTrack(Animation.TrackType.Position3D);
+    animation.TrackSetPath(trackIndex, pathProjectile);
+    animation.TrackInsertKey(trackIndex, poseLength, plan.calculations.shotOrigin);
+    animation.TrackInsertKey(trackIndex, poseLength + shotTime, plan.calculations.impactPoint);
+    animation.Length = poseLength + shotTime;
   }
 
   private static AnimationPlayer CreatePlayerIfArgumentsAreSane(ActionPlan plan, Node parent)
@@ -100,5 +118,30 @@ public static class AnimationUtils
     // turn to face point
 
     return player;
+  }
+
+  private static float CalculatePawnRotationTime(PawnController pawn, Vector3 target)
+  {
+    //Transform3D destinationTfm = pawnTfm.LookingAt(target, Vector3.Up);
+    //Quaternion sourceQuat = pawnTfm.Basis.GetRotationQuaternion();
+    //Quaternion destQuat = destinationTfm.Basis.GetRotationQuaternion();
+    //float angle = destQuat.AngleTo(sourceQuat);
+    Transform3D inFrontofPawn = pawn.Transform.Translated(Vector3.Back);
+    Vector3 inFrontOfPawn = inFrontofPawn.Origin;
+    
+    // We only want to rotate the pawn on the Y axis, so we need to eliminate
+    // Y coordinate differences in the math.
+    inFrontOfPawn.Y = pawn.GlobalPosition.Y;
+    target.Y = pawn.GlobalPosition.Y;
+    
+    Vector3 pawnFacing = pawn.GlobalPosition.DirectionTo(inFrontOfPawn);
+
+
+    Vector3 lookingAtTarget = pawn.GlobalPosition.DirectionTo(target);
+    float radians = lookingAtTarget.AngleTo(pawnFacing);
+
+
+    float time = radians / Globals.m_pawnRotationSpeed;
+    return time;
   }
 }

@@ -169,4 +169,5 @@ public static class Math
 
     return result / points.Length;
   }
+
 }

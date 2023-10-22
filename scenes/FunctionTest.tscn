@@ -12,7 +12,7 @@ step = 0.01
 tracks/0/type = "position_3d"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("AnimationPlayer/basicProjectile")
+tracks/0/path = NodePath("basicProjectile")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = PackedFloat32Array(0, 1, -1.56712, 2.36198, 14.8768, 0.2, 1, 2.51899, 2.36198, 14.8768)
@@ -41,11 +41,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.79076, 1.71858, 14.8906)
 [node name="PawnController2" parent="MockGameMangaer" instance=ExtResource("2_24roe")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.69904, 1.67953, 14.8855)
 
+[node name="basicProjectile" parent="MockGameMangaer" instance=ExtResource("3_iaexb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.56712, 2.36198, 14.8768)
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="MockGameMangaer"]
 libraries = {
 "": SubResource("AnimationLibrary_7m1ds"),
 "ProgrammaticAnimations": SubResource("AnimationLibrary_nc8aj")
 }
-
-[node name="basicProjectile" parent="MockGameMangaer/AnimationPlayer" instance=ExtResource("3_iaexb")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.319582, 2.36198, 14.8768)

@@ -17,6 +17,8 @@ text = "😎"
 depth = 0.5
 
 [node name="PawnController" type="RigidBody3D" node_paths=PackedStringArray("m_statCard")]
+axis_lock_angular_x = true
+axis_lock_angular_z = true
 angular_damp = 100.0
 script = ExtResource("1_fbsm2")
 m_statCard = NodePath("StatCard")

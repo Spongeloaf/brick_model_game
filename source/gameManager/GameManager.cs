@@ -20,7 +20,7 @@ public partial class GameManager : Node3D
   private IActionExecutor m_Executor;
   private GameState m_GameState;
   private ScreenDecorator m_PathPainter;
-  private bool m_CHEAT_chainActions = true;
+  private bool m_CHEAT_chainActions = false;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
