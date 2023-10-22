@@ -40,7 +40,7 @@ mesh = SubResource("CapsuleMesh_g0uok")
 skeleton = NodePath("../../..")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="collider"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.220825, 0.266205)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.220825, -0.211748)
 mesh = SubResource("TextMesh_mg700")
 
 [node name="StatCard" type="Node" parent="."]

@@ -59,22 +59,26 @@ public static class AnimationUtils
   {
     StatCard statCard = plan.actor.GetStatCard();
     float poseLength = CalculatePawnRotationTime(plan.actor, plan.calculations.impactPoint);
-    Transform3D actorPoseTfm = plan.actor.Transform.LookingAt(plan.calculations.impactPoint, Vector3.Up);
-
+   
     // These paths connect the animation tracks to the node in the scene tree
     string pathProjectile = projectile.GetPath() + ":global_position";
     string pathActor = plan.actor.GetPath() + ":rotation";
+    Quaternion pawnPose = Math.LookingAt2D(plan.actor.Transform, plan.calculations.impactPoint);
 
+    // TODO: BUG: The rotation time estimator is off. I think it's not using the correct node rotation value.
+
+    // Pawn pose track. Rotates the pawn towards the target
     int trackIndex = animation.AddTrack(Animation.TrackType.Rotation3D);
     animation.TrackSetPath(trackIndex, pathActor);
     animation.TrackInsertKey(trackIndex, 0.0f, plan.actor.Transform.Basis.GetRotationQuaternion());
-    animation.TrackInsertKey(trackIndex, poseLength, actorPoseTfm.Basis.GetRotationQuaternion());
+    animation.TrackInsertKey(trackIndex, poseLength, pawnPose);
 
     float shotTime = PawnUtils.Combat.GetProjectileDirectFlightTime(
       plan.calculations.shotOrigin,
       plan.calculations.impactPoint,
       statCard.weapon.projectileSpeed);
-
+    
+    // Projectile track. Moves the projectile along from the origin point to the target point.
     trackIndex = animation.AddTrack(Animation.TrackType.Position3D);
     animation.TrackSetPath(trackIndex, pathProjectile);
     animation.TrackInsertKey(trackIndex, poseLength, plan.calculations.shotOrigin);
@@ -122,10 +126,6 @@ public static class AnimationUtils
 
   private static float CalculatePawnRotationTime(PawnController pawn, Vector3 target)
   {
-    //Transform3D destinationTfm = pawnTfm.LookingAt(target, Vector3.Up);
-    //Quaternion sourceQuat = pawnTfm.Basis.GetRotationQuaternion();
-    //Quaternion destQuat = destinationTfm.Basis.GetRotationQuaternion();
-    //float angle = destQuat.AngleTo(sourceQuat);
     Transform3D inFrontofPawn = pawn.Transform.Translated(Vector3.Back);
     Vector3 inFrontOfPawn = inFrontofPawn.Origin;
     
@@ -135,13 +135,17 @@ public static class AnimationUtils
     target.Y = pawn.GlobalPosition.Y;
     
     Vector3 pawnFacing = pawn.GlobalPosition.DirectionTo(inFrontOfPawn);
-
-
     Vector3 lookingAtTarget = pawn.GlobalPosition.DirectionTo(target);
     float radians = lookingAtTarget.AngleTo(pawnFacing);
-
-
     float time = radians / Globals.m_pawnRotationSpeed;
+
+    if (time > 0.8) 
+    {
+      int i = 0;
+    }
+
     return time;
   }
+
+
 }

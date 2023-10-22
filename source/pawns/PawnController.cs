@@ -76,7 +76,7 @@ public partial class PawnController : RigidBody3D
     float speed =m_statCard.moveSpeed * (float)delta;
     Vector3 expectedMovement = (nextWaypoint - currentPosition).Normalized() * speed;
     nextWaypoint.Y = GlobalPosition.Y;
-    LookAt(nextWaypoint, Vector3.Up, true);
+    LookAt(nextWaypoint, Vector3.Up);
 
     if (m_navAgent.AvoidanceEnabled)
       m_navAgent.Velocity = expectedMovement;

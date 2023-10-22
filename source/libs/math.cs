@@ -170,4 +170,11 @@ public static class Math
     return result / points.Length;
   }
 
+  // Returns a Quaternion that faces a point, but only rotates along the y axis to do so.
+  public static Quaternion LookingAt2D(Transform3D pawn, Vector3 target)
+  {
+    target.Y = pawn.Origin.Y;
+    Transform3D looking = pawn.LookingAt(target, Vector3.Up);
+    return looking.Basis.GetRotationQuaternion();
+  }
 }

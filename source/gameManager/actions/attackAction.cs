@@ -118,7 +118,7 @@ public class ExecutorAttack : IActionExecutor
 
     ActionCalculations m_calculations = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target);
     m_attack_success = SkillCheck.Do(plan.calculations.skillCheck);
-    m_attack_success = true;
+    //m_attack_success = true;
     if (!m_attack_success)
       CalculateMissedShot();
 
