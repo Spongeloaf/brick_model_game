@@ -130,7 +130,7 @@ public static class PawnUtils
     // Returns set of attack calculations that contains a bool flag for line of sight, and
     // a penalty value from 0 to -2, based on the proportion of/ the target array that is visible
     // from the sight point of the attacker.
-    public static ActionCalculations CalculateRangedAttack(PawnController actor, PawnController target, World3D world)
+    public static ActionCalculations CalculateRangedAttack(PawnController actor, PawnController target)
     {
       ActionCalculations result = new ActionCalculations();
       if (actor == null || target == null)
@@ -146,19 +146,10 @@ public static class PawnUtils
       List<Vector3> visiblePoints = new List<Vector3>();
       foreach (Vector3 point in targetArray)
       {
-        RaycastHit3D hit = GameWorldUtils.DoRaycastPointToPoint(world, sightPoint, point);
+        RaycastHit3D hit = GameWorldUtils.DoRaycastPointToPoint(actor.GetWorld3D(), sightPoint, point);
         if (hit.collider == target)
           visiblePoints.Add(point);
       }
-
-      if (visiblePoints.Count > 0)
-        result.canPerform = true;
-
-      if (visiblePoints.Count == 1)
-        result.skillCheck.useModifiers = 2;
-
-      if (visiblePoints.Count == 2)
-        result.skillCheck.useModifiers = 1;
 
       // If the enemy is not visible at all, use the centroid of their target points. That way,
       // even if we can't attack, any attempt to aim or point at the target will make sense because
@@ -170,7 +161,30 @@ public static class PawnUtils
       else
         result.impactPoint = Math.GetCentroidPoint(targetArray);
 
+      if (visiblePoints.Count > 0)
+        result.canPerform = true;
+
+      int modifier = 0;
+      if (visiblePoints.Count == 1)
+        modifier = 2;
+
+      else if (visiblePoints.Count == 2)
+        modifier = 1;
+
+      CalculateSkillCheckValues(actor, modifier, ref result.skillCheck);
       return result;
+    }
+
+    private static void CalculateSkillCheckValues(PawnController actor, int useModifier, ref SkillCheck.Parameters skill)
+    {
+      skill.useModifiers = useModifier;
+
+      StatCard statCard = actor.GetStatCard();
+      if (statCard == null) 
+        return;
+
+      skill.skillDie = (int)statCard.skillDie;
+      skill.useRating = (int)statCard.weapon.useRating;
     }
 
     public static Vector3 GetSightPoint(PawnController pawn)
@@ -189,19 +203,6 @@ public static class PawnUtils
     {
       // TODO: Make this find the barrel of the weapon
       return GetSightPoint(pawn);
-    }
-
-    public static string GetSkillCheckString(int useRating, int modifiers, string die)
-    {
-      string result = "Skill Check: " + useRating;
-      if (modifiers > 0)
-        result += " +" + modifiers;
-
-      else if (modifiers < 0)
-        result += " " + modifiers;
-
-      result += " on " + die;
-      return result;
     }
 
     // This function is basically a simple math operation (t = d / v), but it has sanity checking 
@@ -228,9 +229,6 @@ public static class PawnUtils
         result = time;
       else
         GD.PrintErr("GetProjectileDirectFlightTime() somehow got a negative result");
-
-      
-      
 
       return result;
     }

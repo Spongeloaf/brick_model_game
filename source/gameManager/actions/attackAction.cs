@@ -61,8 +61,8 @@ public class PlannerAttack : IActionPlanner
     if (m_currentTarget == null || actor == null)
       return;
 
-    m_plan.calculations = PawnUtils.Combat.CalculateRangedAttack(actor, target, actor.GetWorld3D());
-    string hitString = _Utils.CreateSkillString(actor, target, m_plan.calculations);
+    m_plan.calculations = PawnUtils.Combat.CalculateRangedAttack(actor, target);
+    string hitString = _Utils.CreateSkillCheckString(m_plan.calculations.skillCheck, m_plan.calculations.canPerform);
     PawnUtils.Decoration.SetOverheadText(m_currentTarget, hitString);
     PawnUtils.Decoration.SetHighlightRed(m_currentTarget);
     // GD.Print("TARGET SET");  // for debugging
@@ -76,6 +76,7 @@ public class PlannerAttack : IActionPlanner
 
 public class ExecutorAttack : IActionExecutor
 {
+  // Currently this only handles ranged attacks
   ActionPlan m_plan;
   AnimationPlayer m_player;
   Node m_parent;
@@ -90,7 +91,6 @@ public class ExecutorAttack : IActionExecutor
 
       m_player.QueueFree();
     }
-
     m_plan = null;
   }
 
@@ -112,52 +112,60 @@ public class ExecutorAttack : IActionExecutor
     if (m_plan == null || m_parent == null)
       GD.PrintErr("WARNING: ExecutorAttack got a null action plan or parent!");
 
-    m_plan.calculations = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target, plan.actor.GetWorld3D());
+    ActionCalculations m_calculations = PawnUtils.Combat.CalculateRangedAttack(plan.actor, plan.target);
     bool success = false;
     //bool success = SkillCheck.Do(plan.calculations.skillCheck);
     if (!success)
-    {
-      Vector3 missPoint = PawnUtils.Combat.GetMissedShotPoint(plan.target, plan.calculations.shotOrigin);
-      Vector3 shotDirection = missPoint - plan.calculations.shotOrigin;
-      Rid[] excludeSelf = { plan.actor.GetRid() };
-      
-      // We take the miss offset point and raycast it into the world to see what actually gets hit.
-      RaycastHit3D hit = GameWorldUtils.DoRaycastInDirection(
-        plan.actor.GetWorld3D(),
-        plan.calculations.shotOrigin,
-        shotDirection,
-        Globals.projectileMaxDistance,
-        excludeSelf);
+      CalculateMissedShot();
 
-      // At some point in the future, we should see if we hit another pawn instead.
-      m_plan.calculations.impactPoint = hit.position;
-    }
-
+    // I hate that we pass in a parent node, and still have to return a value.
     m_player = AnimationUtils.CreateRangedAttackAnimation(m_plan, m_parent);
+  }
+
+  private void CalculateMissedShot()
+  {
+    Vector3 missPoint = PawnUtils.Combat.GetMissedShotPoint(m_plan.target, m_plan.calculations.shotOrigin);
+    Vector3 shotDirection = missPoint - m_plan.calculations.shotOrigin;
+    Rid[] excludeSelf = { m_plan.actor.GetRid() };
+
+    // We take the miss offset point and raycast it into the world to see what actually gets hit.
+    RaycastHit3D hit = GameWorldUtils.DoRaycastInDirection(
+      m_plan.actor.GetWorld3D(),
+      m_plan.calculations.shotOrigin,
+      shotDirection,
+      Globals.projectileMaxDistance,
+      excludeSelf);
+
+    // At some point in the future, we should see if we hit another pawn instead.
+    m_plan.calculations.impactPoint = hit.position;
   }
 
 } // class ExecutorAttack
 
 internal static class _Utils
 {
-  public static string CreateSkillString(PawnController actor, PawnController target, ActionCalculations calculations)
+  public static string CreateSkillCheckString(SkillCheck.Parameters skillCheck, bool canPerform)
   {
-    if (actor == null || target == null)
-      return "ACTOR OR TARGET NULL!";
-  
-    if (calculations.canPerform == false)
+    if (canPerform == false)
       return "No line of sight!";
 
-    StatCard actorStatCard = actor.GetStatCard();
 
-    // TODO: figure out a better place and system for this.
-    string die = "1d" + actorStatCard.skillDie;
-    if (actorStatCard.skillBonus > 0)
-      die += " +" + actorStatCard.skillBonus;
-    else if (actorStatCard.skillBonus < 0)
-      die += " " + actorStatCard.skillBonus;
+    string result = "Skill Check: " + skillCheck.useRating;
+    if (skillCheck.useModifiers > 0)
+      result += " + " + skillCheck.useModifiers;
 
-    return PawnUtils.Combat.GetSkillCheckString((int)actorStatCard.weapon.useRating, calculations.skillCheck.useRating, die);
+    else if (skillCheck.useModifiers < 0)
+      result += " " + skillCheck.useModifiers;
+
+    string die = "1d" + skillCheck.skillDie;
+
+    // Currently not using skill die modifiers
+    //if (skillCheck.useModifiers > 0)
+    //  die += " + " + skillCheck.useModifiers;
+    //else if (skillCheck.useModifiers < 0)
+    //  die += " " + skillCheck.useModifiers;
+
+    result += " on " + die;
+    return result;
   }
-
 }

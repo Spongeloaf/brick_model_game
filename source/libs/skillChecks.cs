@@ -3,7 +3,7 @@ using System;
 
 public static class SkillCheck
 {
-  public struct Paramters
+  public struct Parameters
   {
     public int useRating;
     public int useModifiers;
@@ -17,7 +17,7 @@ public static class SkillCheck
   // for use ratings is 2.
   private const int kUseRatingFloor = 2;
 
-  public static bool Do(Paramters parameters)
+  public static bool Do(Parameters parameters)
   {
     SanitizeParameters(ref parameters);
     int roll = m_dieRoller.RandiRange(1, parameters.skillDie);
@@ -34,7 +34,7 @@ public static class SkillCheck
     return modifiedRoll >= parameters.useRating;
   }
 
-  private static void SanitizeParameters(ref Paramters pms)
+  private static void SanitizeParameters(ref Parameters pms)
   {
     // You cannot have fewer than two sides on a die.
     if (pms.skillDie < 2)
@@ -64,7 +64,7 @@ public static class SkillCheck
   private static void TestSkillCheckSanatization()
   {
     // This is just for debugger testing.
-    Paramters pm = new Paramters();
+    Parameters pm = new Parameters();
     pm.skillDie = 0;
     pm.useModifiers = 0;
     pm.skillDie = 0;
