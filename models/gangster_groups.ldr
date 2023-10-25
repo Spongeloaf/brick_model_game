@@ -1,9 +1,13 @@
-0 FILE gangster.io
-0 Untitled Model
-0 Name:  gangster
+0 FILE [minifig:"Gangster"].ldr
+0 
+0 Name: [minifig:"Gangster"].ldr
 0 Author: 
-0 CustomBrick
-0 NumOfBricks:  8
+1 16 0 -72 11 1 0 0 0 1 0 0 0 1 [head]
+1 16 23.5565 -30.838 1 0.985328 0.170671 0 -0.170671 0.985328 0 0 0 1 [arm:left]
+1 16 -23.6505 -30.7987 1.25 0.985495 -0.169703 0 0.169703 0.985495 0 0 0 1 [arm:right]
+1 7 0 0 0 1 0 0 0 1 0 0 0 1 [torso].ldr
+1 7 0 0 0 1 0 0 0 1 0 0 0 1 [legs].ldr
+1 7 4.7658 -16.2234 -26.7172 1 0 0 0 0.866025 -0.5 0 0.5 0.866025 [weapon:"Pistol"][type:ranged][size:small].ldr
 0 NOFILE
 0 FILE [head]
 0 [head]
@@ -21,7 +25,7 @@
 0 CustomBrick
 0 NumOfBricks:  2
 1 0 -2.4557 -33.1925 10 1 0 0 0 1 0 0 0 1 3819.dat
-1 14 2.5443 -14.1925 -0 0.985329 -0.170671 0.000001 0.120683 0.696732 -0.707107 0.120682 0.696732 0.707107 3820.dat
+1 14 2.5443 -14.1925 0 0.985329 -0.170671 0.000001 0.120683 0.696732 -0.707107 0.120682 0.696732 0.707107 3820.dat
 0 NOFILE
 0 FILE [arm:right]
 0 [arm:right]
@@ -49,15 +53,4 @@
 0 Name: [weapon:"Pistol"][type:ranged][size:small].ldr
 0 Author: 
 1 7 -30 -8 30 1 0 0 0 0.866025 -0.5 0 0.5 0.866025 30132.dat
-0 NOFILE
-0 FILE [minifig:"Gangster"].ldr
-0 
-0 Name: [minifig:"Gangster"].ldr
-0 Author: 
-1 16 0 -72 11 1 0 0 0 1 0 0 0 1 [head]
-1 16 23.5565 -30.838 1 0.985328 0.170671 0 -0.170671 0.985328 0 0 0 1 [arm:left]
-1 16 -23.6505 -30.7987 1.25 0.985495 -0.169703 0 0.169703 0.985495 0 0 0 1 [arm:right]
-1 7 0 0 0 1 0 0 0 1 0 0 0 1 [torso].ldr
-1 7 0 0 0 1 0 0 0 1 0 0 0 1 [legs].ldr
-1 7 4.7658 -16.2234 -26.7172 1 0 0 0 0.866025 -0.5 0 0.5 0.866025 [weapon:"Pistol"][type:ranged][size:small].ldr
 0 NOFILE

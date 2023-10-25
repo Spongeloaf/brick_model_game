@@ -43,7 +43,6 @@ public static class AnimationUtils
       return player;
     }
 
-
     err = player.AddAnimationLibrary(ProgrammaticAnimations, m_Library);
     if (err != Error.Ok)
     {
