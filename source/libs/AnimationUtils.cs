@@ -83,6 +83,13 @@ public static class AnimationUtils
     animation.TrackInsertKey(trackIndex, poseLength, plan.calculations.shotOrigin);
     animation.TrackInsertKey(trackIndex, poseLength + shotTime, plan.calculations.impactPoint);
     animation.Length = poseLength + shotTime;
+
+    // hide projectile until it's time to fire
+    trackIndex = animation.AddTrack(Animation.TrackType.Value);
+    animation.TrackSetPath(trackIndex, projectile.GetPath() + ":visible");
+    animation.TrackInsertKey(trackIndex, 0.0f, false);
+    animation.TrackInsertKey(trackIndex, poseLength, false);
+    animation.TrackInsertKey(trackIndex, poseLength + 0.01, true);
   }
 
   private static AnimationPlayer CreatePlayerIfArgumentsAreSane(ActionPlan plan, Node parent)
@@ -125,7 +132,7 @@ public static class AnimationUtils
 
   private static float CalculatePawnRotationTime(PawnController pawn, Vector3 target)
   {
-    Transform3D inFrontofPawn = pawn.Transform.Translated(Vector3.Back);
+    Transform3D inFrontofPawn = pawn.Transform.TranslatedLocal(Vector3.Forward);
     Vector3 inFrontOfPawn = inFrontofPawn.Origin;
     
     // We only want to rotate the pawn on the Y axis, so we need to eliminate

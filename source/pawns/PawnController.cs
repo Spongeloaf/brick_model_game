@@ -18,6 +18,8 @@ public partial class PawnController : RigidBody3D
   private NavigationObstacle3D m_obstacle;
   private CollisionShape3D m_collisionShape;
   private List<Node3D> m_targetPoints;
+  private AnimationPlayer m_animationPlayer;
+
   // Get the gravity from the project settings to be synced with RigidBody nodes.
   public float gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
@@ -48,6 +50,8 @@ public partial class PawnController : RigidBody3D
     {
       m_obstacle.AvoidanceEnabled = true;
     }
+
+    m_animationPlayer = GetNode<AnimationPlayer>("collider/gangster/AnimationPlayer");
   }
 
   public override void _PhysicsProcess(double delta)
@@ -102,6 +106,9 @@ public partial class PawnController : RigidBody3D
     
     if (m_obstacle != null)
       m_obstacle.AvoidanceEnabled = true;
+
+    if (m_animationPlayer != null)
+      m_animationPlayer.Stop();
   }
 
   public void StartNavigation(in Vector3 target)
@@ -128,6 +135,9 @@ public partial class PawnController : RigidBody3D
 
     if (m_obstacle != null)
       m_obstacle.AvoidanceEnabled = false;
+
+    if (m_animationPlayer != null)
+      m_animationPlayer.Play("Walk Cycle");
   }
 
   private void SnapMeshToGround()

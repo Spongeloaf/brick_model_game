@@ -1,20 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://g2yhawrsxocj"]
+[gd_scene load_steps=5 format=3 uid="uid://g2yhawrsxocj"]
 
 [ext_resource type="Script" path="res://source/pawns/PawnController.cs" id="1_fbsm2"]
-[ext_resource type="Material" uid="uid://cr1p64b4hnx8x" path="res://assets/materials/pawnMaterial.tres" id="2_xmans"]
+[ext_resource type="PackedScene" uid="uid://dpy2limacimkt" path="res://source/pawns/gangster.tscn" id="2_l3va8"]
 [ext_resource type="Script" path="res://source/CodeResources/StatCard.cs" id="3_r6y7r"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bkwio"]
 radius = 0.25
 height = 1.0
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_g0uok"]
-radius = 0.25
-height = 1.0
-
-[sub_resource type="TextMesh" id="TextMesh_mg700"]
-text = "😎"
-depth = 0.5
 
 [node name="PawnController" type="RigidBody3D" node_paths=PackedStringArray("m_statCard")]
 axis_lock_angular_x = true
@@ -30,17 +22,11 @@ debug_use_custom = true
 debug_path_custom_color = Color(1, 0, 1, 1)
 
 [node name="collider" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52445, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_bkwio")
 
-[node name="mesh" type="MeshInstance3D" parent="collider"]
-material_override = ExtResource("2_xmans")
-mesh = SubResource("CapsuleMesh_g0uok")
-skeleton = NodePath("../../..")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="collider"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.220825, -0.211748)
-mesh = SubResource("TextMesh_mg700")
+[node name="gangster" parent="collider" instance=ExtResource("2_l3va8")]
+transform = Transform3D(-20, 0, -1.74846e-06, 0, 20, 0, 1.74846e-06, 0, -20, 0, -0.5, 0)
 
 [node name="StatCard" type="Node" parent="."]
 script = ExtResource("3_r6y7r")
