@@ -12,10 +12,10 @@ namespace LDraw
   public partial class LDrawConfig : Resource
   {
     [Export] private string _BasePartsPath = "C:\\Program Files\\BricklinkStudio 2.0\\ldraw\\";
-    [Export] private string _ModelsPath;
-    [Export] private string _ColorConfigPath;
+    [Export] private string _ModelsPath= "res://models/";
     [Export] private string _MaterialsPath = "res://assets/generated/materials/";
-    [Export] private string _MeshesPath;
+    [Export] private string _MeshesPath = "res://assets/generated/meshes/";
+    [Export] private string _ColorConfigPath;
     [Export] private float _Scale;
     [Export] private BaseMaterial3D _DefaultOpaqueMaterial;
     [Export] private BaseMaterial3D _DefaultTransparentMaterial;
@@ -32,6 +32,11 @@ namespace LDraw
 
     private const string ConfigPath = "Assets/LDraw-Importer/Editor/Config.asset";
     public const int DefaultMaterialCode = 16;
+
+    LDrawConfig()
+    {
+      _ColorConfigPath = _BasePartsPath + "LDConfig.ldr";
+    }
 
     public System.Numerics.Matrix4x4 ScaleMatrix
     {
@@ -113,7 +118,7 @@ namespace LDraw
       }
       catch
       {
-        // I don't know what the Godot equivalent of this is.
+        // GODOT PORT: I don't know what the Godot equivalent of this is.
         throw new NotImplementedException();
         GD.PrintErr("http://www.ldraw.org/library/tracker/");
         //EditorUtility.DisplayDialog("Error!", "Missing part or wrong part " + name
