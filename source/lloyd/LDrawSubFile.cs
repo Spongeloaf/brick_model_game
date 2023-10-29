@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Godot;
 
 namespace LDraw
 {
@@ -9,10 +9,10 @@ namespace LDraw
 	{
 		private string _Name;
 		private string _Extension;
-		private Matrix4x4 _Matrix;
+		private System.Numerics.Matrix4x4 _Matrix;
 		private LDrawModel _Model;
 
-		public void GetModelGameObject(Transform parent)
+		public void GetModelNode(Node3D parent)
 		{
 			_Model.CreateMeshGameObject(_Matrix, GetMaterial(), parent);
 		}
@@ -34,7 +34,7 @@ namespace LDraw
 				int argNum = i + 2;
 				if (!Single.TryParse(args[argNum], out param[i]))
 				{
-					Debug.LogError(
+					GD.PrintErr(
 						String.Format(
 							"Something wrong with parameters in {0} sub-file reference command. ParamNum:{1}, Value:{2}",
 							_Name,
@@ -45,11 +45,11 @@ namespace LDraw
 
 			_Model = LDrawModel.Create(_Name, LDrawConfig.Instance.GetSerializedPart(_Name));
 			
-			_Matrix = new Matrix4x4(
-				new Vector4(param[3], param[6], param[9],  0),
-				new Vector4(param[4], param[7], param[10], 0),
-				new Vector4(param[5], param[8], param[11], 0),
-				new Vector4(param[0], param[1], param[2],  1)
+			_Matrix = new System.Numerics.Matrix4x4(
+				param[3], param[6], param[9],  0,
+				param[4], param[7], param[10], 0,
+				param[5], param[8], param[11], 0,
+				param[0], param[1], param[2],  1
 			);
 		}
 

@@ -144,12 +144,6 @@ public static class AnimationUtils
     Vector3 lookingAtTarget = pawn.GlobalPosition.DirectionTo(target);
     float radians = lookingAtTarget.AngleTo(pawnFacing);
     float time = radians / Globals.m_pawnRotationSpeed;
-
-    if (time > 0.8) 
-    {
-      int i = 0;
-    }
-
     return time;
   }
 

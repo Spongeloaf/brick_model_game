@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using Godot;
 
 namespace LDraw
 {
@@ -32,7 +32,7 @@ namespace LDraw
 				int argNum = i + 2;
 				if (!Single.TryParse(args[argNum], out param[i]))
 				{
-					Debug.LogError(
+					GD.PrintErr(
 						String.Format(
 							"Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
 							argNum,

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using Godot;
 
 namespace LDraw
 {
@@ -9,11 +9,16 @@ namespace LDraw
 	{ 
 		public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
 		{
-			var v = _Verts;
-			var nA = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
-			var nB = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
-		
-			var vertLen = verts.Count;
+      //var nA = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
+      //var nB = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
+			
+      Vector3[] v = _Verts;
+			// Why do we need nA and nB, when they're the same value?
+			Vector3 tmp = v[1] - v[0];
+      Vector3 nA = tmp.Cross(v[2] - v[0]);
+      Vector3 nB = tmp.Cross(v[2] - v[0]);
+
+      int vertLen = verts.Count;
 			triangles.AddRange(new[]
 			{
 				vertLen + 1,
@@ -23,8 +28,8 @@ namespace LDraw
 				vertLen + 3,
 				vertLen + 2
 			});
-				
-			var indexes = Vector3.Dot(nA, nB) > 0 ? new int[] {0, 1, 3, 2} : new int[] {0, 1, 2, 3};
+
+      int[] indexes = nA.Dot(nB) > 0 ? new int[] {0, 1, 3, 2} : new int[] {0, 1, 2, 3};
 			for (int i = 0; i < indexes.Length; i++)
 			{
 				verts.Add(v[indexes[i]]);
@@ -33,14 +38,14 @@ namespace LDraw
     
 		public override void Deserialize(string serialized)
 		{
-			var args = serialized.Split(' ');
+      string[] args = serialized.Split(' ');
 			float[] param = new float[12];
 			for (int i = 0; i < param.Length; i++)
 			{
 				int argNum = i + 2;
 				if (!float.TryParse(args[argNum], out param[i]))
 				{
-					Debug.LogError(
+					GD.PrintErr(
 						String.Format(
 							"Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
 							argNum,

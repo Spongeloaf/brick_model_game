@@ -3,14 +3,15 @@ using Godot;
 
 namespace LDraw
 {
-	public static class MatrixExtensions
+
+  public static class MatrixExtensions
 	{
-		public static Matrix4x4 MultiplyVectorsTransposed(Vector4 vector, Vector4 transposeVector)
+		public static System.Numerics.Matrix4x4 MultiplyVectorsTransposed(Vector4 vector, Vector4 transposeVector)
 		{
 		
-			float[] vectorPoints = new[] {vector.x, vector.y, vector.z, vector.w},
+			float[] vectorPoints = new[] {vector.X, vector.Y, vector.Z, vector.W},
 				transposedVectorPoints = new[]
-					{transposeVector.x, transposeVector.y, transposeVector.z, transposeVector.w};
+					{transposeVector.X, transposeVector.Y, transposeVector.Z, transposeVector.W};
 			int matrixDimension = vectorPoints.Length;
 			float[] values = new float[matrixDimension * matrixDimension];
 		
@@ -23,101 +24,104 @@ namespace LDraw
 		
 			}
 		
-			return new Matrix4x4(
-				new Vector4(values[0], values[1], values[2], values[3]),
-				new Vector4(values[4], values[5], values[6], values[7]),
-				new Vector4(values[8], values[9], values[10], values[11]),
-				new Vector4(values[12], values[13], values[14], values[15])
+			return new System.Numerics.Matrix4x4(
+				values[0], values[1], values[2], values[3],
+				values[4], values[5], values[6], values[7],
+				values[8], values[9], values[10], values[11],
+				values[12], values[13], values[14], values[15]
 			);
 		}
 		
-		public static Vector3 ExtractPosition(this Matrix4x4 matrix)
+		public static Vector3 ExtractPosition(this System.Numerics.Matrix4x4 matrix)
 		{
 			Vector3 position;
-			position.x = matrix.m03;
-			position.y = matrix.m13;
-			position.z = matrix.m23;
+			position.X = matrix.M14;
+			position.Y = matrix.M24;
+			position.Z = matrix.M34;
 			return position;
 		}
 		
-		public static Quaternion ExtractRotation(this Matrix4x4 matrix)
+		public static Quaternion ExtractRotation(this System.Numerics.Matrix4x4 matrix)
 		{
 			Vector3 forward;
-			forward.x = matrix.m02;
-			forward.y = matrix.m12;
-			forward.z = matrix.m22;
+			forward.X = matrix.M13;
+			forward.Y = matrix.M23;
+			forward.Z = matrix.M33;
 		
 			Vector3 upwards;
-			upwards.x = matrix.m01;
-			upwards.y = matrix.m11;
-			upwards.z = matrix.m21;
-		
-			return Quaternion.LookRotation(forward, upwards);
+			upwards.X = matrix.M12;
+			upwards.Y = matrix.M22;
+			upwards.Z = matrix.M32;
+
+			// Unity.Quaternion.LookRotation() Creates a rotation with the specified forward and upwards directions.
+			Transform3D tfm = new Transform3D();
+			tfm = tfm.LookingAt(forward, upwards);
+      return new Quaternion(tfm.Basis);
 		}
 		
-		public static Vector3 ExtractScale(this Matrix4x4 matrix)
+		public static Vector3 ExtractScale(this System.Numerics.Matrix4x4 matrix)
 		{
 			Vector3 scale;
-			scale.x = new Vector4(matrix.m00, matrix.m10, matrix.m20, matrix.m30).magnitude;
-			scale.y = new Vector4(matrix.m01, matrix.m11, matrix.m21, matrix.m31).magnitude;
-			scale.z = new Vector4(matrix.m02, matrix.m12, matrix.m22, matrix.m32).magnitude;
+			scale.X = new Vector4(matrix.M11, matrix.M21, matrix.M31, matrix.M41).Length();
+			scale.Y = new Vector4(matrix.M12, matrix.M22, matrix.M32, matrix.M42).Length();
+			scale.Z = new Vector4(matrix.M13, matrix.M23, matrix.M33, matrix.M43).Length();
 			return scale;
 		}
 
-		public static Matrix4x4 HouseholderReflection(this Matrix4x4 matrix4X4, Vector3 planeNormal)
+		public static System.Numerics.Matrix4x4 HouseholderReflection(this System.Numerics.Matrix4x4 matrix4X4, Vector3 planeNormal)
 		{
-			planeNormal.Normalize();
-			Vector4 planeNormal4 = new Vector4(planeNormal.x, planeNormal.y, planeNormal.z, 0);
-			Matrix4x4 householderMatrix = Matrix4x4.identity.Minus(
+			planeNormal.Normalized();
+			Vector4 planeNormal4 = new Vector4(planeNormal.X, planeNormal.Y, planeNormal.Z, 0);
+      System.Numerics.Matrix4x4 householderMatrix = System.Numerics.Matrix4x4.Identity.Minus(
 				MultiplyVectorsTransposed(planeNormal4, planeNormal4).MutiplyByNumber(2));
 			return householderMatrix * matrix4X4;
 		}
 
-		public static Matrix4x4 MutiplyByNumber(this Matrix4x4 matrix, float number)
+		public static System.Numerics.Matrix4x4 MutiplyByNumber(this System.Numerics.Matrix4x4 matrix, float number)
 		{
-			return new Matrix4x4(
-				new Vector4(matrix.m00 * number, matrix.m10 * number, matrix.m20 * number, matrix.m30 * number),
-				new Vector4(matrix.m01 * number, matrix.m11 * number, matrix.m21 * number, matrix.m31 * number),
-				new Vector4(matrix.m02 * number, matrix.m12 * number, matrix.m22 * number, matrix.m32 * number),
-				new Vector4(matrix.m03 * number, matrix.m13 * number, matrix.m23 * number, matrix.m33 * number)
+			return new System.Numerics.Matrix4x4(
+				matrix.M11 * number, matrix.M21 * number, matrix.M31 * number, matrix.M41 * number,
+				matrix.M12 * number, matrix.M22 * number, matrix.M32 * number, matrix.M42 * number,
+				matrix.M13 * number, matrix.M23 * number, matrix.M33 * number, matrix.M43 * number,
+				matrix.M14 * number, matrix.M24 * number, matrix.M34 * number, matrix.M44 * number
 			);
 		}
 		
-		public static Matrix4x4 DivideByNumber(this Matrix4x4 matrix, float number)
+		public static System.Numerics.Matrix4x4 DivideByNumber(this System.Numerics.Matrix4x4 matrix, float number)
 		{
-			return new Matrix4x4(
-				new Vector4(matrix.m00 / number, matrix.m10 / number, matrix.m20 / number, matrix.m30 / number),
-				new Vector4(matrix.m01 / number, matrix.m11 / number, matrix.m21 / number, matrix.m31 / number),
-				new Vector4(matrix.m02 / number, matrix.m12 / number, matrix.m22 / number, matrix.m32 / number),
-				new Vector4(matrix.m03 / number, matrix.m13 / number, matrix.m23 / number, matrix.m33 / number)
+			return new System.Numerics.Matrix4x4(
+				matrix.M11 / number, matrix.M21 / number, matrix.M31 / number, matrix.M41 / number,
+				matrix.M12 / number, matrix.M22 / number, matrix.M32 / number, matrix.M42 / number,
+				matrix.M13 / number, matrix.M23 / number, matrix.M33 / number, matrix.M43 / number,
+				matrix.M14 / number, matrix.M24 / number, matrix.M34 / number, matrix.M44 / number
 			);
 		}
 		
-		public static Matrix4x4 Plus(this Matrix4x4 matrix, Matrix4x4 matrixToAdding)
+		public static System.Numerics.Matrix4x4 Plus(this System.Numerics.Matrix4x4 matrix, System.Numerics.Matrix4x4 matrixToAdding)
 		{
-			return new Matrix4x4(
-				new Vector4(matrix.m00 + matrixToAdding.m00, matrix.m10 + matrixToAdding.m10,
-					matrix.m20 + matrixToAdding.m20, matrix.m30 + matrix.m30),
-				new Vector4(matrix.m01 + matrixToAdding.m01, matrix.m11 + matrixToAdding.m11,
-					matrix.m21 + matrixToAdding.m21, matrix.m31 + matrix.m31),
-				new Vector4(matrix.m02 + matrixToAdding.m02, matrix.m12 + matrixToAdding.m12,
-					matrix.m22 + matrixToAdding.m22, matrix.m32 + matrix.m32),
-				new Vector4(matrix.m03 + matrixToAdding.m03, matrix.m13 + matrixToAdding.m13,
-					matrix.m23 + matrixToAdding.m23, matrix.m33 + matrix.m33)
+			return new System.Numerics.Matrix4x4(
+				matrix.M11 + matrixToAdding.M11, matrix.M21 + matrixToAdding.M21,
+					matrix.M31 + matrixToAdding.M31, matrix.M41 + matrix.M41,
+				matrix.M12 + matrixToAdding.M12, matrix.M22 + matrixToAdding.M22,
+					matrix.M32 + matrixToAdding.M32, matrix.M42 + matrix.M42,
+				matrix.M13 + matrixToAdding.M13, matrix.M23 + matrixToAdding.M23,
+					matrix.M33 + matrixToAdding.M33, matrix.M43 + matrix.M43,
+				matrix.M14 + matrixToAdding.M14, matrix.M24 + matrixToAdding.M24,
+					matrix.M34 + matrixToAdding.M34, matrix.M44 + matrix.M44
 			);
 		}
 		
-		public static Matrix4x4 Minus(this Matrix4x4 matrix, Matrix4x4 matrixToMinus)
+		public static System.Numerics.Matrix4x4 Minus(this System.Numerics.Matrix4x4 matrix, System.Numerics.Matrix4x4 matrixToMinus)
 		{
-			return new Matrix4x4(
-				new Vector4(matrix.m00 - matrixToMinus.m00, matrix.m10 - matrixToMinus.m10,
-					matrix.m20 - matrixToMinus.m20, matrix.m30 - matrixToMinus.m30),
-				new Vector4(matrix.m01 - matrixToMinus.m01, matrix.m11 - matrixToMinus.m11,
-					matrix.m21 - matrixToMinus.m21, matrix.m31 - matrixToMinus.m31),
-				new Vector4(matrix.m02 - matrixToMinus.m02, matrix.m12 - matrixToMinus.m12,
-					matrix.m22 - matrixToMinus.m22, matrix.m32 - matrixToMinus.m32),
-				new Vector4(matrix.m03 - matrixToMinus.m03, matrix.m13 - matrixToMinus.m13,
-					matrix.m23 - matrixToMinus.m23, matrix.m33 - matrixToMinus.m33)
+			return new System.Numerics.Matrix4x4(
+				matrix.M11 - matrixToMinus.M11, matrix.M21 - matrixToMinus.M21,
+					matrix.M31 - matrixToMinus.M31, matrix.M41 - matrixToMinus.M41,
+				matrix.M12 - matrixToMinus.M12, matrix.M22 - matrixToMinus.M22,
+					matrix.M32 - matrixToMinus.M32, matrix.M42 - matrixToMinus.M42,
+				matrix.M13 - matrixToMinus.M13, matrix.M23 - matrixToMinus.M23,
+					matrix.M33 - matrixToMinus.M33, matrix.M43 - matrixToMinus.M43,
+				matrix.M14 - matrixToMinus.M14, matrix.M24 - matrixToMinus.M24,
+					matrix.M34 - matrixToMinus.M34, matrix.M44 - matrixToMinus.M44
 			);
 		}
 	}
