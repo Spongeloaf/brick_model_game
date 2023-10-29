@@ -1,6 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://dpy2limacimkt"]
+[gd_scene load_steps=7 format=3 uid="uid://cqvo2var0kjmq"]
 
-[ext_resource type="PackedScene" uid="uid://e3j2serlqy2b" path="res://models/blends/gangster.glb" id="1_t0xfk"]
+[ext_resource type="PackedScene" uid="uid://e3j2serlqy2b" path="res://models/blends/gangster.glb" id="1_1fttt"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qioe8"]
 albedo_color = Color(1, 0, 1, 1)
@@ -331,7 +331,7 @@ _data = {
 "walk": SubResource("Animation_0o0q1")
 }
 
-[node name="gangster" instance=ExtResource("1_t0xfk")]
+[node name="gangster" instance=ExtResource("1_1fttt")]
 
 [node name="00022_973p8l_dat" parent="." index="0"]
 surface_material_override/0 = SubResource("StandardMaterial3D_qioe8")

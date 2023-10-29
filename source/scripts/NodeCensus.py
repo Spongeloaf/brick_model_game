@@ -2,6 +2,8 @@ import os
 import typing
 import pathlib
 import re
+from treelib import Node, Tree
+import glob
 
 # dude, why not just do this in GD script?
 # because I hate GD script. There's no way to do it that doesn't involve
@@ -17,11 +19,13 @@ import re
 kNodePrefix = "[node name=\""
 kNodeNameRegex = "/(?<=node name=\").*(?=\" type)/gm"
 kNodeParentRegex = "/(?<=parent=\").*(?=\"])/gm"
-gNodeSet = set()
+kFileList = glob.glob("C:\\dev\\brick_model_game\\source\\**\*", recursive=True)
+kTree = Tree()
+
 
 def IsSceneFile(file: str):
    extension = pathlib.Path(file).suffix
-   return extension == "tcsn"
+   return extension == ".tscn"
 
 
 def LineContainsNode(line : str):
@@ -34,14 +38,11 @@ def GetNodeName(line : str):
 
 
 
-
-
 def GetNodePath(line: str):
    cleanLine = line.strip()
    cleanLine = line.strip("[node ")
    cleanLine = line.strip("]")
    tokens = cleanLine.split()
-
 
 
 
@@ -54,7 +55,7 @@ def ProcessSceneFile(filePath: str):
       if not LineContainsNode(line):
         continue
 
-      gNodeSet.add(GetNodePath(line))
+      pass
 
 
 def ProcessFile(file: str):
@@ -64,6 +65,11 @@ def ProcessFile(file: str):
    ProcessSceneFile(file)
 
 
-for root, dirs, files in os.walk("C:\\dev\\brick_model_game\\source\\", topdown=False):
-   for name in files:
-      ProcessFile(name)
+# def AddNodeToTree(string NodePath):
+#    kTree.create_node()
+
+
+
+for file in kFileList:
+      ProcessFile(file)
+pass

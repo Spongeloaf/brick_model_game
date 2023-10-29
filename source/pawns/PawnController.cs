@@ -52,6 +52,10 @@ public partial class PawnController : RigidBody3D
     }
 
     m_animationPlayer = GetNode<AnimationPlayer>("collider/gangster/AnimationPlayer");
+    if (m_animationPlayer != null)
+    {
+      m_animationPlayer.Play("idle");
+    }
   }
 
   public override void _PhysicsProcess(double delta)
@@ -108,7 +112,7 @@ public partial class PawnController : RigidBody3D
       m_obstacle.AvoidanceEnabled = true;
 
     if (m_animationPlayer != null)
-      m_animationPlayer.Stop();
+      m_animationPlayer.Play("idle");
   }
 
   public void StartNavigation(in Vector3 target)
@@ -137,7 +141,7 @@ public partial class PawnController : RigidBody3D
       m_obstacle.AvoidanceEnabled = false;
 
     if (m_animationPlayer != null)
-      m_animationPlayer.Play("Walk Cycle");
+      m_animationPlayer.Play("walk");
   }
 
   private void SnapMeshToGround()

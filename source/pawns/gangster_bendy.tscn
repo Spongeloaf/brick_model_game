@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dqlvf8seyggyx"]
+
+[ext_resource type="PackedScene" uid="uid://dmk67ajl0b15m" path="res://models/blends/gangster_bendy.gltf" id="1_co61i"]
+[ext_resource type="ArrayMesh" uid="uid://cmnoj71g8ri6j" path="res://source/pawns/arm.mes.tres" id="2_l7p34"]
+
+[node name="gangster_bendy" instance=ExtResource("1_co61i")]
+
+[node name="00016_3819_dat" parent="00022_973p8l_dat" index="1"]
+mesh = ExtResource("2_l7p34")
+
+[node name="Skeleton3D" parent="Armature_001" index="0"]
+bones/2/rotation = Quaternion(0.611446, 0.3545, -0.353839, 0.612587)
+bones/4/rotation = Quaternion(0.613425, 0.319101, -0.333783, 0.640682)
+
+[node name="right leg" parent="Armature_001/Skeleton3D" index="1"]
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
+mesh = ExtResource("2_l7p34")

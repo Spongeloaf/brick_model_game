@@ -21,15 +21,15 @@ debug_enabled = true
 debug_use_custom = true
 debug_path_custom_color = Color(1, 0, 1, 1)
 
+[node name="StatCard" type="Node" parent="."]
+script = ExtResource("3_r6y7r")
+
 [node name="collider" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 shape = SubResource("CapsuleShape3D_bkwio")
 
 [node name="gangster" parent="collider" instance=ExtResource("2_l3va8")]
 transform = Transform3D(-20, 0, -1.74846e-06, 0, 20, 0, 1.74846e-06, 0, -20, 0, -0.5, 0)
-
-[node name="StatCard" type="Node" parent="."]
-script = ExtResource("3_r6y7r")
 
 [node name="targetPoints" type="Node3D" parent="."]
 
