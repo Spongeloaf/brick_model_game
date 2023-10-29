@@ -4,6 +4,6 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>Gameplay Scene</ActiveDebugProfile>
+    <ActiveDebugProfile>LdrImporter</ActiveDebugProfile>
   </PropertyGroup>
 </Project>

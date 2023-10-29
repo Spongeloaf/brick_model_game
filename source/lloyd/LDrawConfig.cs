@@ -15,6 +15,7 @@ namespace LDraw
     [Export] private string _ModelsPath= "res://models/";
     [Export] private string _MaterialsPath = "res://assets/generated/materials/";
     [Export] private string _MeshesPath = "res://assets/generated/meshes/";
+    [Export] private string _ScenesPath = " res://assets/generated/scenes/";
     [Export] private string _ColorConfigPath;
     [Export] private float _Scale;
     [Export] private BaseMaterial3D _DefaultOpaqueMaterial;
@@ -33,9 +34,11 @@ namespace LDraw
     private const string ConfigPath = "Assets/LDraw-Importer/Editor/Config.asset";
     public const int DefaultMaterialCode = 16;
 
-    LDrawConfig()
+    public LDrawConfig()
     {
       _ColorConfigPath = _BasePartsPath + "LDConfig.ldr";
+      _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
+      _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
     }
 
     public System.Numerics.Matrix4x4 ScaleMatrix
@@ -103,7 +106,10 @@ namespace LDraw
 
     public string GetModelByFileName(string modelFileName)
     {
-      return _ModelFileNames[modelFileName];
+      if (_ModelFileNames.ContainsKey(modelFileName))
+        return _ModelFileNames[modelFileName];
+
+      return null;
     }
 
 
@@ -192,7 +198,7 @@ namespace LDraw
     private void PrepareModels()
     {
       _ModelFileNames = new Dictionary<string, string>();
-      string[] files = Directory.GetFiles(_ModelsPath, "*.*", SearchOption.AllDirectories);
+      string[] files = Directory.GetFiles(ProjectSettings.GlobalizePath(_ModelsPath), "*.*", SearchOption.AllDirectories);
       _Models = new Dictionary<string, string>();
       foreach (string file in files)
       {
@@ -296,6 +302,13 @@ namespace LDraw
     private void OnEnable()
     {
       InitParts();
+    }
+
+    public Error SaveNodeAsScene(Node3D node)
+    {
+      PackedScene scene = new PackedScene();
+      scene.Pack(node);
+      return ResourceSaver.Save(scene, _ScenesPath + node.Name + ".tscn");
     }
   }
 }
