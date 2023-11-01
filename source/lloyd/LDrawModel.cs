@@ -8,21 +8,6 @@ namespace LDraw
 {
   public class LDrawModel
   {
-    /// FileFormatVersion 1.0.2;
-
-    #region factory
-
-    public static LDrawModel Create(string name, string path)
-    {
-      if (_models.ContainsKey(name)) return _models[name];
-      LDrawModel model = new LDrawModel();
-      model.Init(name, path);
-
-      return model;
-    }
-
-    #endregion
-
     #region fields and properties
 
     private string _Name;
@@ -35,10 +20,24 @@ namespace LDraw
       get { return _Name; }
     }
     #endregion
+    /// FileFormatVersion 1.0.2;
+
+    #region factory
+
+    public static LDrawModel Create(string name, string path)
+    {
+      if (_models.ContainsKey(name)) return _models[name];
+      LDrawModel model = new LDrawModel();
+      model.ConstructModel(name, path);
+
+      return model;
+    }
+
+    #endregion
 
     #region service methods
 
-    private void Init(string name, string serialized)
+    private void ConstructModel(string name, string serialized)
     {
       _Name = name;
       _Commands = new List<LDrawCommand>();
@@ -65,11 +64,14 @@ namespace LDraw
       }
     }
 
-    public Node3D CreateMeshGameObject(System.Numerics.Matrix4x4 trs, Material mat, Node parent)
+    public Node3D CreateMeshGameObject(System.Numerics.Matrix4x4 trs, Material mat, Node parent, List<Node> createdNodes)
     {
-      if (_Commands.Count == 0) return null;
+      if (_Commands.Count == 0)
+        return null;
+
       Node3D node = new Node3D();
       node.Name = _Name;
+      createdNodes.Add(node);
 
       List<int> triangles = new List<int>();
       List<Vector3> verts = new List<Vector3>();
@@ -83,7 +85,8 @@ namespace LDraw
         }
         else
         {
-          sfCommand.GetModelNode(node);
+
+          sfCommand.GetModelNode(node, createdNodes);
         }
       }
 
@@ -103,6 +106,7 @@ namespace LDraw
       {
         MeshInstance3D meshNode = new MeshInstance3D();
         node.AddChild(meshNode);
+        createdNodes.Add(meshNode);
         meshNode.Mesh = PrepareMesh(verts, triangles, _Name);
 
         if (mat != null)
@@ -112,7 +116,9 @@ namespace LDraw
       // GODOT PORT: ???
       node.Transform.ApplyLocalTRS(trs);
 
-      parent.AddChild(node);
+      if (parent != null)
+        parent.AddChild(node);
+
       return node;
     }
 
@@ -123,10 +129,8 @@ namespace LDraw
       if (mesh != null)
         return mesh;
 
-      mesh = new Mesh();
-      mesh.ResourceName = _Name;
       int frontVertsCount = verts.Count;
-      SurfaceTool st = new SurfaceTool();
+
       //backface
       verts.AddRange(verts);
       int[] tris = new int[triangles.Count];
@@ -143,9 +147,20 @@ namespace LDraw
         tris[i] = tris[i] + frontVertsCount;
       }
       triangles.AddRange(tris);
+
+
+      // I don't know why we have these triangle arrays. Something Unity specific.
+      // I think I'm just going to use the vertices and see where that gets me.
+      SurfaceTool st = new SurfaceTool();
+      st.Begin(Mesh.PrimitiveType.Triangles);
+
+      foreach (Vector3 vert in verts)
+        st.AddVertex(vert);
+
+      st.GenerateNormals();
+      mesh = st.Commit();
+      mesh.ResourceName = _Name;
       //end backface
-
-
 
       //mesh.verts(verts)
       //mesh.SetTriangles(triangles, 0);

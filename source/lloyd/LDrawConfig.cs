@@ -12,7 +12,7 @@ namespace LDraw
   public partial class LDrawConfig : Resource
   {
     [Export] private string _BasePartsPath = "C:\\Program Files\\BricklinkStudio 2.0\\ldraw\\";
-    [Export] private string _ModelsPath= "res://models/";
+    [Export] private string _ModelsPath= "res://models/imports/";
     [Export] private string _MaterialsPath = "res://assets/generated/materials/";
     [Export] private string _MeshesPath = "res://assets/generated/meshes/";
     [Export] private string _ScenesPath = " res://assets/generated/scenes/";
@@ -39,6 +39,7 @@ namespace LDraw
       _ColorConfigPath = _BasePartsPath + "LDConfig.ldr";
       _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
       _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
+      InitParts();
     }
 
     public System.Numerics.Matrix4x4 ScaleMatrix
@@ -125,11 +126,10 @@ namespace LDraw
       catch
       {
         // GODOT PORT: I don't know what the Godot equivalent of this is.
-        throw new NotImplementedException();
         GD.PrintErr("http://www.ldraw.org/library/tracker/");
         //EditorUtility.DisplayDialog("Error!", "Missing part or wrong part " + name
         //                                        + "! Find it in url from debug console", "Ok", "");
-        throw;
+        return "";
       }
 
     }
@@ -291,7 +291,7 @@ namespace LDraw
       {
         if (_Instance == null)
         {
-          _Instance = (LDrawConfig)ResourceLoader.Load(ConfigPath);
+          _Instance = new LDrawConfig();
         }
 
         return _Instance;
@@ -306,9 +306,36 @@ namespace LDraw
 
     public Error SaveNodeAsScene(Node3D node)
     {
+      if (node == null)
+        return Error.InvalidData;
+
+      foreach (Node child in node.GetChildren() ) 
+      {
+        child.Owner = node;
+      }
+
       PackedScene scene = new PackedScene();
       scene.Pack(node);
-      return ResourceSaver.Save(scene, _ScenesPath + node.Name + ".tscn");
+
+      //string path = "";
+      //if (OS.HasFeature("editor"))
+      //{
+
+      //  // Running from an editor binary.
+      //  // `path` will contain the absolute path to `hello.txt` located in the project root.
+      //  path = ProjectSettings.GlobalizePath(_ScenesPath + node.Name + ".tscn");
+      //}
+      //else
+      //{
+      //  // Running from an exported project.
+      //  // `path` will contain the absolute path to `hello.txt` next to the executable.
+      //  // This is *not* identical to using `ProjectSettings.globalize_path()` with
+      //  //a `res://` path, but is close enough in spirit.
+      //  path = OS.GetExecutablePath().GetBaseDir().PathJoin(node.Name + ".tscn");
+      //}
+
+      string path = "C:\\dev\\brick_model_game\\assets\\generated\\models\\" + node.Name + ".tscn";
+      return ResourceSaver.Save(scene, path);
     }
   }
 }

@@ -1,0 +1,7 @@
+[gd_scene format=3]
+
+[node name="brick" type="Node3D"]
+
+[node name="[projectile] " type="Node3D" parent="."]
+
+[node name="3062b" type="Node3D" parent="[projectile] "]
