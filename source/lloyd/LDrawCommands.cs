@@ -6,7 +6,7 @@ using Godot;
 
 namespace LDraw
 {
-    
+
     public enum CommandType
     {
         SubFile = 1,
@@ -18,7 +18,7 @@ namespace LDraw
     {
         protected int _ColorCode = -1;
         protected string _Color;
-        
+
         protected LDrawModel _Parent;
         public static LDrawCommand DeserializeCommand(string line, LDrawModel parent)
         {
@@ -28,7 +28,7 @@ namespace LDraw
             if (Int32.TryParse(args[0], out type))
             {
                 var commandType = (CommandType)type;
-             
+
                 switch (commandType)
                 {
                     case CommandType.SubFile:
@@ -42,10 +42,14 @@ namespace LDraw
                         break;
                 }
             }
-           
+            else
+            {
+                GD.Print("Skipped line : " + line);
+            }
+
             if (command != null)
             {
-                if(!int.TryParse(args[1],out command._ColorCode))
+                if (!int.TryParse(args[1], out command._ColorCode))
                 {
                     command._Color = args[1];
                 }
@@ -55,7 +59,7 @@ namespace LDraw
 
             return command;
         }
-        
+
         protected Vector3[] _Verts;
         public abstract void PrepareMeshData(List<int> triangles, List<Vector3> verts);
         public abstract void Deserialize(string serialized);

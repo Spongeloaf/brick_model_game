@@ -85,7 +85,6 @@ namespace LDraw
         }
         else
         {
-
           sfCommand.GetModelNode(node, createdNodes);
         }
       }

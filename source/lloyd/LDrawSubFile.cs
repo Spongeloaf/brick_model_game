@@ -24,10 +24,11 @@ namespace LDraw
 
 		public override void Deserialize(string serialized)
 		{
-			var args = serialized.Split(' ');
+            string[] args = serialized.Split(' ');
 			float[] param = new float[12];
 
-			_Name = LDrawConfig.GetFileName(args, 14);
+			_Name = args[14];
+			_Name = _Name.Trim();
 			_Extension = LDrawConfig.GetExtension(args, 14);
 			for (int i = 0; i < param.Length; i++)
 			{

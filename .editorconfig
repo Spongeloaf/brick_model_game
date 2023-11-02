@@ -1,0 +1,5 @@
+root = true
+
+# Code files
+[*.cs,*.csx,*.vb,*.vbx]
+indent_size = 2
