@@ -363,6 +363,9 @@ bones/6/scale = Vector3(50, 50, 50)
 transform = Transform3D(50, 2.11759e-05, 6.85379e-05, 6.90594e-05, -0.328245, -49.9989, -2.07078e-05, 49.9989, -0.328245, -0.199276, 0.0174896, -0.00390872)
 bone_idx = 3
 
+[node name="00026_3816_dat" parent="Armature_001/Skeleton3D/00026_3816_dat" index="0"]
+transform = Transform3D(1, 0, -4.68514e-14, 0, 1, 0, 8.43769e-15, 0, 1, 0, 0, 0)
+
 [node name="leg_left_2" parent="Armature_001/Skeleton3D" index="1"]
 transform = Transform3D(50, -3.39758e-05, -3.83779e-05, -3.6411e-05, 0.0722431, -49.9999, 3.69313e-05, 49.9999, 0.0722402, -0.199276, 0.017479, -0.00395011)
 bone_idx = 6

@@ -6,175 +6,177 @@ using Godot;
 
 namespace LDraw
 {
-  public class LDrawModel
-  {
-    #region fields and properties
-
-    private string _Name;
-    private List<LDrawCommand> _Commands;
-    private List<string> _SubModels;
-    private static Dictionary<string, LDrawModel> _models = new Dictionary<string, LDrawModel>();
-
-    public string Name
+    public class LDrawModel
     {
-      get { return _Name; }
-    }
-    #endregion
-    /// FileFormatVersion 1.0.2;
+        #region fields and properties
 
-    #region factory
+        private string _Name;
+        private List<LDrawCommand> _Commands;
+        private List<string> _SubModels;
+        private static Dictionary<string, LDrawModel> _models = new Dictionary<string, LDrawModel>();
 
-    public static LDrawModel Create(string name, string path)
-    {
-      if (_models.ContainsKey(name)) return _models[name];
-      LDrawModel model = new LDrawModel();
-      model.ConstructModel(name, path);
-
-      return model;
-    }
-
-    #endregion
-
-    #region service methods
-
-    private void ConstructModel(string name, string serialized)
-    {
-      _Name = name;
-      _Commands = new List<LDrawCommand>();
-      using (StringReader reader = new StringReader(serialized))
-      {
-        string line;
-        while ((line = reader.ReadLine()) != null)
+        public string Name
         {
-          Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-          line = regex.Replace(line, " ").Trim();
-
-          if (!String.IsNullOrEmpty(line))
-          {
-            LDrawCommand command = LDrawCommand.DeserializeCommand(line, this);
-            if (command != null)
-              _Commands.Add(command);
-          }
+            get { return _Name; }
         }
-      }
+        #endregion
+        /// FileFormatVersion 1.0.2;
 
-      if (!_models.ContainsKey(name))
-      {
-        _models.Add(name, this);
-      }
-    }
+        #region factory
 
-    public Node3D CreateMeshGameObject(System.Numerics.Matrix4x4 trs, Material mat, Node parent, List<Node> createdNodes)
-    {
-      if (_Commands.Count == 0)
-        return null;
-
-      Node3D node = new Node3D();
-      node.Name = _Name;
-      createdNodes.Add(node);
-
-      List<int> triangles = new List<int>();
-      List<Vector3> verts = new List<Vector3>();
-
-      for (int i = 0; i < _Commands.Count; i++)
-      {
-        LDrawSubFile sfCommand = _Commands[i] as LDrawSubFile;
-        if (sfCommand == null)
+        public static LDrawModel Create(string name, string path)
         {
-          _Commands[i].PrepareMeshData(triangles, verts);
+            if (_models.ContainsKey(name)) return _models[name];
+            LDrawModel model = new LDrawModel();
+            model.ConstructModel(name, path);
+
+            return model;
         }
-        else
+
+        #endregion
+
+        #region service methods
+
+        private void ConstructModel(string name, string serialized)
         {
-          sfCommand.GetModelNode(node, createdNodes);
-        }
-      }
+            _Name = name;
+            _Commands = new List<LDrawCommand>();
+            using (StringReader reader = new StringReader(serialized))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                    line = regex.Replace(line, " ").Trim();
 
-      if (mat != null)
-      {
-        // GODOT PORT: I'm not sure if "Mesh" is the correct type to search for.
-        Godot.Collections.Array<Node> childMrs = node.FindChildren("*", "Mesh");
-        foreach (Node child in childMrs)
+                    if (!String.IsNullOrEmpty(line))
+                    {
+                        LDrawCommand command = LDrawCommand.DeserializeCommand(line, this);
+                        if (command != null)
+                            _Commands.Add(command);
+                    }
+                }
+            }
+
+            if (!_models.ContainsKey(name))
+            {
+                _models.Add(name, this);
+            }
+        }
+
+        public Node3D CreateMeshGameObject(System.Numerics.Matrix4x4 trs, Material mat, Node parent, List<Node> createdNodes)
         {
-          Mesh mesh = child.GetNode<Mesh>(node.GetPath());
-          if (mesh != null)
-            mesh.SurfaceSetMaterial(0, mat);  // is surface 0 correct????
+            if (_Commands.Count == 0)
+                return null;
+
+            Node3D node = new Node3D();
+            node.Name = _Name;
+            createdNodes.Add(node);
+
+            List<int> triangles = new List<int>();
+            List<Vector3> verts = new List<Vector3>();
+
+            for (int i = 0; i < _Commands.Count; i++)
+            {
+                LDrawSubFile sfCommand = _Commands[i] as LDrawSubFile;
+                if (sfCommand == null)
+                {
+                    _Commands[i].PrepareMeshData(triangles, verts);
+                }
+                else
+                {
+                    sfCommand.GetModelNode(node, createdNodes);
+                }
+            }
+
+            if (mat != null)
+            {
+                // GODOT PORT: I'm not sure if "Mesh" is the correct type to search for.
+                Godot.Collections.Array<Node> childMrs = node.FindChildren("*", "Mesh");
+                foreach (Node child in childMrs)
+                {
+                    Mesh mesh = child.GetNode<Mesh>(node.GetPath());
+                    if (mesh != null)
+                        mesh.SurfaceSetMaterial(0, mat);  // is surface 0 correct????
+                }
+            }
+
+            if (verts.Count > 0)
+            {
+                MeshInstance3D meshNode = new MeshInstance3D();
+                node.AddChild(meshNode);
+                createdNodes.Add(meshNode);
+                meshNode.Mesh = PrepareMesh(verts, triangles, _Name);
+
+                if (mat != null)
+                    meshNode.Mesh.SurfaceSetMaterial(0, mat);
+            }
+
+            // GODOT PORT: ???
+            //node.Transform.ApplyLocalTRS(trs);
+            node.Transform = TransformExtention.GetTransform(trs);
+
+            if (parent != null)
+                parent.AddChild(node);
+
+            return node;
         }
-      }
 
-      if (verts.Count > 0)
-      {
-        MeshInstance3D meshNode = new MeshInstance3D();
-        node.AddChild(meshNode);
-        createdNodes.Add(meshNode);
-        meshNode.Mesh = PrepareMesh(verts, triangles, _Name);
+        private Mesh PrepareMesh(List<Vector3> verts, List<int> triangles, string name)
+        {
 
-        if (mat != null)
-          meshNode.Mesh.SurfaceSetMaterial(0, mat);
-      }
+            Mesh mesh = LDrawConfig.Instance.GetMesh(name);
+            if (mesh != null)
+                return mesh;
 
-      // GODOT PORT: ???
-      node.Transform.ApplyLocalTRS(trs);
+            int frontVertsCount = verts.Count;
 
-      if (parent != null)
-        parent.AddChild(node);
+            //backface
+            verts.AddRange(verts);
+            int[] tris = new int[triangles.Count];
+            triangles.CopyTo(tris);
+            for (int i = 0; i < tris.Length; i += 3)
+            {
+                int temp = tris[i];
+                tris[i] = tris[i + 1];
+                tris[i + 1] = temp;
+            }
 
-      return node;
+            for (int i = 0; i < tris.Length; i++)
+            {
+                tris[i] = tris[i] + frontVertsCount;
+            }
+            triangles.AddRange(tris);
+
+            SurfaceTool st = new SurfaceTool();
+            st.Begin(Mesh.PrimitiveType.Triangles);
+            foreach (Vector3 vert in verts)
+            {
+                st.AddVertex(vert);
+            }
+
+            foreach (int tri in tris)
+                st.AddIndex(tri);
+
+            st.GenerateNormals();
+            mesh = st.Commit();
+            mesh.ResourceName = _Name;
+            //end backface
+
+            //mesh.verts(verts)
+            //mesh.SetTriangles(triangles, 0);
+
+            //mesh.RecalculateNormals();
+            //mesh.RecalculateBounds();
+            //LDrawConfig.Instance.SaveMesh(mesh, mesh.ResourceName);
+            return mesh;
+        }
+
+        #endregion
+
+        private LDrawModel()
+        {
+
+        }
     }
-
-    private Mesh PrepareMesh(List<Vector3> verts, List<int> triangles, string name)
-    {
-
-      Mesh mesh = LDrawConfig.Instance.GetMesh(name);
-      if (mesh != null)
-        return mesh;
-
-      int frontVertsCount = verts.Count;
-
-      //backface
-      verts.AddRange(verts);
-      int[] tris = new int[triangles.Count];
-      triangles.CopyTo(tris);
-      for (int i = 0; i < tris.Length; i += 3)
-      {
-        int temp = tris[i];
-        tris[i] = tris[i + 1];
-        tris[i + 1] = temp;
-      }
-
-      for (int i = 0; i < tris.Length; i++)
-      {
-        tris[i] = tris[i] + frontVertsCount;
-      }
-      triangles.AddRange(tris);
-
-
-      // I don't know why we have these triangle arrays. Something Unity specific.
-      // I think I'm just going to use the vertices and see where that gets me.
-      SurfaceTool st = new SurfaceTool();
-      st.Begin(Mesh.PrimitiveType.Triangles);
-
-      foreach (Vector3 vert in verts)
-        st.AddVertex(vert);
-
-      st.GenerateNormals();
-      mesh = st.Commit();
-      mesh.ResourceName = _Name;
-      //end backface
-
-      //mesh.verts(verts)
-      //mesh.SetTriangles(triangles, 0);
-
-      //mesh.RecalculateNormals();
-      //mesh.RecalculateBounds();
-      //LDrawConfig.Instance.SaveMesh(mesh, mesh.ResourceName);
-      return mesh;
-    }
-
-    #endregion
-
-    private LDrawModel()
-    {
-
-    }
-  }
 }
