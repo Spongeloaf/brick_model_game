@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Dark_Grey"
+shading_mode = 0
+albedo_color = Color(0.329412, 0.34902, 0.333333, 1)

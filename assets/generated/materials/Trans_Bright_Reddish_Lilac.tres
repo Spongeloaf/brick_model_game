@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Trans_Bright_Reddish_Lilac"
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.588235, 0.439216, 0.623529, 0.5)

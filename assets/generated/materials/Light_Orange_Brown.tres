@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Light_Orange_Brown"
+shading_mode = 0
+albedo_color = Color(0.980392, 0.611765, 0.109804, 1)

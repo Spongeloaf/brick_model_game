@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Purple"
+shading_mode = 0
+albedo_color = Color(0.403922, 0.121569, 0.505882, 1)

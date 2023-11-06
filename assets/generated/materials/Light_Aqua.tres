@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Light_Aqua"
+shading_mode = 0
+albedo_color = Color(0.827451, 0.94902, 0.917647, 1)

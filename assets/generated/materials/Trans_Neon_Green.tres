@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Trans_Neon_Green"
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.752941, 1, 0, 0.5)

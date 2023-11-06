@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Magenta"
+shading_mode = 0
+albedo_color = Color(0.564706, 0.121569, 0.462745, 1)

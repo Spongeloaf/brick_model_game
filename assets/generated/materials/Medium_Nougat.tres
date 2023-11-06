@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Medium_Nougat"
+shading_mode = 0
+albedo_color = Color(0.666667, 0.490196, 0.333333, 1)

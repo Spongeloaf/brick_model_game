@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Light_Brown"
+shading_mode = 0
+albedo_color = Color(0.482353, 0.364706, 0.254902, 1)

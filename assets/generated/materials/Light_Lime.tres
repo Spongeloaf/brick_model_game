@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Light_Lime"
+shading_mode = 0
+albedo_color = Color(0.870588, 0.917647, 0.572549, 1)

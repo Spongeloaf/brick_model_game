@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Pearl_Very_Light_Grey"
+shading_mode = 0
+albedo_color = Color(0.596078, 0.607843, 0.6, 1)

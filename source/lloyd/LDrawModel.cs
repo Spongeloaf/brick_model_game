@@ -89,18 +89,6 @@ namespace LDraw
                 }
             }
 
-            if (mat != null)
-            {
-                // GODOT PORT: I'm not sure if "Mesh" is the correct type to search for.
-                Godot.Collections.Array<Node> childMrs = node.FindChildren("*", "Mesh");
-                foreach (Node child in childMrs)
-                {
-                    Mesh mesh = child.GetNode<Mesh>(node.GetPath());
-                    if (mesh != null)
-                        mesh.SurfaceSetMaterial(0, mat);  // is surface 0 correct????
-                }
-            }
-
             if (verts.Count > 0)
             {
                 MeshInstance3D meshNode = new MeshInstance3D();

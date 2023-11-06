@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Trans_Light_Blue_Violet"
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.419608, 0.670588, 0.894118, 0.5)

@@ -37,6 +37,7 @@ public partial class LdrLoader : Node3D
         Error error = LDrawConfig.Instance.SaveNodeAsScene(node);
         if (error != Error.Ok)
             GD.PrintErr("Error saving scene: " + error.ToString());
+        GetTree().Quit();
     }
 
 }

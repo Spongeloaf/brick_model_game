@@ -18,8 +18,8 @@ namespace LDraw
     {
         protected int _ColorCode = -1;
         protected string _Color;
-
         protected LDrawModel _Parent;
+
         public static LDrawCommand DeserializeCommand(string line, LDrawModel parent)
         {
             LDrawCommand command = null;
@@ -53,6 +53,7 @@ namespace LDraw
                 {
                     command._Color = args[1];
                 }
+
                 command._Parent = parent;
                 command.Deserialize(line);
             }

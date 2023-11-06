@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -33,6 +34,7 @@ namespace LDraw
 
         private const string ConfigPath = "Assets/LDraw-Importer/Editor/Config.asset";
         public const int DefaultMaterialCode = 16;
+        private int _Main_Colour_Code = 16;
 
         public LDrawConfig()
         {
@@ -77,6 +79,11 @@ namespace LDraw
             return _CustomColors[colorString];
         }
 
+        public void SetMainColor(int code)
+        {
+            if (code != _Main_Colour_Code)
+                _MainColors[_Main_Colour_Code] = _MainColors[code];
+        }
 
         private void LoadMaterial(string path, string colorString)
         {
@@ -191,11 +198,17 @@ namespace LDraw
                     if (args.Length <= 1 || args[1] != "!COLOUR")
                         continue;
 
-                    string path = _MaterialsPath + args[2] + ".mat";
-                    if (File.Exists(path))
-                        _MainColors.Add(int.Parse(args[4]), (BaseMaterial3D)ResourceLoader.Load(path));
+                    string path = _MaterialsPath + args[2] + ".tres";
+                    if (File.Exists(ProjectSettings.GlobalizePath(path)))
+                    {
+                        BaseMaterial3D mat = (BaseMaterial3D)ResourceLoader.Load(path);
+                        if (mat != null)
+                            _MainColors.Add(int.Parse(args[4]), mat);
+                    }
                     else
+                    {
                         CreateColor(args, path);
+                    }
                 }
             }
 
@@ -209,7 +222,10 @@ namespace LDraw
                 mat.AlbedoColor = alphaIndex > 0 ? new Color(color.R, color.G, color.B, int.Parse(args[alphaIndex + 1]) / 256f)
                     : color;
 
-                ResourceSaver.Save(mat, path);
+                Error err = ResourceSaver.Save(mat, path);
+                if (err != Error.Ok)
+                    Debug.WriteLine("Failed to save material: " + args[2] + $", error: {err}");
+
                 _MainColors.Add(int.Parse(args[4]), mat);
             }
         }

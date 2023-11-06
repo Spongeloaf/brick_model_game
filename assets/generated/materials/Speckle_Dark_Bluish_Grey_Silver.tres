@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Speckle_Dark_Bluish_Grey_Silver"
+shading_mode = 0
+albedo_color = Color(0.388235, 0.372549, 0.380392, 1)

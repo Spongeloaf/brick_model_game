@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "Pearl_Light_Gold"
+shading_mode = 0
+albedo_color = Color(0.870588, 0.67451, 0.4, 1)

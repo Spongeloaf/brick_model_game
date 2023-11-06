@@ -12,13 +12,6 @@ namespace LDraw
             return new System.Numerics.Vector3(vec.X, vec.Y, vec.Z);
         }
 
-        //public static void ApplyLocalTRS(this Transform3D tr, System.Numerics.Matrix4x4 trs)
-        //{
-        //    tr.Origin = MatrixExtensions.ExtractPosition(trs);
-        //    tr.Basis = new Basis(MatrixExtensions.ExtractRotation(trs));
-        //    tr.Basis = tr.Basis.Scaled(MatrixExtensions.ExtractScale(trs));
-        //}
-
         public static Transform3D GetTransform(System.Numerics.Matrix4x4 trs)
         {
             Transform3D tr = new Transform3D();
@@ -28,29 +21,5 @@ namespace LDraw
             return tr;
         }
 
-        //public static System.Numerics.Matrix4x4 ExtractLocalTRS(this Transform3D tr)
-        //{
-        //    // GODOT PORT: I don't know if this is the right way to do this.
-
-        //    // Original code:
-        //    // Unity.Matrix4x4.TRS() Creates a translation, rotation and scaling matrix
-        //    // return System.Numerics.Matrix4x4.TRS(tr.localPosition, tr.localRotation, tr.localScale);
-
-        //    Godot.Quaternion srcQuat = tr.Basis.GetRotationQuaternion();
-        //    System.Numerics.Quaternion dstQuat = new System.Numerics.Quaternion(srcQuat.X, srcQuat.Y, srcQuat.Z, srcQuat.W);
-
-        //    System.Numerics.Matrix4x4 translation = System.Numerics.Matrix4x4.CreateTranslation(FromGodotVector3(tr.Origin));
-        //    System.Numerics.Matrix4x4 rotation = System.Numerics.Matrix4x4.CreateFromQuaternion(dstQuat);
-        //    System.Numerics.Matrix4x4 scale = System.Numerics.Matrix4x4.CreateScale(FromGodotVector3(tr.Basis.Scale));
-
-        //    return translation + rotation + scale;
-        //}
-
-        //public static void LocalReflect(this Transform3D tr, Vector3 planeNormal)
-        //{
-        //    System.Numerics.Matrix4x4 trs = tr.ExtractLocalTRS();
-        //    System.Numerics.Matrix4x4 reflected = MatrixExtensions.HouseholderReflection(trs, planeNormal);
-        //    tr.ApplyLocalTRS(reflected);
-        //}
     }
 }
