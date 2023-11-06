@@ -45,12 +45,19 @@ namespace LDraw
 			}
 
 			_Model = LDrawModel.Create(_Name, LDrawConfig.Instance.GetSerializedPart(_Name));
-			
-			_Matrix = new System.Numerics.Matrix4x4(
-				param[3], param[6], param[9],  0,
-				param[4], param[7], param[10], 0,
-				param[5], param[8], param[11], 0,
-				param[0], param[1], param[2],  1
+
+            //_Matrix = new System.Numerics.Matrix4x4(
+            //    param[3], param[6], param[9], 0,
+            //    param[4], param[7], param[10], 0,
+            //    param[5], param[8], param[11], 0,
+            //    param[0], param[1], param[2], 1
+            //);
+
+            _Matrix = new System.Numerics.Matrix4x4(
+				param[3], param[6], param[9], param[0],
+				param[4], param[7], param[10], param[1],
+				param[5], param[8], param[11], param[2],
+				0, 0, 0,  1
 			);
 		}
 

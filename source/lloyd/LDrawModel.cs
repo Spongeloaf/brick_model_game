@@ -113,7 +113,6 @@ namespace LDraw
             }
 
             // GODOT PORT: ???
-            //node.Transform.ApplyLocalTRS(trs);
             node.Transform = TransformExtention.GetTransform(trs);
 
             if (parent != null)
