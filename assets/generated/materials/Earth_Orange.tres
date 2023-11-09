@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Earth_Orange"
-shading_mode = 0
 albedo_color = Color(0.847059, 0.427451, 0.172549, 1)

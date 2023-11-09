@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace LDraw
+namespace Lloyd
 {
 	
 	public class LDrawSubFile : LDrawCommand
@@ -44,7 +44,7 @@ namespace LDraw
 				}
 			}
 
-			_Model = LDrawModel.Create(_Name, LDrawConfig.Instance.GetSerializedPart(_Name));
+			_Model = LDrawModel.Create(_Name, LDrawConfig.Instance.GetSerializedPart(_Name), _ColorCode);
             _Matrix = new System.Numerics.Matrix4x4(
 				param[3], param[6], param[9], param[0],
 				param[4], param[7], param[10], param[1],

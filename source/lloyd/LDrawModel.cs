@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Godot;
 
-namespace LDraw
+namespace Lloyd
 {
     public class LDrawModel
     {
@@ -14,6 +14,7 @@ namespace LDraw
         private List<LDrawCommand> _Commands;
         private List<string> _SubModels;
         private static Dictionary<string, LDrawModel> _models = new Dictionary<string, LDrawModel>();
+        public int mainColor;
 
         public string Name
         {
@@ -23,11 +24,11 @@ namespace LDraw
         /// FileFormatVersion 1.0.2;
 
         #region factory
-
-        public static LDrawModel Create(string name, string path)
+        public static LDrawModel Create(string name, string path, int mainColor = 1)
         {
             if (_models.ContainsKey(name)) return _models[name];
             LDrawModel model = new LDrawModel();
+            model.mainColor = mainColor;
             model.ConstructModel(name, path);
 
             return model;
@@ -51,7 +52,7 @@ namespace LDraw
 
                     if (!String.IsNullOrEmpty(line))
                     {
-                        LDrawCommand command = LDrawCommand.DeserializeCommand(line, this);
+                        LDrawCommand command = LDrawCommand.DeserializeCommand(line, this, mainColor);
                         if (command != null)
                             _Commands.Add(command);
                     }
@@ -111,7 +112,6 @@ namespace LDraw
 
         private Mesh PrepareMesh(List<Vector3> verts, List<int> triangles, string name)
         {
-
             Mesh mesh = LDrawConfig.Instance.GetMesh(name);
             if (mesh != null)
                 return mesh;
@@ -145,17 +145,15 @@ namespace LDraw
             foreach (int tri in tris)
                 st.AddIndex(tri);
 
+            // See this link for info about improving this:
+            // https://forums.ldraw.org/thread-23274.html
+            // Its also on Trello
+            // There's two options presented:
+            // 1. Draw each face twice in both directions.
+            // 2. Calculate the normal based on rotation determinants.
             st.GenerateNormals();
             mesh = st.Commit();
             mesh.ResourceName = _Name;
-            //end backface
-
-            //mesh.verts(verts)
-            //mesh.SetTriangles(triangles, 0);
-
-            //mesh.RecalculateNormals();
-            //mesh.RecalculateBounds();
-            //LDrawConfig.Instance.SaveMesh(mesh, mesh.ResourceName);
             return mesh;
         }
 

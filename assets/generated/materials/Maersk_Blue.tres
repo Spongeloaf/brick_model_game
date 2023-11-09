@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Maersk_Blue"
-shading_mode = 0
 albedo_color = Color(0.670588, 0.85098, 1, 1)

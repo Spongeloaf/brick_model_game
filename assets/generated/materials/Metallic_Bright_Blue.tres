@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Metallic_Bright_Blue"
-shading_mode = 0
 albedo_color = Color(0, 0.34902, 0.639216, 1)

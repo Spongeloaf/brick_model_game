@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Main_Colour"
-shading_mode = 0
 albedo_color = Color(1, 1, 0.501961, 1)

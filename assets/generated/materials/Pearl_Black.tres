@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Pearl_Black"
-shading_mode = 0
 albedo_color = Color(0.0392157, 0.0745098, 0.152941, 1)

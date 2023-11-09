@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Godot;
 
 
-namespace LDraw
+namespace Lloyd
 {
     public partial class LDrawConfig : Resource
     {
@@ -34,7 +34,7 @@ namespace LDraw
 
         private const string ConfigPath = "Assets/LDraw-Importer/Editor/Config.asset";
         public const int DefaultMaterialCode = 16;
-        private int _Main_Colour_Code = 16;
+
 
         public LDrawConfig()
         {
@@ -81,8 +81,8 @@ namespace LDraw
 
         public void SetMainColor(int code)
         {
-            if (code != _Main_Colour_Code)
-                _MainColors[_Main_Colour_Code] = _MainColors[code];
+            if (code != Constants.kMainColorCode)
+                _MainColors[Constants.kMainColorCode] = _MainColors[code];
         }
 
         private void LoadMaterial(string path, string colorString)
@@ -222,6 +222,7 @@ namespace LDraw
                 mat.AlbedoColor = alphaIndex > 0 ? new Color(color.R, color.G, color.B, int.Parse(args[alphaIndex + 1]) / 256f)
                     : color;
 
+                mat.ShadingMode = BaseMaterial3D.ShadingModeEnum.PerPixel; 
                 Error err = ResourceSaver.Save(mat, path);
                 if (err != Error.Ok)
                     Debug.WriteLine("Failed to save material: " + args[2] + $", error: {err}");

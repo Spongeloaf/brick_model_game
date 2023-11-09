@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Sand_Red"
-shading_mode = 0
 albedo_color = Color(0.533333, 0.376471, 0.368627, 1)

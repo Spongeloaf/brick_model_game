@@ -3,5 +3,4 @@
 [resource]
 resource_name = "Trans_Clear"
 transparency = 1
-shading_mode = 0
 albedo_color = Color(0.988235, 0.988235, 0.988235, 0.5)

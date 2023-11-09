@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Godot;
 
-namespace LDraw
+namespace Lloyd
 {
 
     public enum CommandType
@@ -14,13 +14,14 @@ namespace LDraw
         Quad = 4
     }
 
+
     public abstract class LDrawCommand
     {
         protected int _ColorCode = -1;
         protected string _Color;
         protected LDrawModel _Parent;
 
-        public static LDrawCommand DeserializeCommand(string line, LDrawModel parent)
+        public static LDrawCommand DeserializeCommand(string line, LDrawModel parent, int parentColor)
         {
             LDrawCommand command = null;
             int type;
@@ -52,6 +53,11 @@ namespace LDraw
                 if (!int.TryParse(args[1], out command._ColorCode))
                 {
                     command._Color = args[1];
+                }
+
+                if (command._ColorCode == Constants.kMainColorCode)
+                {
+                    command._ColorCode = parentColor;
                 }
 
                 command._Parent = parent;

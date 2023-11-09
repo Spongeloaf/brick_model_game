@@ -3,5 +3,4 @@
 [resource]
 resource_name = "Trans_Purple"
 transparency = 1
-shading_mode = 0
 albedo_color = Color(0.647059, 0.647059, 0.796078, 0.5)

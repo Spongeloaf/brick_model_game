@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Rubber_Yellow"
-shading_mode = 0
 albedo_color = Color(0.980392, 0.784314, 0.0392157, 1)

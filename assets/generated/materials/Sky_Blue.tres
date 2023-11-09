@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Sky_Blue"
-shading_mode = 0
 albedo_color = Color(0.466667, 0.788235, 0.847059, 1)

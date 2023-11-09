@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Edge_Colour"
-shading_mode = 0
 albedo_color = Color(0.498039, 0.498039, 0.498039, 1)

@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Coral"
-shading_mode = 0
 albedo_color = Color(1, 0.427451, 0.466667, 1)

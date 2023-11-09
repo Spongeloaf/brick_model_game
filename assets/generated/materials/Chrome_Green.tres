@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Chrome_Green"
-shading_mode = 0
 albedo_color = Color(0.235294, 0.701961, 0.443137, 1)

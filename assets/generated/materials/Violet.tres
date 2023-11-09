@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Violet"
-shading_mode = 0
 albedo_color = Color(0.14902, 0.27451, 0.603922, 1)

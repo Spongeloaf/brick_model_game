@@ -2,5 +2,4 @@
 
 [resource]
 resource_name = "Light_Salmon"
-shading_mode = 0
 albedo_color = Color(0.976471, 0.717647, 0.647059, 1)

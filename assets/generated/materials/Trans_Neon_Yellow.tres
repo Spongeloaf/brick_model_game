@@ -3,5 +3,4 @@
 [resource]
 resource_name = "Trans_Neon_Yellow"
 transparency = 1
-shading_mode = 0
 albedo_color = Color(0.854902, 0.690196, 0, 0.5)

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Godot;
 
-namespace LDraw
+namespace Lloyd
 {
 	public class LDrawTriangle : LDrawCommand
 	{
