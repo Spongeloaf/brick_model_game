@@ -15,13 +15,15 @@ namespace Lloyd
 
     public class LdrawMetaCommand : LDrawCommand
     {
-        public VertexWinding m_winding = VertexWinding.Unknown;
         public bool m_BfcCertified = false;
+        public bool m_invertNext = false;
         public MetaCommands m_command = MetaCommands.Unsupported;
         private readonly string kCW = "CW";
         private readonly string kCCW = "CCW";
         private readonly string kCertify = "CERTIFY";
         private readonly string kNoCertify = "NOCERTIFY";
+        private readonly string kInvertNext = "INVERTNEXT";
+        
 
         public override void Deserialize(string serialized)
         {
@@ -36,7 +38,7 @@ namespace Lloyd
                 DoBfc(tokens);
         }
 
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
+        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
         {
 
         }
@@ -78,6 +80,9 @@ namespace Lloyd
                 m_winding = VertexWinding.Unknown;
                 m_BfcCertified = false;
             }
+
+            if (tokens.Contains(kInvertNext))
+                m_invertNext = true;
         }
     }
 }

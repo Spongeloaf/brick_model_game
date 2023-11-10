@@ -22,9 +22,9 @@ namespace Lloyd
         protected int m_colorCode = -1;
         protected string m_color;
         protected LDrawModel m_parent;
-
+        public VertexWinding m_winding { get; set; } = VertexWinding.Unknown;
         protected Vector3[] m_vertices;
-        public abstract void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding);
+        public abstract void PrepareMeshData(List<int> triangles, List<Vector3> verts);
         public abstract void Deserialize(string serialized);
         protected SurfaceTool m_surfaceTool = new SurfaceTool();
 

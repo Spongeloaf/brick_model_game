@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Godot;
 
+
 namespace Lloyd
 {
     public static class Constants
@@ -30,6 +31,7 @@ namespace Lloyd
         private static Dictionary<string, LDrawModel> _models = new Dictionary<string, LDrawModel>();
         public int mainColor;
         public VertexWinding m_winding = VertexWinding.Unknown;
+        private bool m_bfcInvertNext = false;
 
         public string Name
         {
@@ -91,24 +93,8 @@ namespace Lloyd
             List<int> triangles = new List<int>();
             List<Vector3> verts = new List<Vector3>();
 
-            for (int i = 0; i < _Commands.Count; i++)
-            {
-                LDrawSubFile sfCommand = _Commands[i] as LDrawSubFile;
-                if (sfCommand != null)
-                {
-                    sfCommand.GetModelNode(node, createdNodes);
-                    continue;
-                }
-
-                LdrawMetaCommand metaCommand = _Commands[i] as LdrawMetaCommand;
-                if (metaCommand != null)
-                {
-                    DoMetaCommand(metaCommand);
-                    continue;
-                }
-
-                _Commands[i].PrepareMeshData(triangles, verts, m_winding);
-            }
+            foreach (LDrawCommand cmd in _Commands)
+                ProcessCommand(cmd, node, createdNodes, triangles, verts);
 
             if (verts.Count > 0)
             {
@@ -121,13 +107,36 @@ namespace Lloyd
                     meshNode.Mesh.SurfaceSetMaterial(0, mat);
             }
 
-            // GODOT PORT: ???
             node.Transform = TransformExtention.GetTransform(trs);
-
             if (parent != null)
                 parent.AddChild(node);
 
             return node;
+        }
+
+        private void ProcessCommand(LDrawCommand cmd, Node3D node, List<Node> createdNodes, List<int> triangles, List<Vector3> verts)
+        {
+            // This simplifies the logic in the loop. If we break early
+            // we don't have to remember to set InvertNext to false.
+            bool invertNext = m_bfcInvertNext;
+            if (m_bfcInvertNext)
+                m_bfcInvertNext = false;
+
+            LDrawSubFile sfCommand = cmd as LDrawSubFile;
+            if (sfCommand != null)
+            {
+                sfCommand.GetModelNode(node, createdNodes);
+                return;
+            }
+
+            LdrawMetaCommand metaCommand = cmd as LdrawMetaCommand;
+            if (metaCommand != null)
+            {
+                DoMetaCommand(metaCommand);
+                return;
+            }
+            cmd.m_winding = GetWindingForThisCommand(invertNext, m_winding);
+            cmd.PrepareMeshData(triangles, verts);
         }
 
         private void DoMetaCommand(LdrawMetaCommand metaComand)
@@ -135,6 +144,12 @@ namespace Lloyd
             switch (metaComand.m_command)
             {
                 case MetaCommands.BFC:
+                    m_bfcInvertNext = metaComand.m_invertNext;
+
+                    // Don't lose the previous winding order if this command is just INVERTNEXT
+                    if (m_bfcInvertNext)
+                        break;
+
                     m_winding = metaComand.m_winding;
                     break;
                 default:
@@ -183,7 +198,26 @@ namespace Lloyd
             return mesh;
         }
 
+        private static VertexWinding GetWindingForThisCommand(bool invert, VertexWinding winding)
+        {
+            if (winding == VertexWinding.Unknown)
+                return VertexWinding.Unknown;
+
+            VertexWinding result = winding;
+            if (invert)
+            {
+                if (winding == VertexWinding.CCW)
+                    result = VertexWinding.CW;
+                else
+                    result = VertexWinding.CCW;
+            }
+            return result;
+        }
+        
+        
         #endregion
+
+
 
         private LDrawModel()
         {

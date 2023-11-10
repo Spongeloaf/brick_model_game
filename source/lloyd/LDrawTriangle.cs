@@ -6,7 +6,7 @@ namespace Lloyd
 {
 	public class LDrawTriangle : LDrawCommand
 	{
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
+        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
         {
 			if (m_vertices.Length != 3)
 			{
@@ -14,25 +14,39 @@ namespace Lloyd
 				return;
 			}
 
-			if (winding == VertexWinding.CCW)
-			{
-				Vector3 tmp = m_vertices[0];
-				m_vertices[0] = m_vertices[1];
-				m_vertices[1] = tmp;
-			}
-            
-			var vertLen = verts.Count;
-			for (int i = 0; i < 3; i++)
-			{
-				triangles.Add(vertLen + i);
-			}
+			if (m_winding == VertexWinding.CCW)
+				FlipWinding();
 
-			for (int i = 0; i < m_vertices.Length; i++)
-			{
-				verts.Add(m_vertices[i]);
-			}
+			AddMeshData(triangles, verts);
 
-		}
+			if (m_winding != VertexWinding.Unknown)
+				return;
+
+			// If the winding is unknown, we pulicate the faces and flip the winding
+			FlipWinding();
+			AddMeshData(triangles, verts);
+        }
+
+		private void AddMeshData(List<int> triangles, List<Vector3> verts)
+		{
+            var vertLen = verts.Count;
+            for (int i = 0; i < 3; i++)
+            {
+                triangles.Add(vertLen + i);
+            }
+
+            for (int i = 0; i < m_vertices.Length; i++)
+            {
+                verts.Add(m_vertices[i]);
+            }
+        }
+
+		private void FlipWinding()
+		{
+            Vector3 tmp = m_vertices[0];
+			m_vertices[0] = m_vertices[1];
+			m_vertices[1] = tmp;
+        }
 
 		public override void Deserialize(string serialized)
 		{

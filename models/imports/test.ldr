@@ -11,5 +11,7 @@
 0 Name:  [quad_plane]
 0 Author: 
 0 BFC CCW
+3 03 -10 0 10 -10 0 -10 -20 0 0
+0 BFC INVERTNEXT
 4 02 -10 0 10 -10 0 -10 10 0 -10 10 0 10
 0 NOFILE

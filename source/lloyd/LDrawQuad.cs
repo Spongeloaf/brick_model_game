@@ -7,7 +7,7 @@ namespace Lloyd
 {
     public class LDrawQuad : LDrawCommand
     {
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
+        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
         {
             if (m_vertices.Length != 4)
             {
@@ -26,7 +26,7 @@ namespace Lloyd
             Vector3 nB = tmp.Cross(v[2] - v[0]);
 
             int vertLen = verts.Count;
-            if (winding == VertexWinding.CCW)
+            if (m_winding == VertexWinding.CCW || m_winding == VertexWinding.Unknown)
             {
                 triangles.AddRange(new[]
                 {
@@ -53,21 +53,16 @@ namespace Lloyd
 
 
             int[] indexes = nA.Dot(nB) < 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
-            
-            //int[] indexes = null;
-            //if (winding == VertexWinding.CCW)
-            //{
-            //    indexes = nA.Dot(nB) > 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
-            //}
-            //else
-            //{
-            //    indexes = nA.Dot(nB) > 0 ? new int[] { 0, 1, 2, 3 } : new int[] { 0, 1, 3, 2 };
-            //}
-
-
             for (int i = 0; i < indexes.Length; i++)
             {
                 verts.Add(v[indexes[i]]);
+            }
+
+            // This is dirty......
+            if (m_winding == VertexWinding.Unknown)
+            {
+                m_winding = VertexWinding.CW;
+                PrepareMeshData(triangles, verts);
             }
         }
 
