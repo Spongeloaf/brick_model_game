@@ -17,7 +17,7 @@ namespace Lloyd
 			_Model.CreateMeshGameObject(_Matrix, GetMaterial(), parent, createdNodes);
 		}
 
-		public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
+        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
         {
 			 
 		}

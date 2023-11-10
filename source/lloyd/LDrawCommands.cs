@@ -23,9 +23,10 @@ namespace Lloyd
         protected string m_color;
         protected LDrawModel m_parent;
 
-        protected Vector3[] _Verts;
+        protected Vector3[] m_vertices;
         public abstract void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding);
         public abstract void Deserialize(string serialized);
+        protected SurfaceTool m_surfaceTool = new SurfaceTool();
 
 
         public static LDrawCommand DeserializeCommand(string line, LDrawModel parent, int parentColor)

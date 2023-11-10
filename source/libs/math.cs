@@ -176,5 +176,13 @@ public static class Math
     target.Y = pawn.Origin.Y;
     Transform3D looking = pawn.LookingAt(target, Vector3.Up);
     return looking.Basis.GetRotationQuaternion();
-  }
+   }
+
+    public static Vector3 CalculateNormal(Vector3 x0, Vector3 x1, Vector3 x2)
+    {
+        Vector3 v0 = x0 - x2;
+        Vector3 v1 = x1 - x2;
+        Vector3 n = v0.Cross(v1);
+        return n.Normalized();
+    }
 }

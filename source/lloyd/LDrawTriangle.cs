@@ -6,18 +6,30 @@ namespace Lloyd
 {
 	public class LDrawTriangle : LDrawCommand
 	{
-		public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
+        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
         {
-			var vertLen = verts.Count;
+			if (m_vertices.Length != 3)
+			{
+				GD.PrintErr("Triangle command must have 3 vertices");
+				return;
+			}
 
+			if (winding == VertexWinding.CCW)
+			{
+				Vector3 tmp = m_vertices[0];
+				m_vertices[0] = m_vertices[1];
+				m_vertices[1] = tmp;
+			}
+            
+			var vertLen = verts.Count;
 			for (int i = 0; i < 3; i++)
 			{
 				triangles.Add(vertLen + i);
 			}
 
-			for (int i = 0; i < _Verts.Length; i++)
+			for (int i = 0; i < m_vertices.Length; i++)
 			{
-				verts.Add(_Verts[i]);
+				verts.Add(m_vertices[i]);
 			}
 
 		}
@@ -39,7 +51,7 @@ namespace Lloyd
 				}
 			}
 
-			_Verts = new Vector3[]
+			m_vertices = new Vector3[]
 			{
 				new Vector3(param[0], param[1], param[2]),
 				new Vector3(param[3], param[4], param[5]),

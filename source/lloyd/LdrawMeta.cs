@@ -44,7 +44,6 @@ namespace Lloyd
         private void DoBfc(string[] tokens)
         {
             // Refernce: https://www.ldraw.org/article/415.html
-
             m_command = MetaCommands.BFC;
             m_BfcCertified = false;
 

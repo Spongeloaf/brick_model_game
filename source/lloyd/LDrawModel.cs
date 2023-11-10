@@ -88,7 +88,6 @@ namespace Lloyd
             Node3D node = new Node3D();
             node.Name = _Name;
             createdNodes.Add(node);
-
             List<int> triangles = new List<int>();
             List<Vector3> verts = new List<Vector3>();
 
@@ -178,6 +177,7 @@ namespace Lloyd
             foreach (int tri in tris)
                 st.AddIndex(tri);
 
+            st.GenerateNormals();
             mesh = st.Commit();
             mesh.ResourceName = _Name;
             return mesh;

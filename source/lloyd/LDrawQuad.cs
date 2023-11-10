@@ -9,28 +9,61 @@ namespace Lloyd
     {
         public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
         {
+            if (m_vertices.Length != 4)
+            {
+                GD.PrintErr("Quad command must have 4 vertices");
+                return;
+            }
+
             // Why do we need nA and nB, when they're the same value?
             // Was there someting else I was missing? Vertex winding or similar?
             //var nA = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
             //var nB = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
 
-            Vector3[] v = _Verts;
+            Vector3[] v = m_vertices;
             Vector3 tmp = v[1] - v[0];
             Vector3 nA = tmp.Cross(v[2] - v[0]);
             Vector3 nB = tmp.Cross(v[2] - v[0]);
 
             int vertLen = verts.Count;
-            triangles.AddRange(new[]
+            if (winding == VertexWinding.CCW)
             {
-                vertLen + 1,
-                vertLen + 2,
+                triangles.AddRange(new[]
+                {
                 vertLen,
                 vertLen + 1,
+                vertLen + 2,
+                vertLen + 2,
                 vertLen + 3,
-                vertLen + 2
-            });
+                vertLen 
+                });
+            }
+            else
+            {
+                triangles.AddRange(new[]
+                {
+                vertLen + 1,
+                vertLen,
+                vertLen + 2,
+                vertLen + 2,
+                vertLen,
+                vertLen + 3,
+                });
+            }
 
-            int[] indexes = nA.Dot(nB) > 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
+
+            int[] indexes = nA.Dot(nB) < 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
+            
+            //int[] indexes = null;
+            //if (winding == VertexWinding.CCW)
+            //{
+            //    indexes = nA.Dot(nB) > 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
+            //}
+            //else
+            //{
+            //    indexes = nA.Dot(nB) > 0 ? new int[] { 0, 1, 2, 3 } : new int[] { 0, 1, 3, 2 };
+            //}
+
 
             for (int i = 0; i < indexes.Length; i++)
             {
@@ -55,7 +88,7 @@ namespace Lloyd
                 }
             }
 
-            _Verts = new Vector3[]
+            m_vertices = new Vector3[]
             {
                 new Vector3(param[0], param[1], param[2]),
                 new Vector3(param[3], param[4], param[5]),
