@@ -6,6 +6,20 @@ using Godot;
 
 namespace Lloyd
 {
+    public static class Constants
+    {
+        public static readonly int kMainColorCode = 16;
+        public static readonly string kBFC = "BFC";
+    }
+
+    public enum VertexWinding
+    {
+        CCW,
+        CW,
+        Unknown,
+    }
+
+
     public class LDrawModel
     {
         #region fields and properties
@@ -15,6 +29,7 @@ namespace Lloyd
         private List<string> _SubModels;
         private static Dictionary<string, LDrawModel> _models = new Dictionary<string, LDrawModel>();
         public int mainColor;
+        public VertexWinding m_winding = VertexWinding.Unknown;
 
         public string Name
         {
@@ -80,14 +95,20 @@ namespace Lloyd
             for (int i = 0; i < _Commands.Count; i++)
             {
                 LDrawSubFile sfCommand = _Commands[i] as LDrawSubFile;
-                if (sfCommand == null)
-                {
-                    _Commands[i].PrepareMeshData(triangles, verts);
-                }
-                else
+                if (sfCommand != null)
                 {
                     sfCommand.GetModelNode(node, createdNodes);
+                    continue;
                 }
+
+                LdrawMetaCommand metaCommand = _Commands[i] as LdrawMetaCommand;
+                if (metaCommand != null)
+                {
+                    DoMetaCommand(metaCommand);
+                    continue;
+                }
+
+                _Commands[i].PrepareMeshData(triangles, verts, m_winding);
             }
 
             if (verts.Count > 0)
@@ -108,6 +129,18 @@ namespace Lloyd
                 parent.AddChild(node);
 
             return node;
+        }
+
+        private void DoMetaCommand(LdrawMetaCommand metaComand)
+        {
+            switch (metaComand.m_command)
+            {
+                case MetaCommands.BFC:
+                    m_winding = metaComand.m_winding;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private Mesh PrepareMesh(List<Vector3> verts, List<int> triangles, string name)
@@ -145,13 +178,6 @@ namespace Lloyd
             foreach (int tri in tris)
                 st.AddIndex(tri);
 
-            // See this link for info about improving this:
-            // https://forums.ldraw.org/thread-23274.html
-            // Its also on Trello
-            // There's two options presented:
-            // 1. Draw each face twice in both directions.
-            // 2. Calculate the normal based on rotation determinants.
-            st.GenerateNormals();
             mesh = st.Commit();
             mesh.ResourceName = _Name;
             return mesh;

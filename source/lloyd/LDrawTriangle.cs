@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Godot;
 
@@ -7,8 +6,8 @@ namespace Lloyd
 {
 	public class LDrawTriangle : LDrawCommand
 	{
-		public override void PrepareMeshData( List<int> triangles, List<Vector3> verts)
-		{
+		public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
+        {
 			var vertLen = verts.Count;
 
 			for (int i = 0; i < 3; i++)

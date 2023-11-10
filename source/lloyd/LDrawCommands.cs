@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Godot;
 
 namespace Lloyd
@@ -9,6 +10,7 @@ namespace Lloyd
 
     public enum CommandType
     {
+        meta = 0,
         SubFile = 1,
         Triangle = 3,
         Quad = 4
@@ -17,15 +19,25 @@ namespace Lloyd
 
     public abstract class LDrawCommand
     {
-        protected int _ColorCode = -1;
-        protected string _Color;
-        protected LDrawModel _Parent;
+        protected int m_colorCode = -1;
+        protected string m_color;
+        protected LDrawModel m_parent;
+
+        protected Vector3[] _Verts;
+        public abstract void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding);
+        public abstract void Deserialize(string serialized);
+
 
         public static LDrawCommand DeserializeCommand(string line, LDrawModel parent, int parentColor)
         {
             LDrawCommand command = null;
             int type;
             var args = line.Split(' ');
+
+            if (args.Length < 2)
+                return null;
+
+
             if (Int32.TryParse(args[0], out type))
             {
                 var commandType = (CommandType)type;
@@ -41,35 +53,29 @@ namespace Lloyd
                     case CommandType.Quad:
                         command = new LDrawQuad();
                         break;
+                    case CommandType.meta:
+                        command = new LdrawMetaCommand();
+                        break;
                 }
-            }
-            else
-            {
-                GD.Print("Skipped line : " + line);
             }
 
             if (command != null)
             {
-                if (!int.TryParse(args[1], out command._ColorCode))
+                if (!int.TryParse(args[1], out command.m_colorCode))
                 {
-                    command._Color = args[1];
+                    command.m_color = args[1];
                 }
 
-                if (command._ColorCode == Constants.kMainColorCode)
+                if (command.m_colorCode == Constants.kMainColorCode)
                 {
-                    command._ColorCode = parentColor;
+                    command.m_colorCode = parentColor;
                 }
 
-                command._Parent = parent;
+                command.m_parent = parent;
                 command.Deserialize(line);
             }
 
             return command;
         }
-
-        protected Vector3[] _Verts;
-        public abstract void PrepareMeshData(List<int> triangles, List<Vector3> verts);
-        public abstract void Deserialize(string serialized);
-
     }
 }

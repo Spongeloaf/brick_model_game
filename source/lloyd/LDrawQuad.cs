@@ -1,19 +1,20 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Godot;
+
 
 namespace Lloyd
 {
     public class LDrawQuad : LDrawCommand
     {
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
+        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
         {
+            // Why do we need nA and nB, when they're the same value?
+            // Was there someting else I was missing? Vertex winding or similar?
             //var nA = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
             //var nB = Vector3.Cross(v[1] - v[0], v[2] - v[0]);
 
             Vector3[] v = _Verts;
-            // Why do we need nA and nB, when they're the same value?
             Vector3 tmp = v[1] - v[0];
             Vector3 nA = tmp.Cross(v[2] - v[0]);
             Vector3 nB = tmp.Cross(v[2] - v[0]);
@@ -30,11 +31,10 @@ namespace Lloyd
             });
 
             int[] indexes = nA.Dot(nB) > 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
+
             for (int i = 0; i < indexes.Length; i++)
             {
-                Vector3 bob = v[indexes[i]];
-                verts.Add(bob);
-                //verts.Add(v[indexes[i]]);
+                verts.Add(v[indexes[i]]);
             }
         }
 

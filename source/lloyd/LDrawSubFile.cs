@@ -17,8 +17,8 @@ namespace Lloyd
 			_Model.CreateMeshGameObject(_Matrix, GetMaterial(), parent, createdNodes);
 		}
 
-		public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
-		{
+		public override void PrepareMeshData(List<int> triangles, List<Vector3> verts, VertexWinding winding)
+        {
 			 
 		}
 
@@ -44,7 +44,7 @@ namespace Lloyd
 				}
 			}
 
-			_Model = LDrawModel.Create(_Name, LDrawConfig.Instance.GetSerializedPart(_Name), _ColorCode);
+			_Model = LDrawModel.Create(_Name, LDrawConfig.Instance.GetSerializedPart(_Name), m_colorCode);
             _Matrix = new System.Numerics.Matrix4x4(
 				param[3], param[6], param[9], param[0],
 				param[4], param[7], param[10], param[1],
@@ -58,11 +58,11 @@ namespace Lloyd
 			if(_Extension == ".ldr") 
 				return  null;
 			
-			if (_ColorCode > 0) 
-				return LDrawConfig.Instance.GetColoredMaterial(_ColorCode);
+			if (m_colorCode > 0) 
+				return LDrawConfig.Instance.GetColoredMaterial(m_colorCode);
 			
-			if (_Color != null) 
-				return LDrawConfig.Instance.GetColoredMaterial(_Color);
+			if (m_color != null) 
+				return LDrawConfig.Instance.GetColoredMaterial(m_color);
 			
 			return LDrawConfig.Instance.GetColoredMaterial(0);
 		}
