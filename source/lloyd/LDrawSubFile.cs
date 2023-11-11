@@ -11,10 +11,11 @@ namespace Lloyd
 		private string _Extension;
 		private System.Numerics.Matrix4x4 _Matrix;
 		private LDrawModel _Model;
-
-		public void GetModelNode(Node3D parent, List<Node> createdNodes)
+		
+		public void GetModelNode(Node3D parent, List<Node> createdNodes, bool inverted)
 		{
-			_Model.CreateMeshGameObject(_Matrix, GetMaterial(), parent, createdNodes);
+			_Model.m_inverted = inverted;
+            _Model.CreateMeshGameObject(_Matrix, GetMaterial(), parent, createdNodes);
 		}
 
         public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)

@@ -51,7 +51,6 @@ namespace Lloyd
                 });
             }
 
-
             int[] indexes = nA.Dot(nB) < 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
             for (int i = 0; i < indexes.Length; i++)
             {

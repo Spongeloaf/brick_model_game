@@ -32,6 +32,7 @@ namespace Lloyd
         public int mainColor;
         public VertexWinding m_winding = VertexWinding.Unknown;
         private bool m_bfcInvertNext = false;
+        public bool m_inverted = false; // True when the subfile is inverted by a BFC INVERTNEXT command in the parent file.
 
         public string Name
         {
@@ -125,7 +126,7 @@ namespace Lloyd
             LDrawSubFile sfCommand = cmd as LDrawSubFile;
             if (sfCommand != null)
             {
-                sfCommand.GetModelNode(node, createdNodes);
+                sfCommand.GetModelNode(node, createdNodes, invertNext);
                 return;
             }
 
@@ -198,10 +199,14 @@ namespace Lloyd
             return mesh;
         }
 
-        private static VertexWinding GetWindingForThisCommand(bool invert, VertexWinding winding)
+        private VertexWinding GetWindingForThisCommand(bool invert, VertexWinding winding)
         {
             if (winding == VertexWinding.Unknown)
                 return VertexWinding.Unknown;
+
+            // This should only be true when BFC INVERTNEXT is used in the parent file.
+            if (m_inverted)
+                invert = !invert;
 
             VertexWinding result = winding;
             if (invert)
