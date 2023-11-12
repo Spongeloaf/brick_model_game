@@ -6,16 +6,16 @@ using System.Collections.Generic;
 public partial class LdrLoader : Node3D
 {
     // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
+    public void Load(string target)
     {
-        string result = LDrawConfig.Instance.GetModelByFileName("test");
+        string result = LDrawConfig.Instance.GetModelByFileName(target);
         if (result == null)
             return;
 
         //string fileName = "C:\\dev\\brick_model_game\\models\\gangster_groups.ldr";
 
         var zz = LDrawConfig.Instance.GetSerializedPart(result);
-        LDrawModel model = LDrawModel.Create("test", zz);
+        LDrawModel model = LDrawModel.Create(target, zz);
         List<Node> createdNodes = new List<Node>();
         Node3D node = model.CreateMeshGameObject(System.Numerics.Matrix4x4.Identity, null, null, createdNodes);
 
@@ -37,7 +37,14 @@ public partial class LdrLoader : Node3D
         Error error = LDrawConfig.Instance.SaveNodeAsScene(node);
         if (error != Error.Ok)
             GD.PrintErr("Error saving scene: " + error.ToString());
-        GetTree().Quit();
+
     }
 
+    public override void _Ready()
+    {
+        Load("test");
+        Load("brick");
+        Load("standard_minifig");
+        GetTree().Quit();
+    }
 }

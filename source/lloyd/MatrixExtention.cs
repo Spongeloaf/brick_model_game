@@ -35,9 +35,9 @@ namespace Lloyd
         public static Vector3 ExtractPosition(in System.Numerics.Matrix4x4 matrix)
         {
             Vector3 position;
-            position.X = matrix.M14;
-            position.Y = matrix.M24;
-            position.Z = matrix.M34;
+            position.X = matrix.M41;
+            position.Y = matrix.M42;
+            position.Z = matrix.M43;
             return position;
         }
 

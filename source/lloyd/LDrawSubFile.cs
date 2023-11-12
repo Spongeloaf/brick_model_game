@@ -46,13 +46,24 @@ namespace Lloyd
 			}
 
 			_Model = LDrawModel.Create(_Name, LDrawConfig.Instance.GetSerializedPart(_Name), m_colorCode);
+            System.Numerics.Matrix4x4 mat = System.Numerics.Matrix4x4.CreateTranslation(4, 5, 6);
+			
+			// Packing the martix with transform in the right column
+			//_Matrix = new System.Numerics.Matrix4x4(
+			//	param[3], param[6], param[9], param[0],
+			//	param[4], param[7], param[10], param[1],
+			//	param[5], param[8], param[11], param[2],
+			//	0, 0, 0,  1
+			//);
+
+			// Packing the martix with transform in the bottom row.
             _Matrix = new System.Numerics.Matrix4x4(
-				param[3], param[6], param[9], param[0],
-				param[4], param[7], param[10], param[1],
-				param[5], param[8], param[11], param[2],
-				0, 0, 0,  1
-			);
-		}
+                param[3], param[6], param[9], 0,
+                param[4], param[7], param[10], 0,
+                param[5], param[8], param[11], 0,
+                param[0], param[1], param[2], 1
+            );
+        }
 
 		private Material GetMaterial()
 		{
