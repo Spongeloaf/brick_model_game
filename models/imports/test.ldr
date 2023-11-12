@@ -2,7 +2,7 @@
 0 PLANE
 0 Name:  planey boi
 0 Author:  Peter Vandergragt
-1 4 -10 0 10 1 0 0 0 1 0 0 0 1 [quad_plane]
+1 7 0 0 -10 1 0 0 0 1 0 0 0 1 [quad_plane]
 0 CustomBrick
 0 NumOfBricks:  19
 0 NOFILE
@@ -10,7 +10,5 @@
 0 [quad_plane]
 0 Name:  [quad_plane]
 0 Author: 
-0 BFC CCW
-0 1 16 0 0 0 1 0 0 0 1 0 0 0 1 s\3003s01.dat
-4 16 -20 24 -20 20 24 -20 20 0 -20 -20 0 -20
+1 7 -240 -24 50 1 0 0 0 1 0 0 0 1 3004.dat
 0 NOFILE

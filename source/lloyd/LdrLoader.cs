@@ -8,14 +8,14 @@ public partial class LdrLoader : Node3D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        string result = LDrawConfig.Instance.GetModelByFileName("brick");
+        string result = LDrawConfig.Instance.GetModelByFileName("test");
         if (result == null)
             return;
 
         //string fileName = "C:\\dev\\brick_model_game\\models\\gangster_groups.ldr";
 
         var zz = LDrawConfig.Instance.GetSerializedPart(result);
-        LDrawModel model = LDrawModel.Create("brick", zz);
+        LDrawModel model = LDrawModel.Create("test", zz);
         List<Node> createdNodes = new List<Node>();
         Node3D node = model.CreateMeshGameObject(System.Numerics.Matrix4x4.Identity, null, null, createdNodes);
 
