@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using Godot;
+using lloyd;
 
-
-namespace Lloyd
+namespace lloyd
 {
     public static class Constants
     {
@@ -26,13 +26,13 @@ namespace Lloyd
         #region fields and properties
 
         private string _Name;
-        private List<LDrawCommand> _Commands;
-        private List<string> _SubModels;
+        public int m_mainColor;
+        private List<LDrawCommand> m_commands;
         private static Dictionary<string, LDrawModel> _models = new Dictionary<string, LDrawModel>();
-        public int mainColor;
         public VertexWinding m_winding = VertexWinding.Unknown;
         private bool m_bfcInvertNext = false;
         public bool m_inverted = false; // True when the subfile is inverted by a BFC INVERTNEXT command in the parent file.
+        private MeshManager m_meshManager = new MeshManager();
 
         public string Name
         {
@@ -46,7 +46,7 @@ namespace Lloyd
         {
             if (_models.ContainsKey(name)) return _models[name];
             LDrawModel model = new LDrawModel();
-            model.mainColor = mainColor;
+            model.m_mainColor = mainColor;
             model.ConstructModel(name, path);
 
             return model;
@@ -59,7 +59,7 @@ namespace Lloyd
         private void ConstructModel(string name, string serialized)
         {
             _Name = name;
-            _Commands = new List<LDrawCommand>();
+            m_commands = new List<LDrawCommand>();
             using (StringReader reader = new StringReader(serialized))
             {
                 string line;
@@ -70,9 +70,9 @@ namespace Lloyd
 
                     if (!String.IsNullOrEmpty(line))
                     {
-                        LDrawCommand command = LDrawCommand.DeserializeCommand(line, this, mainColor);
+                        LDrawCommand command = LDrawCommand.DeserializeCommand(line, m_mainColor);
                         if (command != null)
-                            _Commands.Add(command);
+                            m_commands.Add(command);
                     }
                 }
             }
@@ -85,7 +85,7 @@ namespace Lloyd
 
         public Node3D CreateMeshGameObject(System.Numerics.Matrix4x4 trs, Material mat, Node parent, List<Node> createdNodes)
         {
-            if (_Commands.Count == 0)
+            if (m_commands.Count == 0)
                 return null;
 
             Node3D node = new Node3D();
@@ -94,7 +94,7 @@ namespace Lloyd
             List<int> triangles = new List<int>();
             List<Vector3> verts = new List<Vector3>();
 
-            foreach (LDrawCommand cmd in _Commands)
+            foreach (LDrawCommand cmd in m_commands)
                 ProcessCommand(cmd, node, createdNodes, triangles, verts);
 
             if (verts.Count > 0)
@@ -137,7 +137,7 @@ namespace Lloyd
                 return;
             }
             cmd.m_winding = GetWindingForThisCommand(invertNext, m_winding);
-            cmd.PrepareMeshData(triangles, verts);
+            cmd.PrepareMeshData(m_meshManager);
         }
 
         private void DoMetaCommand(LdrawMetaCommand metaComand)
@@ -222,11 +222,72 @@ namespace Lloyd
         
         #endregion
 
+        protected LDrawModel() {}
+    }
 
+    public class LDrawPart
+    {
+        MeshManager m_meshMgr;
+        public int m_mainColor;
+        private List<LDrawCommand> m_commands;
 
-        private LDrawModel()
+        // The primitive is used for parts, and also the triangles and quads that make up the parts.
+        public LDrawPart(MeshManager meshMgr, int mainColor) 
         {
+            m_mainColor = mainColor;
+            m_meshMgr = meshMgr;
+            if (m_meshMgr == null)
+                throw new Exception("MeshManager cannot be null");
+        }
 
+
+        public void CreatePartMesh(string serialized)
+        {
+            m_commands = new List<LDrawCommand>();
+            using (StringReader reader = new StringReader(serialized))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                    line = regex.Replace(line, " ").Trim();
+
+                    if (!String.IsNullOrEmpty(line))
+                    {
+                        LDrawCommand command = LDrawCommand.DeserializeCommand(line, m_mainColor);
+                        if (command != null)
+                            m_commands.Add(command);
+                    }
+                }
+            }
+
+            foreach (LDrawCommand cmd in m_commands)
+                ProcessCommand(cmd);
+        }
+
+        private void ProcessCommand(LDrawCommand cmd, List<Node> createdNodes, List<int> triangles, List<Vector3> verts)
+        {
+            // This simplifies the logic in the loop. If we break early
+            // we don't have to remember to set InvertNext to false.
+            bool invertNext = m_bfcInvertNext;
+            if (m_bfcInvertNext)
+                m_bfcInvertNext = false;
+
+            LDrawSubFile sfCommand = cmd as LDrawSubFile;
+            if (sfCommand != null)
+            {
+                sfCommand.GetModelNode(node, createdNodes, invertNext);
+                return;
+            }
+
+            LdrawMetaCommand metaCommand = cmd as LdrawMetaCommand;
+            if (metaCommand != null)
+            {
+                DoMetaCommand(metaCommand);
+                return;
+            }
+            cmd.m_winding = GetWindingForThisCommand(invertNext, m_winding);
+            cmd.PrepareMeshData(m_meshManager);
         }
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using Godot;
 
 
-namespace Lloyd
+namespace lloyd
 {
     public class LDrawQuad : LDrawCommand
     {
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
+        public override void PrepareMeshData(MeshManager meshMgr)
         {
             if (m_vertices.Length != 4)
             {
@@ -25,10 +25,10 @@ namespace Lloyd
             Vector3 nA = tmp.Cross(v[2] - v[0]);
             Vector3 nB = tmp.Cross(v[2] - v[0]);
 
-            int vertLen = verts.Count;
+            int vertLen = meshMgr.verts.Count;
             if (m_winding == VertexWinding.CCW || m_winding == VertexWinding.Unknown)
             {
-                triangles.AddRange(new[]
+                meshMgr.triangles.AddRange(new[]
                 {
                 vertLen,
                 vertLen + 1,
@@ -40,7 +40,7 @@ namespace Lloyd
             }
             else
             {
-                triangles.AddRange(new[]
+                meshMgr.triangles.AddRange(new[]
                 {
                 vertLen + 1,
                 vertLen,
@@ -54,14 +54,14 @@ namespace Lloyd
             int[] indexes = nA.Dot(nB) < 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
             for (int i = 0; i < indexes.Length; i++)
             {
-                verts.Add(v[indexes[i]]);
+                meshMgr.verts.Add(v[indexes[i]]);
             }
 
             // This is dirty......
             if (m_winding == VertexWinding.Unknown)
             {
                 m_winding = VertexWinding.CW;
-                PrepareMeshData(triangles, verts);
+                PrepareMeshData(meshMgr);
             }
         }
 

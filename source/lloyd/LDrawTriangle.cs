@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Lloyd
+namespace lloyd
 {
 	public class LDrawTriangle : LDrawCommand
 	{
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
+        public override void PrepareMeshData(MeshManager meshMgr)
         {
 			if (m_vertices.Length != 3)
 			{
@@ -17,14 +17,14 @@ namespace Lloyd
 			if (m_winding == VertexWinding.CCW)
 				FlipWinding();
 
-			AddMeshData(triangles, verts);
+			AddMeshData(meshMgr.triangles, meshMgr.verts);
 
 			if (m_winding != VertexWinding.Unknown)
 				return;
 
 			// If the winding is unknown, we pulicate the faces and flip the winding
 			FlipWinding();
-			AddMeshData(triangles, verts);
+			AddMeshData(meshMgr.triangles, meshMgr.verts);
         }
 
 		private void AddMeshData(List<int> triangles, List<Vector3> verts)

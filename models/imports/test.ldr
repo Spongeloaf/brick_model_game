@@ -2,16 +2,15 @@
 0 PLANE
 0 Name:  planey boi
 0 Author:  Peter Vandergragt
-1 7 0 0 0 1 0 0 0 1 0 0 0 1 [quad_plane]
+1 7 0 0 0 1 0 0 0 1 0 0 0 1 [prop:quad_plane]
 0 CustomBrick
 0 NumOfBricks:  19
 0 NOFILE
-0 FILE [quad_plane]
-0 [quad_plane]
-0 Name:  [quad_plane]
+0 FILE [prop:quad_plane]
+0 [prop:quad_plane]
+0 Name:  [prop:quad_plane]
 0 Author: 
 0 BFC INVERTNEXT
 1 16 0 0 0 1 0 0 0 1 0 0 0 1 1-8sphe.dat
-
 1 16 0 0 0 1 0 0 0 1 0 0 0 -1 1-8sphe.dat
 0 NOFILE

@@ -2,10 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Lloyd
+
+namespace lloyd
 {
     public enum MetaCommands
     {
@@ -38,7 +37,7 @@ namespace Lloyd
                 DoBfc(tokens);
         }
 
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
+        public override void PrepareMeshData(MeshManager meshMgr)
         {
 
         }

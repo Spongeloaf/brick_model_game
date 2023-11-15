@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 using System;
 
-namespace Lloyd
+namespace lloyd
 {
     public static class TransformExtention
     {

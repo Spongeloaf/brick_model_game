@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Godot;
 
-namespace Lloyd
+namespace lloyd
 {
 	
 	public class LDrawSubFile : LDrawCommand
@@ -18,7 +18,12 @@ namespace Lloyd
             _Model.CreateMeshGameObject(_Matrix, GetMaterial(), parent, createdNodes);
 		}
 
-        public override void PrepareMeshData(List<int> triangles, List<Vector3> verts)
+		public void GetPart()
+		{
+
+		}
+
+        public override void PrepareMeshData(MeshManager meshMgr)
         {
 			 
 		}

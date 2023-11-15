@@ -1,7 +1,7 @@
 ﻿using System;
 using Godot;
 
-namespace Lloyd
+namespace lloyd
 {
 
     public static class MatrixExtensions

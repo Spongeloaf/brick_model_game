@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Godot;
 
 
-namespace Lloyd
+namespace lloyd
 {
     public partial class LDrawConfig : Resource
     {

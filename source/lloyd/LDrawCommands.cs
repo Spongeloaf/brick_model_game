@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Godot;
+using lloyd;
 
-namespace Lloyd
+namespace lloyd
 {
 
     public enum CommandType
@@ -21,15 +22,14 @@ namespace Lloyd
     {
         protected int m_colorCode = -1;
         protected string m_color;
-        protected LDrawModel m_parent;
         public VertexWinding m_winding { get; set; } = VertexWinding.Unknown;
         protected Vector3[] m_vertices;
-        public abstract void PrepareMeshData(List<int> triangles, List<Vector3> verts);
+        public abstract void PrepareMeshData(MeshManager meshMgr);
         public abstract void Deserialize(string serialized);
         protected SurfaceTool m_surfaceTool = new SurfaceTool();
 
 
-        public static LDrawCommand DeserializeCommand(string line, LDrawModel parent, int parentColor)
+        public static LDrawCommand DeserializeCommand(string line, int parentColor)
         {
             LDrawCommand command = null;
             int type;
@@ -72,7 +72,6 @@ namespace Lloyd
                     command.m_colorCode = parentColor;
                 }
 
-                command.m_parent = parent;
                 command.Deserialize(line);
             }
 

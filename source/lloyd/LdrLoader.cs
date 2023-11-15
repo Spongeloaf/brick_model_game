@@ -1,5 +1,5 @@
 using Godot;
-using Lloyd;
+using lloyd;
 using System;
 using System.Collections.Generic;
 
