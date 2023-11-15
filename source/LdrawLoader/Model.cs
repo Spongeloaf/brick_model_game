@@ -10,14 +10,14 @@ namespace Ldraw
         {
             // We can just make default data here, because we'll be overwriting it anyway inside GetCommandsFromFile().
             LdrMetadata metadata = new LdrMetadata();
-            Command[] commands = Parsing.GetCommandsFromFile(metadata, fullFilePath);
-            if (commands == null || commands.Length == 0)
+            List<Command> commands = Parsing.GetCommandsFromFile(metadata, fullFilePath);
+            if (commands == null || commands.Count == 0)
                 return null;
 
             List<Model> nodes = new List<Model>();
             foreach (Command command in commands)
             {
-                if (command.type == LdrawCommandType.Model)
+                if (command.type == GameEntityType.Model)
                     nodes.Add(new Model(command));
             }
 
@@ -37,12 +37,12 @@ namespace Ldraw
             m_modelName = modelCommand.metadata.name;
             m_fileName = Parsing.GetSubFileName(modelCommand.commandString);
 
-            Command[] commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand.metadata, m_fileName);
+            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand.metadata, m_fileName);
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
                 {
-                    case Ldraw.LdrawCommandType.Component:
+                    case Ldraw.GameEntityType.Component:
                         m_components.Add(new Component(modelCommand));
                         break;
                     default:
