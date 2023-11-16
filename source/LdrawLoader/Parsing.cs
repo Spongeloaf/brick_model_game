@@ -85,6 +85,7 @@ namespace Ldraw
             optionalLine = 5,
         }
 
+        private static readonly string kFILE = "FILE";
         private static readonly string kBFC = "BFC";
         private static readonly string kCW = "CW";
         private static readonly string kCCW = "CCW";
@@ -180,10 +181,7 @@ namespace Ldraw
                         return ParseMetaCommand(tokens, ref metadata);
 
                     case LdrCommandType.subfile:
-                        cmd.type = GameEntityType.Component;
-                        cmd.metadata = metadata;
-                        cmd.commandString = commandString;
-                        break;
+                        return ParseSubfileCommand(tokens, ref metadata, ref cmd);
 
                     case LdrCommandType.triangle:
                         cmd.type = GameEntityType.Primitive;
@@ -265,10 +263,26 @@ namespace Ldraw
             tokens[kSubFileFileName] = tokens[kSubFileFileName].Trim();
             cmd.subfileName = tokens[kSubFileFileName];
             cmd.type = GetGameEntityType(tokens[kSubFileFileName]);
-            
-            // TODO: parse the transform. DDO we need to worry about BFC right now?
-
+            cmd.transform = GetCommandTransform(tokens);
             return true;
+        }
+
+        private static System.Numerics.Matrix4x4 GetCommandTransform(string[] tokens)
+        {
+            // TODO: Do I need to check for BFC INVERTNEXT here?
+            float[] param = new float[12];
+            for (int i = 0; i < param.Length; i++)
+            {
+                int argNum = i + 2;
+                if (!Single.TryParse(tokens[argNum], out param[i]))
+                    Logger.Error("Failed to parse transform from subfile, with value: " + tokens[argNum]);
+            }
+
+            return new System.Numerics.Matrix4x4(
+                param[3], param[6], param[9], 0,
+                param[4], param[7], param[10], 0,
+                param[5], param[8], param[11], 0,
+                param[0], param[1], param[2], 1);
         }
 
         private static GameEntityType GetGameEntityType(string subfileName)
@@ -311,33 +325,6 @@ namespace Ldraw
                 return true;
 
             return false;
-        }
-
-
-        public static string GetFileContents(string relativePath)
-        {
-
-            throw new System.NotImplementedException();
-        }
-
-        // Returns the name of a sufile refernce from a subfile command. Appends the extension .virtual
-        // if the subfile is a virtual file. (i.e. the filename does not have an extension)
-        public static string GetSubFileName(string commandString)
-        {
-            // examples:
-
-            // 1 16 0 0 0 1 0 0 0 1 0 0 0 1 1-8sphe.dat
-            // should return 1-8sphe.dat
-
-            // 1 7 0 0 0 1 0 0 0 1 0 0 0 1 quadplane.ldr
-            // should return quadplane.ldr
-            throw new System.NotImplementedException();
-        }
-
-        public static string GetModelName(string commandString)
-        {
-            // basically just subfile name without extension
-            throw new System.NotImplementedException();
         }
 
         private static LdrCommandType GetCommandType(int value)

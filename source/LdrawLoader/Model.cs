@@ -32,10 +32,10 @@ namespace Ldraw
         public readonly List<Component> m_components;
 
 
-        public Model(Ldraw.Command modelCommand)
+        public Model(Command modelCommand)
         {
-            m_modelName = modelCommand.metadata.name;
-            m_fileName = Parsing.GetSubFileName(modelCommand.commandString);
+            m_modelName = modelCommand.metadata.modelName;
+            m_fileName = modelCommand.subfileName;
 
             List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand.metadata, m_fileName);
             foreach (Command cmd in commands)

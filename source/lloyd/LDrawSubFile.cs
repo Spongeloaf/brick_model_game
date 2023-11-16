@@ -4,7 +4,11 @@ using Godot;
 
 namespace lloyd
 {
-	
+	public class MeshManager
+	{
+
+	}
+
 	public class LDrawSubFile : LDrawCommand
 	{
 		private string _Name;

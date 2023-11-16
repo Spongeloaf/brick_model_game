@@ -9,6 +9,7 @@ namespace Ldraw
     public class MeshManager
     {
         private Dictionary<LdrColor, MeshLayer> m_colorsInMesh = new Dictionary<LdrColor, MeshLayer>();
+        private Dictionary<string, int> m_billOfMaterials = new Dictionary<string, int>();
         private SurfaceTool m_surfaceTool = new SurfaceTool();
         private Mesh m_mesh;
 
