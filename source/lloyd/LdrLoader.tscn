@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://q2kiqpess7eu"]
-
-[ext_resource type="Script" path="res://source/lloyd/LdrLoader.cs" id="1_06tm8"]
-
-[node name="LdrLoader" type="Node3D"]
-script = ExtResource("1_06tm8")

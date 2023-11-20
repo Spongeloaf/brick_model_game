@@ -11,9 +11,9 @@ namespace Ldraw
         private Dictionary<LdrColor, MeshLayer> m_colorsInMesh = new Dictionary<LdrColor, MeshLayer>();
         private Dictionary<string, int> m_billOfMaterials = new Dictionary<string, int>();
         private SurfaceTool m_surfaceTool = new SurfaceTool();
-        private Mesh m_mesh;
+        public Mesh m_mesh = new Mesh();
 
-        public List<int> triangles;
-        public List<Vector3> verts;
+        public List<int> triangles = new List<int>();
+        public List<Vector3> verts = new List<Vector3>();
     }
 }

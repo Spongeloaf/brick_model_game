@@ -46,6 +46,17 @@ namespace Ldraw
         Model
     }
 
+    public enum LdrCommandType
+    {
+        invalid = -1,
+        meta = 0,
+        line = 2,
+        subfile = 1,
+        triangle = 3,
+        quad = 4,
+        optionalLine = 5,
+    }
+
     // Should I convert this to a class?
     // No. Being a struct means it's never null, and we can force
     // consumers to create a copy or not using the ref keyword.
@@ -70,20 +81,12 @@ namespace Ldraw
         public Vector3[] vertices;
         public int[] triangles;
         public string subfileName;
+        public LdrCommandType ldrCommandType;
     }
 
     public static class Parsing
     {
-        internal enum LdrCommandType
-        {
-            invalid = -1,
-            meta = 0,
-            line = 2,
-            subfile = 1,
-            triangle = 3,
-            quad = 4,
-            optionalLine = 5,
-        }
+        public static string kBasePartsPath = "C:\\dev\\ldraw\\";
 
         private static readonly string kFILE = "FILE";
         private static readonly string kBFC = "BFC";
@@ -108,6 +111,49 @@ namespace Ldraw
         private static readonly int kSubFileH = 12;
         private static readonly int kSubFileI = 13;
         private static readonly int kSubFileFileName = 14;
+
+        private static readonly Dictionary<string, string> m_ldrawPrimitives = new Dictionary<string, string>();
+
+        static Parsing()
+        {
+            m_ldrawPrimitives = LoadParts();
+        }
+
+        public static Dictionary<string, string> LoadParts()
+        {
+            Dictionary<string, string> parts = new Dictionary<string, string>();
+            string[] files = Directory.GetFiles(kBasePartsPath, "*.*", SearchOption.AllDirectories);
+
+            foreach (string file in files)
+            {
+                if (file.Contains("s\\3062bs01"))
+                {
+                    int i = 0;
+                }
+
+                if (file.Contains(".meta"))
+                    continue;
+
+                string fileName = file.Replace(kBasePartsPath, "");
+
+                // According to the LDRAW spec, https://www.ldraw.org/article/398.html:
+                // Filename is the file name of the part including the folder (e.g. s/, 48/)
+                // if it is not directly in the parts or p folders. 
+                if (fileName.StartsWith("parts\\"))
+                    fileName = fileName.Replace("parts\\", "");
+
+                if (fileName.StartsWith("p\\"))
+                    fileName = fileName.Replace("p\\", "");
+
+                fileName = fileName.Trim();
+                if (!parts.ContainsKey(fileName))
+                    parts.Add(fileName, file);
+                else
+                    GD.PrintErr("Duplicate part: " + fileName);
+            }
+
+            return parts;
+        }
 
         private static Dictionary<string, string> m_fileCache = new Dictionary<string, string>();
 
@@ -174,8 +220,8 @@ namespace Ldraw
 
             if (Int32.TryParse(tokens[0], out type))
             {
-                LdrCommandType commandType = GetCommandType(type);
-                switch (commandType)
+                cmd.ldrCommandType = GetCommandType(type);
+                switch (cmd.ldrCommandType)
                 {
                     case LdrCommandType.meta:
                         return ParseMetaCommand(tokens, ref metadata);
@@ -261,9 +307,9 @@ namespace Ldraw
                 return false;
 
             tokens[kSubFileFileName] = tokens[kSubFileFileName].Trim();
-            cmd.subfileName = tokens[kSubFileFileName];
             cmd.type = GetGameEntityType(tokens[kSubFileFileName]);
             cmd.transform = GetCommandTransform(tokens);
+            cmd.subfileName = GetFullPathForSubfile(tokens[kSubFileFileName]); 
             return true;
         }
 
@@ -329,14 +375,76 @@ namespace Ldraw
 
         private static LdrCommandType GetCommandType(int value)
         {
-            // This function is gross. Maybe someday I'll make a template out of it or something cleaner.
-            LdrCommandType[] arr = new[] { LdrCommandType.invalid, LdrCommandType.optionalLine };
-            if (Array.IndexOf(arr, value) < 0)
-            {
+            if (value < 0 || value > 5)
                 return LdrCommandType.invalid;
-            }
-
+            
             return (LdrCommandType)value;
         }
-    }
+
+        public static Vector3[] DeserializeQuad(string serialized)
+        {
+            string[] args = serialized.Split(' ');
+            float[] param = new float[12];
+            for (int i = 0; i < param.Length; i++)
+            {
+                int argNum = i + 2;
+                if (!float.TryParse(args[argNum], out param[i]))
+                {
+                    GD.PrintErr(
+                        String.Format(
+                            "Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
+                            argNum,
+                            args[argNum]));
+                    return new Vector3[0];
+                }
+            }
+
+            return new Vector3[]
+            {
+                new Vector3(param[0], param[1], param[2]),
+                new Vector3(param[3], param[4], param[5]),
+                new Vector3(param[6], param[7], param[8]),
+                new Vector3(param[9], param[10], param[11])
+            };
+        }
+
+        public static Vector3[] DeserializeTriangle(string serialized)
+        {
+            var args = serialized.Split(' ');
+            float[] param = new float[9];
+            for (int i = 0; i < param.Length; i++)
+            {
+                int argNum = i + 2;
+                if (!Single.TryParse(args[argNum], out param[i]))
+                {
+                    GD.PrintErr(
+                        String.Format(
+                            "Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
+                            argNum,
+                            args[argNum]));
+                    return new Vector3[0];
+                }
+            }
+
+            return new Vector3[]
+            {
+                new Vector3(param[0], param[1], param[2]),
+                new Vector3(param[3], param[4], param[5]),
+                new Vector3(param[6], param[7], param[8])
+            };
+        }
+
+        public static string GetFullPathForSubfile(string subfileName)
+        {
+            if (string.IsNullOrEmpty(subfileName))
+                return string.Empty;
+
+            if (m_ldrawPrimitives.ContainsKey(subfileName))
+                return m_ldrawPrimitives[subfileName];
+
+            return string.Empty;
+        }
+
+
+    }   // public static class Parsing
 }

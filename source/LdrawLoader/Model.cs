@@ -37,7 +37,7 @@ namespace Ldraw
             m_modelName = modelCommand.metadata.modelName;
             m_fileName = modelCommand.subfileName;
 
-            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand.metadata, m_fileName);
+            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand.metadata, modelCommand.subfileName);
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
