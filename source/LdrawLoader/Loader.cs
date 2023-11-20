@@ -20,8 +20,8 @@ public partial class Loader : Node3D
         _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
         _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
     
-        Node3D model = LoadModel("bar.ldr");
-
+        Node3D model = LoadModel("87994.dat");
+        model.Name = "bar";
         Error error = SaveNodeAsScene(model);
         if (error != Error.Ok)
             GD.PrintErr("Error saving scene: " + error.ToString());

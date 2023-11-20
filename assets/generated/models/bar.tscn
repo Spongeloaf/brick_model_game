@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6il7w"]
+resource_name = "C:/DEV/BRICK_MODEL_GAME/models/imports/87994.dat"
+
+[node name="bar" type="MeshInstance3D"]
+mesh = SubResource("ArrayMesh_6il7w")

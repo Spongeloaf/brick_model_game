@@ -19,15 +19,15 @@ namespace Ldraw
                 switch (cmd.ldrCommandType)
                 {
                     case LdrCommandType.subfile:
-                        AddPrimitiveToMesh(meshManager, in cmd);
+                        AddPrimitiveToMesh(meshManager, in subCmd);
                         break;
 
                     case LdrCommandType.triangle:
-                        AddTriangleToMesh(meshManager, in cmd);
+                        AddTriangleToMesh(meshManager, in subCmd);
                         break;
 
                     case LdrCommandType.quad:
-                        AddQuadToMesh(meshManager, in cmd);
+                        AddQuadToMesh(meshManager, in subCmd);
                         break;
 
                     default:
