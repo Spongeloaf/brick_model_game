@@ -46,7 +46,7 @@ namespace Ldraw
                         m_components.Add(new Component(modelCommand));
                         break;
                     default:
-                        Logger.Info("Ldraw models should only contain components as direct children, not primitives or parts.");
+                        OmniLogger.Info("Ldraw models should only contain components as direct children, not primitives or parts.");
                         break;
                 }
             }

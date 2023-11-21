@@ -1,7 +1,8 @@
 ﻿using Godot;
 
 
-public static class Logger
+// Logs to visual studio debug output and godot console
+public static class OmniLogger
 {
     public static void Info(string message)
     {

@@ -5,18 +5,18 @@ namespace Ldraw
 {
     public static class Primitive
     {
-        public static void AddPrimitiveToMesh(MeshManager meshManager, in Command cmd)
+        public static void AddPrimitiveToMesh(MeshManager meshManager, in Command command)
         {
             if (meshManager == null)
             {
-                Logger.Error("Primitive MeshManager is null");
+                OmniLogger.Error("Primitive MeshManager is null");
                 return;
             }
 
-            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(cmd.metadata, cmd.subfileName);
+            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(command.metadata, command.subfileName);
             foreach (Command subCmd in commands)
             {
-                switch (cmd.ldrCommandType)
+                switch (subCmd.ldrCommandType)
                 {
                     case LdrCommandType.subfile:
                         AddPrimitiveToMesh(meshManager, in subCmd);
@@ -31,7 +31,7 @@ namespace Ldraw
                         break;
 
                     default:
-                        Logger.Info("Ldraw models should only contain components or primitives as direct children");
+                        OmniLogger.Info("Ldraw models should only contain components or primitives as direct children");
                         break;
                 }
             }

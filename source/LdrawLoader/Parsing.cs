@@ -112,25 +112,21 @@ namespace Ldraw
         private static readonly int kSubFileI = 13;
         private static readonly int kSubFileFileName = 14;
 
-        private static readonly Dictionary<string, string> m_ldrawPrimitives = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> m_ldrawFileIndex = new Dictionary<string, string>();
+        private static Dictionary<string, string> m_fileCache = new Dictionary<string, string>();
 
         static Parsing()
         {
-            m_ldrawPrimitives = LoadParts();
+            m_ldrawFileIndex = PrepareFileIndex();
         }
 
-        public static Dictionary<string, string> LoadParts()
+        public static Dictionary<string, string> PrepareFileIndex()
         {
             Dictionary<string, string> parts = new Dictionary<string, string>();
             string[] files = Directory.GetFiles(kBasePartsPath, "*.*", SearchOption.AllDirectories);
 
             foreach (string file in files)
             {
-                if (file.Contains("s\\3062bs01"))
-                {
-                    int i = 0;
-                }
-
                 if (file.Contains(".meta"))
                     continue;
 
@@ -155,31 +151,30 @@ namespace Ldraw
             return parts;
         }
 
-        private static Dictionary<string, string> m_fileCache = new Dictionary<string, string>();
-
-        public static List<Command> GetCommandsFromFile(LdrMetadata metadata, string fullFilePath)
+        public static List<Command> GetCommandsFromFile(LdrMetadata metadata, string shortFileName)
         {
+            string fullFilePath = GetFullPathToFile(shortFileName);
             List<Command> result = new List<Command>();
             if (!System.IO.File.Exists(fullFilePath))
             {
-                Logger.Error("File does not exist: " + fullFilePath);
+                OmniLogger.Error("File does not exist: " + fullFilePath);
                 return result;
             }
 
-            if (m_fileCache.ContainsKey(fullFilePath))
+            if (m_fileCache.ContainsKey(shortFileName))
             {
-                return GetCommandsFromString(metadata, m_fileCache[fullFilePath]);
+                return GetCommandsFromString(metadata, m_fileCache[shortFileName]);
             }
 
             try
             {
                 string contents = File.ReadAllText(fullFilePath);
-                m_fileCache.Add(fullFilePath, contents);
+                m_fileCache.Add(shortFileName, contents);
                 return GetCommandsFromString(metadata, contents);
             }
             catch (System.Exception e)
             {
-                Logger.Error($"Exception '{e.Message}' raised while reading file: " + fullFilePath);
+                OmniLogger.Error($"Exception '{e.Message}' raised while reading file: " + fullFilePath);
                 return result;
             }
         }
@@ -309,7 +304,7 @@ namespace Ldraw
             tokens[kSubFileFileName] = tokens[kSubFileFileName].Trim();
             cmd.type = GetGameEntityType(tokens[kSubFileFileName]);
             cmd.transform = GetCommandTransform(tokens);
-            cmd.subfileName = GetFullPathForSubfile(tokens[kSubFileFileName]); 
+            cmd.subfileName = tokens[kSubFileFileName]; 
             return true;
         }
 
@@ -321,7 +316,7 @@ namespace Ldraw
             {
                 int argNum = i + 2;
                 if (!Single.TryParse(tokens[argNum], out param[i]))
-                    Logger.Error("Failed to parse transform from subfile, with value: " + tokens[argNum]);
+                    OmniLogger.Error("Failed to parse transform from subfile, with value: " + tokens[argNum]);
             }
 
             return new System.Numerics.Matrix4x4(
@@ -349,7 +344,7 @@ namespace Ldraw
             if (tokens.Length != 2)
             {
                 // This is a shity hack. Fix this so we can have spaces in model names please!
-                Logger.Error($"Invalid model or component name: {subfileName}, can't have more than one space!");
+                OmniLogger.Error($"Invalid model or component name: {subfileName}, can't have more than one space!");
                 return GameEntityType.Invalid;
             }
 
@@ -360,7 +355,7 @@ namespace Ldraw
             }
             catch
             {
-                Logger.Error($"Invalid model or component type: {tokens[0]}");
+                OmniLogger.Error($"Invalid model or component type: {tokens[0]}");
                 return GameEntityType.Invalid;
             }
         }
@@ -434,17 +429,19 @@ namespace Ldraw
             };
         }
 
-        public static string GetFullPathForSubfile(string subfileName)
+        private static string GetFullPathToFile(string path)
         {
-            if (string.IsNullOrEmpty(subfileName))
+            if (string.IsNullOrEmpty(path))
+            {
+                OmniLogger.Error("File path is null or empty");
                 return string.Empty;
+            }
 
-            if (m_ldrawPrimitives.ContainsKey(subfileName))
-                return m_ldrawPrimitives[subfileName];
+            if (m_ldrawFileIndex.ContainsKey(path))
+                return m_ldrawFileIndex[path];
 
+            OmniLogger.Error($"File {path} does not exist in the file index");
             return string.Empty;
         }
-
-
     }   // public static class Parsing
 }

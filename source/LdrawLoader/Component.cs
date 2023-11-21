@@ -37,36 +37,12 @@ namespace Ldraw
                         Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
                         break;
                     default:
-                        Logger.Info("Ldraw models should only contain components or primitives as direct children");
+                        OmniLogger.Info("Ldraw models should only contain components or primitives as direct children");
                         break;
                 }
             }
 
-            BuildMesh();
-        }
-
-        private void BuildMesh()
-        {
-            SurfaceTool st = new SurfaceTool();
-            st.Begin(Mesh.PrimitiveType.Triangles);
-            foreach (Vector3 vert in m_meshManager.verts)
-            {
-                st.AddVertex(vert);
-            }
-
-            foreach (int tri in m_meshManager.triangles)
-                st.AddIndex(tri);
-
-            st.GenerateNormals();
-            m_meshManager.m_mesh = st.Commit();
-            m_meshManager.m_mesh.ResourceName = m_fileName;
-        }
-
-        public MeshInstance3D GetMeshInstance()
-        {
-            MeshInstance3D meshInstance = new MeshInstance3D();
-            meshInstance.Mesh = m_meshManager.m_mesh;
-            return meshInstance;
+            m_meshManager.BuildMesh(m_modelName);
         }
     }
 }
