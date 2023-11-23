@@ -73,11 +73,13 @@ namespace Ldraw
 
     public struct Command
     {
+        public Command() {}
+
         // This metadada can be inherited from the parent command, or read from a previous line.
-        public LdrMetadata metadata;
+        public LdrMetadata metadata = new LdrMetadata();
         public string commandString;
         public GameEntityType type;
-        public System.Numerics.Matrix4x4 transform;
+        public Transform3D transform = Transform3D.Identity;
         public Vector3[] vertices;
         public int[] triangles;
         public string subfileName;
@@ -151,7 +153,7 @@ namespace Ldraw
             return parts;
         }
 
-        public static List<Command> GetCommandsFromFile(LdrMetadata metadata, string shortFileName)
+        public static List<Command> GetCommandsFromFile(in LdrMetadata metadata, string shortFileName)
         {
             string fullFilePath = GetFullPathToFile(shortFileName);
             List<Command> result = new List<Command>();
@@ -179,10 +181,11 @@ namespace Ldraw
             }
         }
 
-        public static List<Command> GetCommandsFromString(LdrMetadata metadata, string serializedData)
+        public static List<Command> GetCommandsFromString(in LdrMetadata metadata, string serializedData)
         {
             List<Command> commands = new List<Command>();
             StringReader reader = new StringReader(serializedData);
+            LdrMetadata workingMetaData = metadata;
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -196,7 +199,7 @@ namespace Ldraw
 
                 // Warning: Parsecommand may change the metadata and not
                 // return true when it does so. (Example: BFC).
-                if (ParseCommand(line, ref metadata, out cmd))
+                if (ParseCommand(line, ref workingMetaData, out cmd))
                     commands.Add(cmd);
             }
 
@@ -209,6 +212,7 @@ namespace Ldraw
             commandString = commandString.Trim();
             string[] tokens = commandString.Split();
             cmd = new Command();
+            cmd.metadata = metadata;
             int type;
             if (tokens.Length < 2)
                 return false;
@@ -260,40 +264,47 @@ namespace Ldraw
         private static void ParseBfcCommand(string[] tokens, ref LdrMetadata metadata)
         {
             // Reference: https://www.ldraw.org/article/415.html
+            
+            // Following the advic here: https://forums.ldraw.org/thread-23274.html
+            // I have purposefully chosen to disable all BFC. If we need the performance
+            // later on, we can do a deep dive on implementing it properly.
+            metadata.winding = VertexWinding.Unknown;
+            return;
 
-            // Winding is implied CCW if not accompanied by explicit CCW or CW token
-            if (tokens.Contains(kCertify))
-            {
-                metadata.winding = VertexWinding.CCW;
-            }
 
-            // However, we can also assume the file is certified if it contains any BFC statement
-            // that eEXCEPT for "0 BFC NOCERTIFY".
+            //// Winding is implied CCW if not accompanied by explicit CCW or CW token
+            //if (tokens.Contains(kCertify))
+            //{
+            //    metadata.winding = VertexWinding.CCW;
+            //}
 
-            if (tokens.Contains(kCW))
-            {
-                metadata.winding = VertexWinding.CW;
-            }
+            //// However, we can also assume the file is certified if it contains any BFC statement
+            //// that eEXCEPT for "0 BFC NOCERTIFY".
 
-            if (tokens.Contains(kCCW))
-            {
-                metadata.winding = VertexWinding.CCW;
-            }
+            //if (tokens.Contains(kCW))
+            //{
+            //    metadata.winding = VertexWinding.CW;
+            //}
 
-            // There is a potential bug here, where we don't bother to check a NOCERTIFY or CERTIFY
-            // BFC command is the first BFC command in the file, as ordained by the spec. However, any
-            // file exhibiting such behavior is malformed, and undefined behavior is expected in this
-            // case.
-            //
-            // I'm currently imagining future me, reading this with a sigh, and then fixing it.
-            // Sorry future me.
-            if (tokens.Contains(kNoCertify))
-            {
-                metadata.winding = VertexWinding.Unknown;
-            }
+            //if (tokens.Contains(kCCW))
+            //{
+            //    metadata.winding = VertexWinding.CCW;
+            //}
 
-            if (tokens.Contains(kInvertNext))
-                metadata.invertNext = true;
+            //// There is a potential bug here, where we don't bother to check a NOCERTIFY or CERTIFY
+            //// BFC command is the first BFC command in the file, as ordained by the spec. However, any
+            //// file exhibiting such behavior is malformed, and undefined behavior is expected in this
+            //// case.
+            ////
+            //// I'm currently imagining future me, reading this with a sigh, and then fixing it.
+            //// Sorry future me.
+            //if (tokens.Contains(kNoCertify))
+            //{
+            //    metadata.winding = VertexWinding.Unknown;
+            //}
+
+            //if (tokens.Contains(kInvertNext))
+            //    metadata.invertNext = true;
         }
 
         private static bool ParseSubfileCommand(string[] tokens, ref LdrMetadata metadata, ref Command cmd)
@@ -308,7 +319,7 @@ namespace Ldraw
             return true;
         }
 
-        private static System.Numerics.Matrix4x4 GetCommandTransform(string[] tokens)
+        private static Transform3D GetCommandTransform(string[] tokens)
         {
             // TODO: Do I need to check for BFC INVERTNEXT here?
             float[] param = new float[12];
@@ -319,11 +330,13 @@ namespace Ldraw
                     OmniLogger.Error("Failed to parse transform from subfile, with value: " + tokens[argNum]);
             }
 
-            return new System.Numerics.Matrix4x4(
+            System.Numerics.Matrix4x4 mat4x4 = new System.Numerics.Matrix4x4(
                 param[3], param[6], param[9], 0,
                 param[4], param[7], param[10], 0,
                 param[5], param[8], param[11], 0,
                 param[0], param[1], param[2], 1);
+
+            return Transforms.MakeGodotTransformFrom4x4(mat4x4);
         }
 
         private static GameEntityType GetGameEntityType(string subfileName)

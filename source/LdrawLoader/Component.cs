@@ -41,8 +41,6 @@ namespace Ldraw
                         break;
                 }
             }
-
-            m_meshManager.BuildMesh(m_modelName);
         }
     }
 }

@@ -20,7 +20,7 @@ public partial class Loader : Node3D
         _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
         _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
     
-        Node3D model = GetPartMesh("87994.dat");
+        Node3D model = GetPartMesh("22484.dat");
         model.Name = "bar";
         Error error = SaveNodeAsScene(model);
         if (error != Error.Ok)
@@ -34,7 +34,6 @@ public partial class Loader : Node3D
         Command command = new Command();
         command.subfileName = partFile;
         Primitive.AddPrimitiveToMesh(meshManager, in command);
-        meshManager.BuildMesh(partFile);
         return meshManager.GetMeshInstance();
     }
 
