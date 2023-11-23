@@ -153,9 +153,9 @@ namespace Ldraw
             return parts;
         }
 
-        public static List<Command> GetCommandsFromFile(in LdrMetadata metadata, string shortFileName)
+        public static List<Command> GetCommandsFromFile(in Command parentCommand)
         {
-            string fullFilePath = GetFullPathToFile(shortFileName);
+            string fullFilePath = GetFullPathToFile(parentCommand.subfileName);
             List<Command> result = new List<Command>();
             if (!System.IO.File.Exists(fullFilePath))
             {
@@ -163,16 +163,16 @@ namespace Ldraw
                 return result;
             }
 
-            if (m_fileCache.ContainsKey(shortFileName))
+            if (m_fileCache.ContainsKey(parentCommand.subfileName))
             {
-                return GetCommandsFromString(metadata, m_fileCache[shortFileName]);
+                return GetCommandsFromString(parentCommand, m_fileCache[parentCommand.subfileName]);
             }
 
             try
             {
                 string contents = File.ReadAllText(fullFilePath);
-                m_fileCache.Add(shortFileName, contents);
-                return GetCommandsFromString(metadata, contents);
+                m_fileCache.Add(parentCommand.subfileName, contents);
+                return GetCommandsFromString(parentCommand, contents);
             }
             catch (System.Exception e)
             {
@@ -181,11 +181,11 @@ namespace Ldraw
             }
         }
 
-        public static List<Command> GetCommandsFromString(in LdrMetadata metadata, string serializedData)
+        public static List<Command> GetCommandsFromString(in Command parentCommand, string serializedData)
         {
             List<Command> commands = new List<Command>();
             StringReader reader = new StringReader(serializedData);
-            LdrMetadata workingMetaData = metadata;
+            LdrMetadata workingMetaData = parentCommand.metadata;
             string line;
             while ((line = reader.ReadLine()) != null)
             {
@@ -195,24 +195,23 @@ namespace Ldraw
                 if (String.IsNullOrEmpty(line))
                     continue;
 
-                Command cmd;
-
                 // Warning: Parsecommand may change the metadata and not
                 // return true when it does so. (Example: BFC).
-                if (ParseCommand(line, ref workingMetaData, out cmd))
+                if (ParseCommand(line, in parentCommand.transform, ref workingMetaData, out Command cmd))
                     commands.Add(cmd);
             }
 
             return commands;
         }
 
-        private static bool ParseCommand(string commandString, ref LdrMetadata metadata, out Command cmd)
+        private static bool ParseCommand(string commandString, in Transform3D parentTransform, ref LdrMetadata metadata, out Command cmd)
         {
             commandString = commandString.Replace("\t", " ");
             commandString = commandString.Trim();
             string[] tokens = commandString.Split();
             cmd = new Command();
             cmd.metadata = metadata;
+            cmd.transform = parentTransform;
             int type;
             if (tokens.Length < 2)
                 return false;
@@ -229,6 +228,7 @@ namespace Ldraw
                         return ParseSubfileCommand(tokens, ref metadata, ref cmd);
 
                     case LdrCommandType.triangle:
+
                         cmd.type = GameEntityType.Primitive;
                         cmd.metadata = metadata;
                         cmd.commandString = commandString;
@@ -255,7 +255,7 @@ namespace Ldraw
             if (tokens[1] == kBFC)
             {
                 ParseBfcCommand(tokens, ref metadata);
-                return true;
+                return false;
             }
 
             return false;
@@ -310,11 +310,17 @@ namespace Ldraw
         private static bool ParseSubfileCommand(string[] tokens, ref LdrMetadata metadata, ref Command cmd)
         {
             if (tokens.Length < 15)
+            {
+                OmniLogger.Error("Subfile command has too few tokens");
                 return false;
+            }
 
             tokens[kSubFileFileName] = tokens[kSubFileFileName].Trim();
+
+            // Tranforms in subfiles are relative to parent transforms.
+            Transform3D childTfm = GetCommandTransform(tokens);
+            cmd.transform = cmd.transform * childTfm;
             cmd.type = GetGameEntityType(tokens[kSubFileFileName]);
-            cmd.transform = GetCommandTransform(tokens);
             cmd.subfileName = tokens[kSubFileFileName]; 
             return true;
         }

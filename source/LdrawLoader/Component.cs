@@ -25,7 +25,7 @@ namespace Ldraw
             m_modelName = modelCommand.metadata.modelName;
             m_fileName = modelCommand.subfileName;
 
-            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand.metadata, modelCommand.subfileName);
+            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand);
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
@@ -35,6 +35,7 @@ namespace Ldraw
                         break;
                     case GameEntityType.Primitive:
                         Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
+                        m_meshManager.BuildMesh();
                         break;
                     default:
                         OmniLogger.Info("Ldraw models should only contain components or primitives as direct children");

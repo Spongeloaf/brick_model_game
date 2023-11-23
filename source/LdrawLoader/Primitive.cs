@@ -5,7 +5,7 @@ namespace Ldraw
 {
     public static class Primitive
     {
-        public static void AddPrimitiveToMesh(MeshManager meshManager, in Command command)
+        public static void AddPrimitiveToMesh(MeshManager meshManager, in Command parentCommand)
         {
             if (meshManager == null)
             {
@@ -13,8 +13,13 @@ namespace Ldraw
                 return;
             }
 
-            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(command.metadata, command.subfileName);
-            foreach (Command subCmd in commands)
+            if ( parentCommand.subfileName == "stud2a.dat")
+            {
+                int i = 0;
+            }
+
+            List<Command> subCommands = Ldraw.Parsing.GetCommandsFromFile(in parentCommand);
+            foreach (Command subCmd in subCommands)
             {
                 switch (subCmd.ldrCommandType)
                 {
@@ -24,12 +29,12 @@ namespace Ldraw
 
                     case LdrCommandType.triangle:
                         // Use the parent transform because primitive commands do not have their own.
-                        meshManager.AddTriangle(in subCmd, in command.transform);
+                        meshManager.AddTriangle(in subCmd);
                         break;
 
                     case LdrCommandType.quad:
                         // Use the parent transform because primitive commands do not have their own.
-                        meshManager.AddQuad(in subCmd, command.transform);
+                        meshManager.AddQuad(in subCmd);
                         break;
 
                     default:

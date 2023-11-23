@@ -19,7 +19,7 @@ namespace Ldraw
         public List<int> triangles = new List<int>();
         public List<Vector3> verts = new List<Vector3>();
 
-        public void AddTriangle(in Command cmd, in Transform3D tfm)
+        public void AddTriangle(in Command cmd)
         {
             Vector3[] vertices = Parsing.DeserializeTriangle(cmd.commandString);
 
@@ -32,16 +32,14 @@ namespace Ldraw
             if (cmd.metadata.winding == VertexWinding.CCW)
                 FlipTriangleWinding(ref vertices);
 
-            AddTriangleMeshData(in vertices, in tfm);
+            AddTriangleMeshData(in vertices, in cmd.transform);
 
             if (cmd.metadata.winding == VertexWinding.Unknown)
             {
                 // If the winding is unknown, duplicate the data and flip the winding
                 FlipTriangleWinding(ref vertices);
-                AddTriangleMeshData(in vertices, in tfm);
+                AddTriangleMeshData(in vertices, in cmd.transform);
             }
-
-            BuildMesh(in cmd);
         }
 
         private void AddTriangleMeshData(in Vector3[] inputVerts, in Transform3D tfm)
@@ -65,7 +63,7 @@ namespace Ldraw
             verts[1] = tmp;
         }
 
-        private void BuildMesh(in Command cmd)
+        public void BuildMesh()
         {
             m_surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
             foreach (Vector3 vert in verts)
@@ -78,6 +76,9 @@ namespace Ldraw
 
             m_surfaceTool.GenerateNormals();
             m_ArrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, m_surfaceTool.CommitToArrays());
+            m_surfaceTool.Clear();
+            verts.Clear();
+            triangles.Clear();
         }
 
         public MeshInstance3D GetMeshInstance()
@@ -87,7 +88,7 @@ namespace Ldraw
             return meshInstance;
         }
 
-        public void AddQuad(in Command cmd, in Transform3D tfm)
+        public void AddQuad(in Command cmd)
         {
             Vector3[] vertices = Parsing.DeserializeQuad(cmd.commandString);
             if (vertices.Length != 4)
@@ -137,7 +138,7 @@ namespace Ldraw
             int[] indexes = nA.Dot(nB) < 0 ? new int[] { 0, 1, 3, 2 } : new int[] { 0, 1, 2, 3 };
             for (int i = 0; i < indexes.Length; i++)
             {
-                verts.Add(tfm * v[indexes[i]]);
+                verts.Add(cmd.transform * v[indexes[i]]);
             }
 
             // This is dirty......
@@ -147,11 +148,7 @@ namespace Ldraw
                 // we wind CCW on the first pass, if the winding is unknown.
                 Command cmd2 = cmd;
                 cmd2.metadata.winding = VertexWinding.CCW;
-                AddQuad(in cmd2, tfm);
-            }
-            else
-            {
-                BuildMesh(in cmd);
+                AddQuad(in cmd2);
             }
         }
     }

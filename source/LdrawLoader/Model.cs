@@ -10,7 +10,9 @@ namespace Ldraw
         {
             // We can just make default data here, because we'll be overwriting it anyway inside GetCommandsFromFile().
             LdrMetadata metadata = new LdrMetadata();
-            List<Command> commands = Parsing.GetCommandsFromFile(metadata, fullFilePath);
+            Command cmd = new Command();
+            cmd.metadata = metadata;
+            List<Command> commands = Parsing.GetCommandsFromFile(cmd);
             if (commands == null || commands.Count == 0)
                 return null;
 
@@ -37,7 +39,7 @@ namespace Ldraw
             m_modelName = modelCommand.metadata.modelName;
             m_fileName = modelCommand.subfileName;
 
-            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand.metadata, modelCommand.subfileName);
+            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand);
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
