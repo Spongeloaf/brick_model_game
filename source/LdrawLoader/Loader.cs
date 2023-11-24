@@ -20,7 +20,7 @@ public partial class Loader : Node3D
         _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
         _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
     
-        Node3D model = GetPartMesh("4083.dat");
+        Node3D model = GetPartMesh("93085.dat");
         model.Name = "bar";
         Error error = SaveNodeAsScene(model);
         if (error != Error.Ok)
@@ -37,6 +37,11 @@ public partial class Loader : Node3D
         meshManager.BuildMesh();
         return meshManager.GetMeshInstance();
     }
+
+    //private Node3D GetComponent(string componentFile)
+    //{
+
+    //}
 
     public Error SaveNodeAsScene(Node3D node)
     {

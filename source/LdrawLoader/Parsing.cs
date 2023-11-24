@@ -90,7 +90,8 @@ namespace Ldraw
     {
         public static string kBasePartsPath = "C:\\dev\\ldraw\\";
 
-        private static readonly string kFILE = "FILE";
+        private static readonly string kEmbeddedFileStart = "0 FILE";
+        private static readonly string kEmbeddedFileEnd = "0 NOFILE";
         private static readonly string kBFC = "BFC";
         private static readonly string kCW = "CW";
         private static readonly string kCCW = "CCW";
@@ -183,25 +184,110 @@ namespace Ldraw
 
         public static List<Command> GetCommandsFromString(in Command parentCommand, string serializedData)
         {
+            ParseEmberddedFiles(parentCommand, serializedData);
+
             List<Command> commands = new List<Command>();
             StringReader reader = new StringReader(serializedData);
-            LdrMetadata workingMetaData = parentCommand.metadata;
-            string line;
-            while ((line = reader.ReadLine()) != null)
+            LdrMetadata workingMetaData = parentCommand.metadata;      
+            string line = "";
+            bool readingEmbeddedFile = false;
+
+            // God I hate these control statement roller coasters.
+            try
             {
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                line = regex.Replace(line, " ").Trim();
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (String.IsNullOrEmpty(line))
+                        continue;
 
-                if (String.IsNullOrEmpty(line))
-                    continue;
+                    line = line.Trim().Trim('\t');
 
-                // Warning: Parsecommand may change the metadata and not
-                // return true when it does so. (Example: BFC).
-                if (ParseCommand(line, in parentCommand.transform, ref workingMetaData, out Command cmd))
-                    commands.Add(cmd);
+                    // I think removes dubliate spaces, but I'm not sure.
+                    // Drop it into a regex sandbox some time and see.
+                    Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                    line = regex.Replace(line, " ").Trim();
+
+                    if (line == kEmbeddedFileStart)
+                        readingEmbeddedFile = true;
+
+                    if (line == kEmbeddedFileEnd)
+                        readingEmbeddedFile = false;
+
+                    if (readingEmbeddedFile)
+                        continue;
+
+                    // Warning: Parsecommand may change the metadata and not
+                    // return true when it does so. (Example: BFC).
+                    if (ParseCommand(line, in parentCommand.transform, ref workingMetaData, out Command cmd))
+                        commands.Add(cmd);
+                }
+            }
+            catch (System.Exception e)
+            {
+                OmniLogger.Error($"Exception '{e.Message}' raised while parsing file: {parentCommand.subfileName}. Line: {line}");
             }
 
             return commands;
+        }
+
+        private static void ParseEmberddedFiles(in Command parentCommand, string serializedData)
+        {
+            StringReader reader = new StringReader(serializedData);
+
+            string line = "";
+            string embeddedFileContents = string.Empty;
+            string embeddedFileName = string.Empty;
+
+            // God I hate these control statement roller coasters.
+            try
+            {
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (String.IsNullOrEmpty(line))
+                        continue;
+
+                    line = line.Trim().Trim('\t');
+
+                    // I think removes dubliate spaces, but I'm not sure.
+                    // Drop it into a regex sandbox some time and see.
+                    Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                    line = regex.Replace(line, " ").Trim();
+
+                    if (line == kEmbeddedFileStart)
+                    {
+                        embeddedFileName = parentCommand.metadata.fileName + "/" + line.Split(' ')[2];
+                        embeddedFileContents = string.Empty;
+                    }
+
+                    if (line == kEmbeddedFileEnd)
+                    {
+                        CacheFileContents(embeddedFileName, embeddedFileContents);
+                        embeddedFileName = string.Empty;
+                        embeddedFileContents = string.Empty;
+                    }
+
+                    if (!String.IsNullOrEmpty(embeddedFileName))
+                    {
+                        embeddedFileContents += line + System.Environment.NewLine;
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                OmniLogger.Error($"Exception '{e.Message}' while parsing embedded file: {parentCommand.subfileName}. Line: {line}");
+            }
+        }
+
+
+        private static void CacheFileContents(string fileName, string contents)
+        {
+            if (m_fileCache.ContainsKey(fileName))
+            {
+                OmniLogger.Error($"File {fileName} already exists in the Ldraw file cache!");
+                return;
+            }
+
+            m_fileCache.Add(fileName, contents);
         }
 
         private static bool ParseCommand(string commandString, in Transform3D parentTransform, ref LdrMetadata metadata, out Command cmd)

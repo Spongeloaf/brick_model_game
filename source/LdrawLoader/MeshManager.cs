@@ -18,6 +18,17 @@ namespace Ldraw
         public Mesh m_mesh = new Mesh();
         public List<int> triangles = new List<int>();
         public List<Vector3> verts = new List<Vector3>();
+        public List<Vector3> normals = new List<Vector3>();
+
+        private VertexWinding GetInvertedWinding(VertexWinding winding)
+        {
+            if (winding == VertexWinding.CCW)
+                return VertexWinding.CW;
+            else if (winding == VertexWinding.CW)
+                return VertexWinding.CCW;
+            else
+                return VertexWinding.Unknown;
+        }
 
         public void AddTriangle(in Command cmd)
         {
@@ -46,14 +57,10 @@ namespace Ldraw
         {
             var vertLen = verts.Count;
             for (int i = 0; i < 3; i++)
-            {
                 triangles.Add(vertLen + i);
-            }
 
             for (int i = 0; i < inputVerts.Length; i++)
-            {
                 verts.Add(tfm * inputVerts[i]);
-            }
         }
 
         private static void FlipTriangleWinding(ref Vector3[] verts)
@@ -75,6 +82,7 @@ namespace Ldraw
                 m_surfaceTool.AddIndex(tri);
 
             m_surfaceTool.GenerateNormals();
+            m_surfaceTool.GenerateTangents();
             m_ArrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, m_surfaceTool.CommitToArrays());
             m_surfaceTool.Clear();
             verts.Clear();
@@ -150,6 +158,13 @@ namespace Ldraw
                 cmd2.metadata.winding = VertexWinding.CCW;
                 AddQuad(in cmd2);
             }
+        }
+
+        public Vector3 CalculateNormal(in Vector3[] verts, VertexWinding winding)
+        {
+            Vector3 u = verts[1] - verts[0];
+            Vector3 v = verts[2] - verts[0];
+            return (winding == VertexWinding.CW ? 1 : -1) * u.Cross(v).Normalized();
         }
     }
 }
