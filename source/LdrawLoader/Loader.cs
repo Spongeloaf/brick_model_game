@@ -20,8 +20,9 @@ public partial class Loader : Node3D
         _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
         _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
     
-        Node3D model = GetPartMesh("93085.dat");
-        model.Name = "bar";
+        //Node3D model = GetPartMesh("93085.dat");
+        Node3D model = LoadModel("C:\\dev\\brick_model_game\\models\\imports\\prop.mpd");
+        model.Name = "prop";
         Error error = SaveNodeAsScene(model);
         if (error != Error.Ok)
             GD.PrintErr("Error saving scene: " + error.ToString());
@@ -38,10 +39,13 @@ public partial class Loader : Node3D
         return meshManager.GetMeshInstance();
     }
 
-    //private Node3D GetComponent(string componentFile)
-    //{
-
-    //}
+    private Node3D LoadModel(string modelfile)
+    {
+        Command command = new Command();
+        command.subfileName = modelfile;
+        Ldraw.Model model = new Ldraw.Model(command);
+        return model.GetModelInstance();
+    }
 
     public Error SaveNodeAsScene(Node3D node)
     {

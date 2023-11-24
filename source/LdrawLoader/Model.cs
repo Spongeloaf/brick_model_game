@@ -31,7 +31,7 @@ namespace Ldraw
     {
         public readonly string m_modelName;
         public readonly string m_fileName;
-        public readonly List<Component> m_components;
+        public readonly List<Component> m_components = new List<Component>();
 
 
         public Model(Command modelCommand)
@@ -52,6 +52,22 @@ namespace Ldraw
                         break;
                 }
             }
+        }
+
+        public Node3D GetModelInstance()
+        {
+            Node3D model = new Node3D();
+            model.Name = m_modelName;
+
+            if (m_components == null || m_components.Count == 0)
+                return model;
+
+            foreach (Component component in m_components)
+            {
+                Node3D componentNode = component.GetComponentInstance();
+                componentNode.Owner = model;
+            }
+            return model;
         }
     }
 }

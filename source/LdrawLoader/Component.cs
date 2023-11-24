@@ -14,7 +14,7 @@ namespace Ldraw
             leg,
         }
 
-        public readonly List<Component> m_components;
+        public readonly List<Component> m_childComponents = new List<Component>();
         public readonly string m_modelName;
         public readonly string m_fileName;
         public MeshManager m_meshManager = new MeshManager();
@@ -31,7 +31,7 @@ namespace Ldraw
                 switch (cmd.type)
                 {
                     case Ldraw.GameEntityType.Component:
-                        m_components.Add(new Component(modelCommand));
+                        m_childComponents.Add(new Component(modelCommand));
                         break;
                     case GameEntityType.Primitive:
                         Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
@@ -42,6 +42,23 @@ namespace Ldraw
                         break;
                 }
             }
+        }
+
+        public Node3D GetComponentInstance()
+        {
+            Node3D component = new Node3D();
+            component.Name = m_modelName;
+            component.AddChild(m_meshManager.GetMeshInstance());
+
+            if (m_childComponents == null || m_childComponents.Count == 0)
+                return component;
+
+            foreach (Component child in m_childComponents)
+            {
+                Node3D componentNode = child.GetComponentInstance();
+                componentNode.Owner = component;
+            }
+            return component;
         }
     }
 }

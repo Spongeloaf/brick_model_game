@@ -278,7 +278,6 @@ namespace Ldraw
             }
         }
 
-
         private static void CacheFileContents(string fileName, string contents)
         {
             if (m_fileCache.ContainsKey(fileName))
@@ -400,6 +399,10 @@ namespace Ldraw
                 OmniLogger.Error("Subfile command has too few tokens");
                 return false;
             }
+
+            todo next: Parsing does not support spaces in subfile names. This needs fixing.
+                // Maybe we should just glue the tokens back together? We'd lose double spaces,
+                // but that's not a big deal.
 
             tokens[kSubFileFileName] = tokens[kSubFileFileName].Trim();
 
@@ -540,6 +543,13 @@ namespace Ldraw
             {
                 OmniLogger.Error("File path is null or empty");
                 return string.Empty;
+            }
+
+            if (path.EndsWith(Constants.kLdrExtension, StringComparison.OrdinalIgnoreCase) ||
+                path.EndsWith(Constants.kMpdExtension, StringComparison.OrdinalIgnoreCase))                          
+            {
+                // TODO: make this locate the models folder in the project.
+                return path;
             }
 
             if (m_ldrawFileIndex.ContainsKey(path))
