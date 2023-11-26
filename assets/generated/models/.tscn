@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://cym2a5buyc8yo"]
+[gd_scene format=3 uid="uid://dspbh63ebwj0w"]
 
-[node name="prop" type="Node3D"]
+[node name="Node3D" type="Node3D"]
 
 [node name="[prop a]_ldr" type="Node3D" parent="."]
 

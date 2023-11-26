@@ -2,26 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Ldraw
 {
-    internal static class ModelTree
-    {
-        internal enum ModelTypes
-        {
-            invalid,
-            prop,
-        }
-
-        internal enum ComponentTypes
-        {
-            invalid,
-            body,
-        }
-    }
-
     public static class Constants
     {
         public static readonly int kMainColorCode = 16;
@@ -29,6 +13,35 @@ namespace Ldraw
         public static readonly string kLdrExtension = "ldr";
         public static readonly string kMpdExtension = "mpd";
         public static readonly string kDatExtension = "dat";
+
+        public static string kBasePartsPath = "C:\\dev\\ldraw\\";
+
+        public static readonly string kEmbeddedFileStart = "0 FILE";
+        public static readonly string kEmbeddedFileEnd = "0 NOFILE";
+        public static readonly string kBFC = "BFC";
+        public static readonly string kCW = "CW";
+        public static readonly string kCCW = "CCW";
+        public static readonly string kCertify = "CERTIFY";
+        public static readonly string kNoCertify = "NOCERTIFY";
+        public static readonly string kInvertNext = "INVERTNEXT";
+        public static readonly string kName = "0 Name:";
+
+
+        // Token array indices for subfile commands
+        public static readonly int kSubFileColour = 1;
+        public static readonly int kSubFileX = 2;
+        public static readonly int kSubFileY = 3;
+        public static readonly int kSubFileZ = 4;
+        public static readonly int kSubFileA = 5;
+        public static readonly int kSubFileB = 6;
+        public static readonly int kSubFileC = 7;
+        public static readonly int kSubFileD = 8;
+        public static readonly int kSubFileE = 9;
+        public static readonly int kSubFileF = 10;
+        public static readonly int kSubFileG = 11;
+        public static readonly int kSubFileH = 12;
+        public static readonly int kSubFileI = 13;
+        public static readonly int kSubFileFileName = 14;
     }
 
     public enum VertexWinding
@@ -76,6 +89,8 @@ namespace Ldraw
         public Command() {}
 
         // This metadada can be inherited from the parent command, or read from a previous line.
+        public ModelTree.ModelTypes modelType = ModelTree.ModelTypes.invalid;
+        public LdrCommandType ldrCommandType = LdrCommandType.invalid;
         public LdrMetadata metadata = new LdrMetadata();
         public string commandString;
         public GameEntityType type;
@@ -83,38 +98,10 @@ namespace Ldraw
         public Vector3[] vertices;
         public int[] triangles;
         public string subfileName;
-        public LdrCommandType ldrCommandType;
     }
 
     public static class Parsing
     {
-        public static string kBasePartsPath = "C:\\dev\\ldraw\\";
-
-        private static readonly string kEmbeddedFileStart = "0 FILE";
-        private static readonly string kEmbeddedFileEnd = "0 NOFILE";
-        private static readonly string kBFC = "BFC";
-        private static readonly string kCW = "CW";
-        private static readonly string kCCW = "CCW";
-        private static readonly string kCertify = "CERTIFY";
-        private static readonly string kNoCertify = "NOCERTIFY";
-        private static readonly string kInvertNext = "INVERTNEXT";
-
-        // Token array indices for subfile commands
-        private static readonly int kSubFileColour = 1;
-        private static readonly int kSubFileX = 2;
-        private static readonly int kSubFileY = 3;
-        private static readonly int kSubFileZ = 4;
-        private static readonly int kSubFileA = 5;
-        private static readonly int kSubFileB = 6;
-        private static readonly int kSubFileC = 7;
-        private static readonly int kSubFileD = 8;
-        private static readonly int kSubFileE = 9;
-        private static readonly int kSubFileF = 10;
-        private static readonly int kSubFileG = 11;
-        private static readonly int kSubFileH = 12;
-        private static readonly int kSubFileI = 13;
-        private static readonly int kSubFileFileName = 14;
-
         private static readonly Dictionary<string, string> m_ldrawFileIndex = new Dictionary<string, string>();
         private static Dictionary<string, string> m_fileCache = new Dictionary<string, string>();
 
@@ -126,14 +113,14 @@ namespace Ldraw
         public static Dictionary<string, string> PrepareFileIndex()
         {
             Dictionary<string, string> parts = new Dictionary<string, string>();
-            string[] files = Directory.GetFiles(kBasePartsPath, "*.*", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(Constants.kBasePartsPath, "*.*", SearchOption.AllDirectories);
 
             foreach (string file in files)
             {
                 if (file.Contains(".meta"))
                     continue;
 
-                string fileName = file.Replace(kBasePartsPath, "");
+                string fileName = file.Replace(Constants.kBasePartsPath, "");
 
                 // According to the LDRAW spec, https://www.ldraw.org/article/398.html:
                 // Filename is the file name of the part including the folder (e.g. s/, 48/)
@@ -156,17 +143,17 @@ namespace Ldraw
 
         public static List<Command> GetCommandsFromFile(in Command parentCommand)
         {
-            string fullFilePath = GetFullPathToFile(parentCommand.subfileName);
             List<Command> result = new List<Command>();
+            if (m_fileCache.ContainsKey(parentCommand.subfileName))
+            {
+                return GetCommandsFromString(parentCommand, m_fileCache[parentCommand.subfileName]);
+            }
+
+            string fullFilePath = GetFullPathToFile(parentCommand.subfileName);
             if (!System.IO.File.Exists(fullFilePath))
             {
                 OmniLogger.Error("File does not exist: " + fullFilePath);
                 return result;
-            }
-
-            if (m_fileCache.ContainsKey(parentCommand.subfileName))
-            {
-                return GetCommandsFromString(parentCommand, m_fileCache[parentCommand.subfileName]);
             }
 
             try
@@ -184,8 +171,7 @@ namespace Ldraw
 
         public static List<Command> GetCommandsFromString(in Command parentCommand, string serializedData)
         {
-            ParseEmberddedFiles(parentCommand, serializedData);
-
+            ParseEmbeddedFiles(m_fileCache, parentCommand.subfileName, serializedData);
             LdrMetadata workingMetaData = parentCommand.metadata; 
             List<Command> commands = new List<Command>();
             StringReader reader = new StringReader(serializedData);
@@ -207,13 +193,13 @@ namespace Ldraw
                     Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
                     line = regex.Replace(line, " ").Trim();
 
-                    if (line.StartsWith(kEmbeddedFileStart))
+                    if (line.StartsWith(Constants.kEmbeddedFileStart))
                     {
                         readingEmbeddedFile = true;
                         continue;
                     }
 
-                    if (line.StartsWith(kEmbeddedFileEnd))
+                    if (line.StartsWith(Constants.kEmbeddedFileEnd))
                     {
                         readingEmbeddedFile = false;
                         continue;
@@ -236,64 +222,206 @@ namespace Ldraw
             return commands;
         }
 
-        private static void ParseEmberddedFiles(in Command parentCommand, string serializedData)
+        public static Vector3[] DeserializeQuad(string serialized)
         {
-            StringReader reader = new StringReader(serializedData);
+            string[] args = serialized.Split(' ');
+            float[] param = new float[12];
+            for (int i = 0; i < param.Length; i++)
+            {
+                int argNum = i + 2;
+                if (!float.TryParse(args[argNum], out param[i]))
+                {
+                    GD.PrintErr(
+                        String.Format(
+                            "Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
+                            argNum,
+                            args[argNum]));
+                    return new Vector3[0];
+                }
+            }
 
-            string line = "";
-            string embeddedFileContents = string.Empty;
-            string embeddedFileName = string.Empty;
+            return new Vector3[]
+            {
+                new Vector3(param[0], param[1], param[2]),
+                new Vector3(param[3], param[4], param[5]),
+                new Vector3(param[6], param[7], param[8]),
+                new Vector3(param[9], param[10], param[11])
+            };
+        }
 
-            // God I hate these control statement roller coasters.
+        public static Vector3[] DeserializeTriangle(string serialized)
+        {
+            var args = serialized.Split(' ');
+            float[] param = new float[9];
+            for (int i = 0; i < param.Length; i++)
+            {
+                int argNum = i + 2;
+                if (!Single.TryParse(args[argNum], out param[i]))
+                {
+                    GD.PrintErr(
+                        String.Format(
+                            "Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
+                            argNum,
+                            args[argNum]));
+                    return new Vector3[0];
+                }
+            }
+
+            return new Vector3[]
+            {
+                new Vector3(param[0], param[1], param[2]),
+                new Vector3(param[3], param[4], param[5]),
+                new Vector3(param[6], param[7], param[8])
+            };
+        }
+
+        public static List<Model> GetModelsFromFile(string fullFilePath)
+        {
+            List<Model> results = new List<Model>();
+            if (!System.IO.File.Exists(fullFilePath))
+            {
+                OmniLogger.Error("File does not exist: " + fullFilePath);
+                return results;
+            }
+
+            // Key = fileName, Value = fileContents
+            Dictionary<string, string> embeddedFiles = new Dictionary<string, string>();
+            string contents = string.Empty;
+
             try
             {
-                while ((line = reader.ReadLine()) != null)
+                contents = File.ReadAllText(fullFilePath); 
+            }
+            catch (System.Exception e)
+            {
+                OmniLogger.Error($"Exception '{e.Message}' raised while reading file: " + fullFilePath);
+                return results;
+            }
+
+            ParseEmbeddedFiles(embeddedFiles, fullFilePath, contents);
+            foreach (KeyValuePair<string, string> kvp in embeddedFiles)
+            {
+                CacheFileContents(m_fileCache, kvp.Key, kvp.Value);
+                GetModelsFromSerializedFile(results, kvp.Key, kvp.Value);
+            }
+
+            return results;
+         }
+
+        // This function assumes there are no embedded files in the serialized file.
+        private static void GetModelsFromSerializedFile(List<Model> results, string fileName, string serializedFileContents)
+        {
+            LdrMetadata metadata = new LdrMetadata();
+            metadata.fileName = fileName;
+            metadata.modelName = "unknown";
+            string line;
+            StringReader reader = new StringReader(serializedFileContents);
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (String.IsNullOrEmpty(line))
+                    continue;
+
+                if (line.StartsWith(Constants.kName))
+                {                     
+                    metadata.modelName = line.Replace(Constants.kName, "").Trim();
+                    continue;
+                }
+
+                Command modelCommand = ModelTree.GetModelCommand(line);
+                if (modelCommand.modelType == ModelTree.ModelTypes.invalid)
+                    continue;
+
+                modelCommand.metadata = metadata;
+                modelCommand.subfileName = fileName;
+                modelCommand.commandString = "1 0 0 0 0 1 0 0 0 1 0 0 0 1 " + fileName;
+                results.Add(new Model(modelCommand));
+            }
+
+         }
+
+        private static bool IsModelCommand(string line)
+        {
+            
+
+            return false;
+        }
+
+        // Separates an LDraw file into a dictionary of files. The dictionary contains at least one entry,
+        // the parent file. If the parent file contains embedded files, the dictionary will contain an entry
+        // for each embedded file.
+        private static void ParseEmbeddedFiles(Dictionary<string, string> cache, string parentFileName, string serializedFileContents)
+        {
+            if (cache == null)
+                return;
+
+            StringReader reader = new StringReader(serializedFileContents);
+            string embeddedFileContents = string.Empty;
+            string embeddedFileName = string.Empty;
+            string parentFileContents = string.Empty;
+
+            // God I hate these control statement roller coasters.
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                try
                 {
                     if (String.IsNullOrEmpty(line))
                         continue;
 
                     line = line.Trim().Trim('\t');
 
-                    // I think removes dubliate spaces, but I'm not sure.
+                    // I think removes duplicate spaces, but I'm not sure.
                     // Drop it into a regex sandbox some time and see.
                     Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
                     line = regex.Replace(line, " ").Trim();
 
-                    if (line.StartsWith(kEmbeddedFileStart))
+                    if (line.StartsWith(Constants.kEmbeddedFileStart))
                     {
-                        embeddedFileName = Path.GetFileName(parentCommand.metadata.fileName);
-                        embeddedFileName += "/" + line.Replace(kEmbeddedFileStart, "").Trim();
+                        embeddedFileName = System.IO.Path.GetFileName(parentFileName);
+                        embeddedFileName += "/" + line.Replace(Constants.kEmbeddedFileStart, "").Trim();
                         embeddedFileContents = string.Empty;
+                        continue;
                     }
 
-                    if (line.StartsWith(kEmbeddedFileEnd))
+                    if (line.StartsWith(Constants.kEmbeddedFileEnd))
                     {
-                        CacheFileContents(embeddedFileName, embeddedFileContents);
+                        CacheFileContents(cache, embeddedFileName, embeddedFileContents);
                         embeddedFileName = string.Empty;
                         embeddedFileContents = string.Empty;
+                        continue;
                     }
 
-                    if (!String.IsNullOrEmpty(embeddedFileName))
+                    if (String.IsNullOrEmpty(embeddedFileName))
+                    {
+                        // add to parent file entry
+                        parentFileContents += line + System.Environment.NewLine;
+                    }
+                    else
                     {
                         embeddedFileContents += line + System.Environment.NewLine;
                     }
                 }
-            }
-            catch (System.Exception e)
-            {
-                OmniLogger.Error($"Exception '{e.Message}' while parsing embedded file: {parentCommand.subfileName}. Line: {line}");
-            }
+                catch (System.Exception e)
+                {
+                    OmniLogger.Error($"Exception '{e.Message}' while parsing embedded file: {parentFileName}. Line: {line}");
+                }
+            }   // while
+
+            CacheFileContents(cache, System.IO.Path.GetFileName(parentFileName), parentFileContents);
         }
 
-        private static void CacheFileContents(string fileName, string contents)
+        private static void CacheFileContents(Dictionary<string, string> cache, string fileName, string contents)
         {
-            if (m_fileCache.ContainsKey(fileName))
+            if (cache == null)
+                return;
+
+            if (cache.ContainsKey(fileName))
             {
                 OmniLogger.Error($"File {fileName} already exists in the Ldraw file cache!");
                 return;
             }
 
-            m_fileCache.Add(fileName, contents);
+            cache.Add(fileName, contents);
         }
 
         private static bool ParseCommand(string commandString, in Transform3D parentTransform, ref LdrMetadata metadata, out Command cmd)
@@ -344,7 +472,7 @@ namespace Ldraw
 
         private static bool ParseMetaCommand(string[] tokens, ref LdrMetadata metadata)
         {
-            if (tokens[1] == kBFC)
+            if (tokens[1] == Constants.kBFC)
             {
                 ParseBfcCommand(tokens, ref metadata);
                 return false;
@@ -410,26 +538,26 @@ namespace Ldraw
             // Tranforms in subfiles are relative to parent transforms.
             Transform3D childTfm = GetCommandTransform(tokens);
             cmd.transform = cmd.transform * childTfm;
-            cmd.type = GetGameEntityType(tokens[kSubFileFileName]);
+            cmd.type = GetGameEntityType(tokens[Constants.kSubFileFileName]);
             cmd.subfileName = GetSubileName(tokens);
             return true;
         }
 
         private static string GetSubileName(string[] tokens)
         {
-            if (tokens.Length <= kSubFileFileName)
+            if (tokens.Length <= Constants.kSubFileFileName)
             {
                 OmniLogger.Error("Subfile command has too few tokens");
                 return string.Empty;
             }
 
-            if (tokens.Length == kSubFileFileName + 1)
+            if (tokens.Length == Constants.kSubFileFileName + 1)
             {
-                return tokens[kSubFileFileName];
+                return tokens[Constants.kSubFileFileName];
             }
 
             string result = "";
-            for (int i = kSubFileFileName; i < tokens.Length; i++)
+            for (int i = Constants.kSubFileFileName; i < tokens.Length; i++)
             {
                 result += " " + tokens[i];
             }
@@ -504,59 +632,6 @@ namespace Ldraw
                 return LdrCommandType.invalid;
             
             return (LdrCommandType)value;
-        }
-
-        public static Vector3[] DeserializeQuad(string serialized)
-        {
-            string[] args = serialized.Split(' ');
-            float[] param = new float[12];
-            for (int i = 0; i < param.Length; i++)
-            {
-                int argNum = i + 2;
-                if (!float.TryParse(args[argNum], out param[i]))
-                {
-                    GD.PrintErr(
-                        String.Format(
-                            "Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
-                            argNum,
-                            args[argNum]));
-                    return new Vector3[0];
-                }
-            }
-
-            return new Vector3[]
-            {
-                new Vector3(param[0], param[1], param[2]),
-                new Vector3(param[3], param[4], param[5]),
-                new Vector3(param[6], param[7], param[8]),
-                new Vector3(param[9], param[10], param[11])
-            };
-        }
-
-        public static Vector3[] DeserializeTriangle(string serialized)
-        {
-            var args = serialized.Split(' ');
-            float[] param = new float[9];
-            for (int i = 0; i < param.Length; i++)
-            {
-                int argNum = i + 2;
-                if (!Single.TryParse(args[argNum], out param[i]))
-                {
-                    GD.PrintErr(
-                        String.Format(
-                            "Something wrong with parameters in line drawn command. ParamNum:{0}, Value:{1}",
-                            argNum,
-                            args[argNum]));
-                    return new Vector3[0];
-                }
-            }
-
-            return new Vector3[]
-            {
-                new Vector3(param[0], param[1], param[2]),
-                new Vector3(param[3], param[4], param[5]),
-                new Vector3(param[6], param[7], param[8])
-            };
         }
 
         private static string GetFullPathToFile(string path)

@@ -1,6 +1,6 @@
 ﻿using Godot;
 using Ldraw;
-using System.IO;
+using System.Collections.Generic;
 
 public partial class Loader : Node3D
 {
@@ -20,11 +20,18 @@ public partial class Loader : Node3D
         _ColorConfigPath = _BasePartsPath + "LDConfig.ldr";
         _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
         _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
-    
+
         //Node3D model = GetPartMesh("93085.dat");
-        Node3D model = LoadModel("C:\\dev\\brick_model_game\\models\\imports\\prop.mpd");
-        model.Name = "prop";
-        Error error = SaveNodeAsScene(model);
+        List<Node3D> models = LoadModels("C:\\dev\\brick_model_game\\models\\imports\\prop.mpd");
+        
+        Node3D modelScene = new Node3D();
+        modelScene.Name = "prop";
+        foreach (Node3D model in models)
+        {
+            modelScene.AddChild(model);
+        }
+        
+        Error error = SaveNodeAsScene(modelScene);
         if (error != Error.Ok)
             GD.PrintErr("Error saving scene: " + error.ToString());
         GetTree().Quit();
@@ -40,14 +47,10 @@ public partial class Loader : Node3D
         return meshManager.GetMeshInstance();
     }
 
-    private Node3D LoadModel(string modelfile)
+    private List<Node3D> LoadModels(string modelfile)
     {
-        Command command = new Command();
-        command.subfileName = modelfile;
-        command.metadata.fileName = modelfile;
-        command.metadata.modelName = Path.GetFileName(modelfile);
-        Ldraw.Model model = new Ldraw.Model(command);
-        return model.GetModelInstance();
+        ldrFile file = new ldrFile(modelfile);
+        return file.GetModelList();
     }
 
     public Error SaveNodeAsScene(Node3D node)
