@@ -1,5 +1,6 @@
 ﻿using Godot;
 using Ldraw;
+using System.IO;
 
 public partial class Loader : Node3D
 {
@@ -43,6 +44,8 @@ public partial class Loader : Node3D
     {
         Command command = new Command();
         command.subfileName = modelfile;
+        command.metadata.fileName = modelfile;
+        command.metadata.modelName = Path.GetFileName(modelfile);
         Ldraw.Model model = new Ldraw.Model(command);
         return model.GetModelInstance();
     }

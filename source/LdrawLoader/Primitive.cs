@@ -13,11 +13,6 @@ namespace Ldraw
                 return;
             }
 
-            if ( parentCommand.subfileName == "stud2a.dat")
-            {
-                int i = 0;
-            }
-
             List<Command> subCommands = Ldraw.Parsing.GetCommandsFromFile(in parentCommand);
             foreach (Command subCmd in subCommands)
             {

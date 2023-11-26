@@ -186,9 +186,9 @@ namespace Ldraw
         {
             ParseEmberddedFiles(parentCommand, serializedData);
 
+            LdrMetadata workingMetaData = parentCommand.metadata; 
             List<Command> commands = new List<Command>();
             StringReader reader = new StringReader(serializedData);
-            LdrMetadata workingMetaData = parentCommand.metadata;      
             string line = "";
             bool readingEmbeddedFile = false;
 
@@ -207,11 +207,17 @@ namespace Ldraw
                     Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
                     line = regex.Replace(line, " ").Trim();
 
-                    if (line == kEmbeddedFileStart)
+                    if (line.StartsWith(kEmbeddedFileStart))
+                    {
                         readingEmbeddedFile = true;
+                        continue;
+                    }
 
-                    if (line == kEmbeddedFileEnd)
+                    if (line.StartsWith(kEmbeddedFileEnd))
+                    {
                         readingEmbeddedFile = false;
+                        continue;
+                    }
 
                     if (readingEmbeddedFile)
                         continue;
@@ -253,13 +259,14 @@ namespace Ldraw
                     Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
                     line = regex.Replace(line, " ").Trim();
 
-                    if (line == kEmbeddedFileStart)
+                    if (line.StartsWith(kEmbeddedFileStart))
                     {
-                        embeddedFileName = parentCommand.metadata.fileName + "/" + line.Split(' ')[2];
+                        embeddedFileName = Path.GetFileName(parentCommand.metadata.fileName);
+                        embeddedFileName += "/" + line.Replace(kEmbeddedFileStart, "").Trim();
                         embeddedFileContents = string.Empty;
                     }
 
-                    if (line == kEmbeddedFileEnd)
+                    if (line.StartsWith(kEmbeddedFileEnd))
                     {
                         CacheFileContents(embeddedFileName, embeddedFileContents);
                         embeddedFileName = string.Empty;
@@ -400,18 +407,33 @@ namespace Ldraw
                 return false;
             }
 
-            todo next: Parsing does not support spaces in subfile names. This needs fixing.
-                // Maybe we should just glue the tokens back together? We'd lose double spaces,
-                // but that's not a big deal.
-
-            tokens[kSubFileFileName] = tokens[kSubFileFileName].Trim();
-
             // Tranforms in subfiles are relative to parent transforms.
             Transform3D childTfm = GetCommandTransform(tokens);
             cmd.transform = cmd.transform * childTfm;
             cmd.type = GetGameEntityType(tokens[kSubFileFileName]);
-            cmd.subfileName = tokens[kSubFileFileName]; 
+            cmd.subfileName = GetSubileName(tokens);
             return true;
+        }
+
+        private static string GetSubileName(string[] tokens)
+        {
+            if (tokens.Length <= kSubFileFileName)
+            {
+                OmniLogger.Error("Subfile command has too few tokens");
+                return string.Empty;
+            }
+
+            if (tokens.Length == kSubFileFileName + 1)
+            {
+                return tokens[kSubFileFileName];
+            }
+
+            string result = "";
+            for (int i = kSubFileFileName; i < tokens.Length; i++)
+            {
+                result += " " + tokens[i];
+            }
+            return result.Trim();
         }
 
         private static Transform3D GetCommandTransform(string[] tokens)
