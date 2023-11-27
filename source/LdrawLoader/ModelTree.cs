@@ -25,6 +25,11 @@ namespace Ldraw
             { "minifig_anchor.dat", ModelTypes.minifig },
         };
 
+        private static readonly Dictionary<string, ComponentTypes> kComponentAnchors = new Dictionary<string, ComponentTypes>()
+        {
+            { "body_anchor.dat", ComponentTypes.body },
+        };
+
         public static Command GetModelCommand(string command)
         {
             Command cmd = new Command();
@@ -48,6 +53,25 @@ namespace Ldraw
                 return kModelAnchors[tokens.Last()];
 
             return ModelTypes.invalid;
+        }
+
+        public static GameEntityType GetGameEntityType(Command cmd)
+        {
+            9387573987575 -=
+
+                // Next step:
+                // Nothing loads because the models have no component anchors.
+                // 1. Do props needa body anchor?
+                // 2. Should the model anchor somehow serve as a compenent anchor?
+                // 3. Or should the model just get a primitive directlly, as though it were a component?
+
+            if (kModelAnchors.ContainsKey(cmd.subfileName))
+                return GameEntityType.Model;
+
+            if (kModelAnchors.ContainsKey(cmd.subfileName))
+                return GameEntityType.Component;
+
+            return GameEntityType.Invalid;
         }
     }
 }

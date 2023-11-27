@@ -144,29 +144,28 @@ namespace Ldraw
         public static List<Command> GetCommandsFromFile(in Command parentCommand)
         {
             List<Command> result = new List<Command>();
-            if (m_fileCache.ContainsKey(parentCommand.subfileName))
-            {
-                return GetCommandsFromString(parentCommand, m_fileCache[parentCommand.subfileName]);
-            }
+            string contents = OpenFile(parentCommand.subfileName);
+            return GetCommandsFromString(parentCommand, contents);
+        }
 
-            string fullFilePath = GetFullPathToFile(parentCommand.subfileName);
+        public static string OpenFile(string fileName)
+        {
+            if (String.IsNullOrEmpty(fileName))
+                return string.Empty;
+            
+            if (m_fileCache.ContainsKey(fileName))
+                return m_fileCache[fileName];
+
+            string fullFilePath = GetFullPathToFile(fileName);
             if (!System.IO.File.Exists(fullFilePath))
             {
                 OmniLogger.Error("File does not exist: " + fullFilePath);
-                return result;
+                return string.Empty;
             }
 
-            try
-            {
-                string contents = File.ReadAllText(fullFilePath);
-                m_fileCache.Add(parentCommand.subfileName, contents);
-                return GetCommandsFromString(parentCommand, contents);
-            }
-            catch (System.Exception e)
-            {
-                OmniLogger.Error($"Exception '{e.Message}' raised while reading file: " + fullFilePath);
-                return result;
-            }
+            string contents = File.ReadAllText(fullFilePath);
+            m_fileCache.Add(fileName, contents);
+            return contents;
         }
 
         public static List<Command> GetCommandsFromString(in Command parentCommand, string serializedData)
@@ -432,6 +431,7 @@ namespace Ldraw
             cmd = new Command();
             cmd.metadata = metadata;
             cmd.transform = parentTransform;
+            cmd.commandString = commandString;
             int type;
             if (tokens.Length < 2)
                 return false;
@@ -448,16 +448,8 @@ namespace Ldraw
                         return ParseSubfileCommand(tokens, ref metadata, ref cmd);
 
                     case LdrCommandType.triangle:
-
-                        cmd.type = GameEntityType.Primitive;
-                        cmd.metadata = metadata;
-                        cmd.commandString = commandString;
-                        break;
-
                     case LdrCommandType.quad:
                         cmd.type = GameEntityType.Primitive;
-                        cmd.metadata = metadata;
-                        cmd.commandString = commandString;
                         break;
 
                     case LdrCommandType.line:
@@ -538,8 +530,8 @@ namespace Ldraw
             // Tranforms in subfiles are relative to parent transforms.
             Transform3D childTfm = GetCommandTransform(tokens);
             cmd.transform = cmd.transform * childTfm;
-            cmd.type = GetGameEntityType(tokens[Constants.kSubFileFileName]);
             cmd.subfileName = GetSubileName(tokens);
+            cmd.type = ModelTree.GetGameEntityType(cmd);
             return true;
         }
 
@@ -582,48 +574,6 @@ namespace Ldraw
                 param[0], param[1], param[2], 1);
 
             return Transforms.MakeGodotTransformFrom4x4(mat4x4);
-        }
-
-        private static GameEntityType GetGameEntityType(string subfileName)
-        {
-            if (subfileName.EndsWith(Constants.kDatExtension, StringComparison.OrdinalIgnoreCase))
-                return GameEntityType.Primitive;
-
-            if (!subfileName.EndsWith(Constants.kLdrExtension, StringComparison.OrdinalIgnoreCase) &&
-                !subfileName.EndsWith(Constants.kMpdExtension, StringComparison.OrdinalIgnoreCase))
-                return GameEntityType.Invalid;
-           
-            subfileName = Path.GetFileNameWithoutExtension(subfileName);
-            if (!IsAModelOrComponentName(subfileName))
-                return GameEntityType.Invalid;
-
-            string workinSubfileName = subfileName.Replace("[", "").Replace("]", "").Trim();
-            string[] tokens = workinSubfileName.Split(' ');
-            if (tokens.Length != 2)
-            {
-                // This is a shity hack. Fix this so we can have spaces in model names please!
-                OmniLogger.Error($"Invalid model or component name: {subfileName}, can't have more than one space!");
-                return GameEntityType.Invalid;
-            }
-
-            try
-            {
-                Enum.TryParse(tokens[0], out GameEntityType value);
-                return value;
-            }
-            catch
-            {
-                OmniLogger.Error($"Invalid model or component type: {tokens[0]}");
-                return GameEntityType.Invalid;
-            }
-        }
-
-        private static bool IsAModelOrComponentName(string subfileName)
-        {
-            if (subfileName.StartsWith("[") && subfileName.EndsWith("]"))
-                return true;
-
-            return false;
         }
 
         private static LdrCommandType GetCommandType(int value)
