@@ -54,12 +54,14 @@ namespace Ldraw
     public enum GameEntityType
     {
         Invalid,
-        Primitive,
+        Model,
         Component,
-        Model
+        Part,
+        Triangle,
+        Quad,
     }
 
-    public enum LdrCommandType
+    internal enum LdrCommandType
     {
         invalid = -1,
         meta = 0,
@@ -90,7 +92,6 @@ namespace Ldraw
 
         // This metadada can be inherited from the parent command, or read from a previous line.
         public ModelTree.ModelTypes modelType = ModelTree.ModelTypes.invalid;
-        public LdrCommandType ldrCommandType = LdrCommandType.invalid;
         public LdrMetadata metadata = new LdrMetadata();
         public string commandString;
         public GameEntityType type;
@@ -276,6 +277,9 @@ namespace Ldraw
 
         public static List<Model> GetModelsFromFile(string fullFilePath)
         {
+            // TODO: Replace this garbage with a call to GetCommandsFromFile()
+            // that simply prunes non-model commands.
+
             List<Model> results = new List<Model>();
             if (!System.IO.File.Exists(fullFilePath))
             {
@@ -432,14 +436,13 @@ namespace Ldraw
             cmd.metadata = metadata;
             cmd.transform = parentTransform;
             cmd.commandString = commandString;
-            int type;
+            LdrCommandType type;
             if (tokens.Length < 2)
                 return false;
 
             if (Int32.TryParse(tokens[0], out type))
             {
-                cmd.ldrCommandType = GetCommandType(type);
-                switch (cmd.ldrCommandType)
+                switch (type)
                 {
                     case LdrCommandType.meta:
                         return ParseMetaCommand(tokens, ref metadata);
@@ -448,8 +451,10 @@ namespace Ldraw
                         return ParseSubfileCommand(tokens, ref metadata, ref cmd);
 
                     case LdrCommandType.triangle:
+
+                        break;
                     case LdrCommandType.quad:
-                        cmd.type = GameEntityType.Primitive;
+                        cmd.type = GameEntityType.Triangle;
                         break;
 
                     case LdrCommandType.line:

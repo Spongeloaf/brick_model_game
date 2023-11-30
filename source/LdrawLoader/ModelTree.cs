@@ -57,8 +57,6 @@ namespace Ldraw
 
         public static GameEntityType GetGameEntityType(Command cmd)
         {
-            9387573987575 -=
-
                 // Next step:
                 // Nothing loads because the models have no component anchors.
                 // 1. Do props needa body anchor?
