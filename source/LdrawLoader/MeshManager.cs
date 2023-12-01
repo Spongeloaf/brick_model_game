@@ -70,7 +70,7 @@ namespace Ldraw
             verts[1] = tmp;
         }
 
-        public void BuildMesh()
+        private void BuildMesh()
         {
             m_surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
             foreach (Vector3 vert in verts)
@@ -91,6 +91,7 @@ namespace Ldraw
 
         public MeshInstance3D GetMeshInstance()
         {
+            BuildMesh();
             MeshInstance3D meshInstance = new MeshInstance3D();
             meshInstance.Mesh = m_ArrayMesh;
             return meshInstance;

@@ -1,0 +1,16 @@
+0 
+0 Name: [prop a].ldr
+0 Author: 
+
+1 57 0 -48 0 1 0 0 0 1 0 0 0 1 a component.ldr
+1 15 0 -24 0 1 0 0 0 1 0 0 0 1 3005.dat
+1 4 0 -48 0 1 0 0 0 1 0 0 0 1 4588.dat
+1 0 0 0 0 1 0 0 0 1 0 0 0 1 prop_anchor.dat
+
+0 FILE a component.ldr
+0 
+0 Name: a component.ldr
+0 Author: 
+1 7 0 0 0 1 0 0 0 1 0 0 0 1 component_anchor.dat
+1 57 0 -8 2 1 0 0 0 0 -1 0 1 0 28618.dat
+0 NOFILE

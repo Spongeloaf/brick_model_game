@@ -76,8 +76,6 @@ namespace Ldraw
             System.Numerics.Matrix4x4 rotateX = System.Numerics.Matrix4x4.CreateRotationX(45.0f);
             System.Numerics.Matrix4x4 rotateY = System.Numerics.Matrix4x4.CreateRotationY(45.0f);
             System.Numerics.Matrix4x4 rotateZ = System.Numerics.Matrix4x4.CreateRotationZ(45.0f);
-            int i = 0;
-
         }
     }
 }

@@ -13,27 +13,29 @@ namespace Ldraw
                 return;
             }
 
+            // Do not render anchors, they're only used for logical operations
+            if (ModelTree.IsCommandStringAnAnchor(parentCommand.commandString))
+                return;
+
             List<Command> subCommands = Ldraw.Parsing.GetCommandsFromFile(in parentCommand);
             foreach (Command subCmd in subCommands)
             {
-                switch (subCmd.ldrCommandType)
+                switch (subCmd.type)
                 {
-                    case LdrCommandType.subfile:
+                    case GameEntityType.Part:
                         AddPrimitiveToMesh(meshManager, in subCmd);
                         break;
 
-                    case LdrCommandType.triangle:
-                        // Use the parent transform because primitive commands do not have their own.
+                    case GameEntityType.Triangle:
                         meshManager.AddTriangle(in subCmd);
                         break;
 
-                    case LdrCommandType.quad:
-                        // Use the parent transform because primitive commands do not have their own.
+                    case GameEntityType.Quad:
                         meshManager.AddQuad(in subCmd);
                         break;
 
                     default:
-                        OmniLogger.Info("Ldraw models should only contain components or primitives as direct children");
+                        OmniLogger.Info("Ldraw primitievs should only contain parts, triangles, or quads as direct children");
                         break;
                 }
             }

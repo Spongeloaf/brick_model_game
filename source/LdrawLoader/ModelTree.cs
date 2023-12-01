@@ -28,6 +28,7 @@ namespace Ldraw
         private static readonly Dictionary<string, ComponentTypes> kComponentAnchors = new Dictionary<string, ComponentTypes>()
         {
             { "body_anchor.dat", ComponentTypes.body },
+            { "component_anchor.dat", ComponentTypes.body }, // This is a fake component just for testing
         };
 
         public static Command GetModelCommand(string command)
@@ -36,11 +37,18 @@ namespace Ldraw
             if (string.IsNullOrEmpty(command))
                 return cmd;
 
-            cmd.modelType = GetModelType(command);
+            cmd.modelType = GetModelTypeFromCommandString(command);
+            if (cmd.modelType == ModelTypes.invalid)
+            {
+                cmd.type = GameEntityType.Invalid;
+                return cmd;
+            }
+
+            cmd.type = GameEntityType.Model;
             return cmd;
         }
 
-        private static ModelTypes GetModelType(string command)
+        public static ModelTypes GetModelTypeFromCommandString(string command)
         {
             if (string.IsNullOrEmpty(command))
                 return ModelTypes.invalid;
@@ -55,21 +63,24 @@ namespace Ldraw
             return ModelTypes.invalid;
         }
 
-        public static GameEntityType GetGameEntityType(Command cmd)
+        public static bool IsCommandStringAnAnchor(string command)
         {
-                // Next step:
-                // Nothing loads because the models have no component anchors.
-                // 1. Do props needa body anchor?
-                // 2. Should the model anchor somehow serve as a compenent anchor?
-                // 3. Or should the model just get a primitive directlly, as though it were a component?
+            return GetModelTypeFromCommandString(command) != ModelTypes.invalid;
+        }
 
-            if (kModelAnchors.ContainsKey(cmd.subfileName))
-                return GameEntityType.Model;
+        public static ComponentTypes GetComponentTypeFromCommandString(string command)
+        {
+            if (string.IsNullOrEmpty(command))
+                return ComponentTypes.invalid;
 
-            if (kModelAnchors.ContainsKey(cmd.subfileName))
-                return GameEntityType.Component;
+            string[] tokens = command.Trim().Split();
+            if (tokens.Length <= Constants.kSubFileFileName)
+                return ComponentTypes.invalid;
 
-            return GameEntityType.Invalid;
+            if (kComponentAnchors.ContainsKey(tokens.Last()))
+                return kComponentAnchors[tokens.Last()];
+
+            return ComponentTypes.invalid;
         }
     }
 }

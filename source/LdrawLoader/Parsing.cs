@@ -59,6 +59,7 @@ namespace Ldraw
         Part,
         Triangle,
         Quad,
+        File,
     }
 
     internal enum LdrCommandType
@@ -88,11 +89,12 @@ namespace Ldraw
 
     public struct Command
     {
-        public Command() {}
+        public Command() { }
 
         // This metadada can be inherited from the parent command, or read from a previous line.
-        public ModelTree.ModelTypes modelType = ModelTree.ModelTypes.invalid;
         public LdrMetadata metadata = new LdrMetadata();
+        public ModelTree.ModelTypes modelType = ModelTree.ModelTypes.invalid;
+        public ModelTree.ComponentTypes componentType = ModelTree.ComponentTypes.invalid;
         public string commandString;
         public GameEntityType type;
         public Transform3D transform = Transform3D.Identity;
@@ -103,76 +105,34 @@ namespace Ldraw
 
     public static class Parsing
     {
-        private static readonly Dictionary<string, string> m_ldrawFileIndex = new Dictionary<string, string>();
-        private static Dictionary<string, string> m_fileCache = new Dictionary<string, string>();
-
-        static Parsing()
+        public static bool IsLdrOrMpdFile(string fileName)
         {
-            m_ldrawFileIndex = PrepareFileIndex();
-        }
+            if (fileName.EndsWith(Constants.kLdrExtension, StringComparison.OrdinalIgnoreCase) ||
+                fileName.EndsWith(Constants.kMpdExtension, StringComparison.OrdinalIgnoreCase))
+                return true;
 
-        public static Dictionary<string, string> PrepareFileIndex()
-        {
-            Dictionary<string, string> parts = new Dictionary<string, string>();
-            string[] files = Directory.GetFiles(Constants.kBasePartsPath, "*.*", SearchOption.AllDirectories);
-
-            foreach (string file in files)
-            {
-                if (file.Contains(".meta"))
-                    continue;
-
-                string fileName = file.Replace(Constants.kBasePartsPath, "");
-
-                // According to the LDRAW spec, https://www.ldraw.org/article/398.html:
-                // Filename is the file name of the part including the folder (e.g. s/, 48/)
-                // if it is not directly in the parts or p folders. 
-                if (fileName.StartsWith("parts\\"))
-                    fileName = fileName.Replace("parts\\", "");
-
-                if (fileName.StartsWith("p\\"))
-                    fileName = fileName.Replace("p\\", "");
-
-                fileName = fileName.Trim();
-                if (!parts.ContainsKey(fileName))
-                    parts.Add(fileName, file);
-                else
-                    GD.PrintErr("Duplicate part: " + fileName);
-            }
-
-            return parts;
+            return false;
         }
 
         public static List<Command> GetCommandsFromFile(in Command parentCommand)
         {
-            List<Command> result = new List<Command>();
-            string contents = OpenFile(parentCommand.subfileName);
-            return GetCommandsFromString(parentCommand, contents);
-        }
-
-        public static string OpenFile(string fileName)
-        {
-            if (String.IsNullOrEmpty(fileName))
-                return string.Empty;
-            
-            if (m_fileCache.ContainsKey(fileName))
-                return m_fileCache[fileName];
-
-            string fullFilePath = GetFullPathToFile(fileName);
-            if (!System.IO.File.Exists(fullFilePath))
+            try
             {
-                OmniLogger.Error("File does not exist: " + fullFilePath);
-                return string.Empty;
+                List<Command> result = new List<Command>();
+                string contents = FileCache.OpenFile(parentCommand.subfileName);
+                return GetCommandsFromString(parentCommand, contents);
             }
-
-            string contents = File.ReadAllText(fullFilePath);
-            m_fileCache.Add(fileName, contents);
-            return contents;
+            catch (System.Exception e)
+            {
+                OmniLogger.Error($"Exception '{e.Message}' raised while parsing file: {parentCommand.subfileName}");
+                return new List<Command>();
+            }
         }
 
         public static List<Command> GetCommandsFromString(in Command parentCommand, string serializedData)
         {
-            ParseEmbeddedFiles(m_fileCache, parentCommand.subfileName, serializedData);
-            LdrMetadata workingMetaData = parentCommand.metadata; 
+            ParseEmbeddedFiles(parentCommand.subfileName, serializedData);
+            LdrMetadata workingMetaData = parentCommand.metadata;
             List<Command> commands = new List<Command>();
             StringReader reader = new StringReader(serializedData);
             string line = "";
@@ -205,12 +165,15 @@ namespace Ldraw
                         continue;
                     }
 
+                    Command cmd = new Command();
                     if (readingEmbeddedFile)
+                    {
                         continue;
+                    }
 
                     // Warning: Parsecommand may change the metadata and not
                     // return true when it does so. (Example: BFC).
-                    if (ParseCommand(line, in parentCommand.transform, ref workingMetaData, out Command cmd))
+                    if (ParseCommand(line, in parentCommand.transform, ref workingMetaData, out cmd))
                         commands.Add(cmd);
                 }
             }
@@ -275,42 +238,6 @@ namespace Ldraw
             };
         }
 
-        public static List<Model> GetModelsFromFile(string fullFilePath)
-        {
-            // TODO: Replace this garbage with a call to GetCommandsFromFile()
-            // that simply prunes non-model commands.
-
-            List<Model> results = new List<Model>();
-            if (!System.IO.File.Exists(fullFilePath))
-            {
-                OmniLogger.Error("File does not exist: " + fullFilePath);
-                return results;
-            }
-
-            // Key = fileName, Value = fileContents
-            Dictionary<string, string> embeddedFiles = new Dictionary<string, string>();
-            string contents = string.Empty;
-
-            try
-            {
-                contents = File.ReadAllText(fullFilePath); 
-            }
-            catch (System.Exception e)
-            {
-                OmniLogger.Error($"Exception '{e.Message}' raised while reading file: " + fullFilePath);
-                return results;
-            }
-
-            ParseEmbeddedFiles(embeddedFiles, fullFilePath, contents);
-            foreach (KeyValuePair<string, string> kvp in embeddedFiles)
-            {
-                CacheFileContents(m_fileCache, kvp.Key, kvp.Value);
-                GetModelsFromSerializedFile(results, kvp.Key, kvp.Value);
-            }
-
-            return results;
-         }
-
         // This function assumes there are no embedded files in the serialized file.
         private static void GetModelsFromSerializedFile(List<Model> results, string fileName, string serializedFileContents)
         {
@@ -325,7 +252,7 @@ namespace Ldraw
                     continue;
 
                 if (line.StartsWith(Constants.kName))
-                {                     
+                {
                     metadata.modelName = line.Replace(Constants.kName, "").Trim();
                     continue;
                 }
@@ -340,11 +267,11 @@ namespace Ldraw
                 results.Add(new Model(modelCommand));
             }
 
-         }
+        }
 
         private static bool IsModelCommand(string line)
         {
-            
+
 
             return false;
         }
@@ -352,11 +279,8 @@ namespace Ldraw
         // Separates an LDraw file into a dictionary of files. The dictionary contains at least one entry,
         // the parent file. If the parent file contains embedded files, the dictionary will contain an entry
         // for each embedded file.
-        private static void ParseEmbeddedFiles(Dictionary<string, string> cache, string parentFileName, string serializedFileContents)
+        private static void ParseEmbeddedFiles(string parentFileName, string serializedFileContents)
         {
-            if (cache == null)
-                return;
-
             StringReader reader = new StringReader(serializedFileContents);
             string embeddedFileContents = string.Empty;
             string embeddedFileName = string.Empty;
@@ -380,15 +304,14 @@ namespace Ldraw
 
                     if (line.StartsWith(Constants.kEmbeddedFileStart))
                     {
-                        embeddedFileName = System.IO.Path.GetFileName(parentFileName);
-                        embeddedFileName += "/" + line.Replace(Constants.kEmbeddedFileStart, "").Trim();
+                        embeddedFileName = GetEmbeddedFileNameFromCommandString(parentFileName, line);
                         embeddedFileContents = string.Empty;
                         continue;
                     }
 
                     if (line.StartsWith(Constants.kEmbeddedFileEnd))
                     {
-                        CacheFileContents(cache, embeddedFileName, embeddedFileContents);
+                        FileCache.CacheFileContents(embeddedFileName, embeddedFileContents);
                         embeddedFileName = string.Empty;
                         embeddedFileContents = string.Empty;
                         continue;
@@ -410,21 +333,14 @@ namespace Ldraw
                 }
             }   // while
 
-            CacheFileContents(cache, System.IO.Path.GetFileName(parentFileName), parentFileContents);
+            FileCache.CacheFileContents(System.IO.Path.GetFileName(parentFileName), parentFileContents);
         }
 
-        private static void CacheFileContents(Dictionary<string, string> cache, string fileName, string contents)
+        private static string GetEmbeddedFileNameFromCommandString(string parentFileName, string line)
         {
-            if (cache == null)
-                return;
-
-            if (cache.ContainsKey(fileName))
-            {
-                OmniLogger.Error($"File {fileName} already exists in the Ldraw file cache!");
-                return;
-            }
-
-            cache.Add(fileName, contents);
+            string embeddedFileName = System.IO.Path.GetFileName(parentFileName);
+            embeddedFileName += "/" + line.Replace(Constants.kEmbeddedFileStart, "").Trim();
+            return embeddedFileName;
         }
 
         private static bool ParseCommand(string commandString, in Transform3D parentTransform, ref LdrMetadata metadata, out Command cmd)
@@ -436,43 +352,48 @@ namespace Ldraw
             cmd.metadata = metadata;
             cmd.transform = parentTransform;
             cmd.commandString = commandString;
-            LdrCommandType type;
             if (tokens.Length < 2)
                 return false;
 
-            if (Int32.TryParse(tokens[0], out type))
+
+            LdrCommandType type = GetCommandType(int.Parse(tokens[0]));
+            switch (type)
             {
-                switch (type)
-                {
-                    case LdrCommandType.meta:
-                        return ParseMetaCommand(tokens, ref metadata);
+                case LdrCommandType.meta:
+                    return ParseMetaCommand(tokens, ref metadata, ref cmd);
 
-                    case LdrCommandType.subfile:
-                        return ParseSubfileCommand(tokens, ref metadata, ref cmd);
+                case LdrCommandType.subfile:
+                    return ParseSubfileCommand(tokens, ref metadata, ref cmd);
 
-                    case LdrCommandType.triangle:
+                case LdrCommandType.triangle:
+                    cmd.type = GameEntityType.Triangle;
+                    break;
+                case LdrCommandType.quad:
+                    cmd.type = GameEntityType.Quad;
+                    break;
 
-                        break;
-                    case LdrCommandType.quad:
-                        cmd.type = GameEntityType.Triangle;
-                        break;
-
-                    case LdrCommandType.line:
-                    case LdrCommandType.optionalLine:
-                    default:
-                        return false;
-                }
+                case LdrCommandType.line:
+                case LdrCommandType.optionalLine:
+                default:
+                    return false;
             }
 
             return true;
         }
 
-        private static bool ParseMetaCommand(string[] tokens, ref LdrMetadata metadata)
+        private static bool ParseMetaCommand(string[] tokens, ref LdrMetadata metadata, ref Command cmd)
         {
             if (tokens[1] == Constants.kBFC)
             {
                 ParseBfcCommand(tokens, ref metadata);
                 return false;
+            }
+
+            if (tokens[1] == Constants.kEmbeddedFileStart)
+            {
+                cmd.type = GameEntityType.File;
+                cmd.subfileName = GetEmbeddedFileNameFromCommandString(metadata.fileName, cmd.commandString);
+                return true;
             }
 
             return false;
@@ -481,7 +402,7 @@ namespace Ldraw
         private static void ParseBfcCommand(string[] tokens, ref LdrMetadata metadata)
         {
             // Reference: https://www.ldraw.org/article/415.html
-            
+
             // Following the advic here: https://forums.ldraw.org/thread-23274.html
             // I have purposefully chosen to disable all BFC. If we need the performance
             // later on, we can do a deep dive on implementing it properly.
@@ -536,7 +457,33 @@ namespace Ldraw
             Transform3D childTfm = GetCommandTransform(tokens);
             cmd.transform = cmd.transform * childTfm;
             cmd.subfileName = GetSubileName(tokens);
-            cmd.type = ModelTree.GetGameEntityType(cmd);
+
+            if (IsLdrOrMpdFile(cmd.subfileName))
+            {
+                cmd.subfileName = GetEmbeddedFileNameFromCommandString(metadata.fileName, cmd.subfileName);
+                cmd.type = GameEntityType.File;
+                return true;
+            }
+
+            ModelTree.ModelTypes modelType = ModelTree.GetModelTypeFromCommandString(cmd.commandString);
+            if (modelType != ModelTree.ModelTypes.invalid)
+            {
+                cmd.modelType = modelType;
+                cmd.type = GameEntityType.Model;
+                cmd.subfileName = metadata.fileName;
+                return true;
+            }
+
+            ModelTree.ComponentTypes componentType = ModelTree.GetComponentTypeFromCommandString(cmd.commandString);
+            if (componentType != ModelTree.ComponentTypes.invalid)
+            {
+                cmd.componentType = componentType;
+                cmd.type = GameEntityType.Component;
+                cmd.subfileName = metadata.fileName;
+                return true;
+            }
+
+            cmd.type = GameEntityType.Part;
             return true;
         }
 
@@ -585,30 +532,8 @@ namespace Ldraw
         {
             if (value < 0 || value > 5)
                 return LdrCommandType.invalid;
-            
+
             return (LdrCommandType)value;
-        }
-
-        private static string GetFullPathToFile(string path)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                OmniLogger.Error("File path is null or empty");
-                return string.Empty;
-            }
-
-            if (path.EndsWith(Constants.kLdrExtension, StringComparison.OrdinalIgnoreCase) ||
-                path.EndsWith(Constants.kMpdExtension, StringComparison.OrdinalIgnoreCase))                          
-            {
-                // TODO: make this locate the models folder in the project.
-                return path;
-            }
-
-            if (m_ldrawFileIndex.ContainsKey(path))
-                return m_ldrawFileIndex[path];
-
-            OmniLogger.Error($"File {path} does not exist in the file index");
-            return string.Empty;
         }
     }   // public static class Parsing
 }
