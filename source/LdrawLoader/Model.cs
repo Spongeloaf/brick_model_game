@@ -12,9 +12,9 @@ namespace Ldraw
         private readonly MeshManager m_meshManager = new MeshManager();
         private ModelTree.ModelTypes m_modelType = ModelTree.ModelTypes.invalid;
 
-        public Model(Command modelCommand)
+        public Model(List<Command> commands, in Command modelCommand)
         {
-            m_modelName = modelCommand.metadata.modelName;
+            m_modelName = modelCommand.subfileName;
             m_fileName = modelCommand.metadata.fileName;
 
             if (modelCommand.modelType == ModelTree.ModelTypes.invalid)
@@ -22,53 +22,60 @@ namespace Ldraw
                 OmniLogger.Error("Model type is invalid");
                 return;
             }
-            
-            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(modelCommand);
+
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
                 {
-                    case Ldraw.GameEntityType.Component:
-                        m_components.Add(new Component(modelCommand));
+                    case Ldraw.CommandType.SubFile:
+                        GetComponentsFromFile(in cmd);
                         break;
 
-                    case GameEntityType.Part:
+                    case CommandType.Part:
                         Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
                         break;
 
-                    case GameEntityType.Model:
+                    case CommandType.Model:
                         Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
                         m_modelType = cmd.modelType;
                         break;
 
-                    case GameEntityType.File:
-                        LdrFile file = new LdrFile(cmd.subfileName);
-                        m_components.AddRange(file.GetComponentList());
-                        break;
                     default:
                         break;
                 }
             }
         }
 
-        public Node3D GetModelInstance()
+        private void GetComponentsFromFile(in Command cmd)
         {
+            EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName);
+            m_components.AddRange(embeddedFile.GetComponents());
+        }
+
+        public void ConnectModelToOwner(Node3D sceneRoot)
+        {
+            if (sceneRoot == null)
+            {
+                OmniLogger.Error("Model scene root is null");
+                return;
+            }
+
             Node3D model = new Node3D();
+            sceneRoot.AddChild(model);
+            model.Owner = sceneRoot;
             model.Name = m_modelName;
             if (m_modelType == ModelTree.ModelTypes.invalid)
-                return model;
+                return;
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             model.AddChild(meshInstance);
-            meshInstance.Owner = model;
+            meshInstance.Owner = sceneRoot;
 
             if (m_components == null || m_components.Count == 0)
-                return model;
+                return;
 
             foreach (Component component in m_components)
-                component.ConnectComponentInstance(model);
-
-            return model;
+                component.ConnectComponent(model, sceneRoot);
         }
     }
 }

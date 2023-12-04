@@ -3,16 +3,14 @@ using System.Collections.Generic;
 
 namespace Ldraw
 {
-    public class LdrFile
+    public class UserModelFile
     {
         private string m_fullFilePath;
-        private string m_fileHandle;
         private string m_fileContents;
         private Command m_loadModelsCommand = new Command();
-        private List<Model> m_models = new List<Model>();
-        private List<Component> m_components = new List<Component>();
+        private List<EmbeddedFile> m_embeddedFiles = new List<EmbeddedFile>();
 
-        public LdrFile(string fullFilePath)
+        public UserModelFile(string fullFilePath)
         {
             m_fullFilePath = fullFilePath;
             m_fileContents = FileCache.OpenFile(m_fullFilePath);
@@ -26,17 +24,61 @@ namespace Ldraw
             {
                 switch (cmd.type)
                 {
-                    case Ldraw.GameEntityType.Model:
-                        m_models.Add(new Model(cmd));
+                    case Ldraw.CommandType.SubFile:
+                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName));
                         break;
 
-                    case GameEntityType.Component:
+                    default:
+                        break;
+                }
+            }
+        }
+
+        public Node3D GetModels()
+        {
+            Node3D scene = new Node3D();
+            foreach (EmbeddedFile efile in m_embeddedFiles)
+            {
+                efile.ConnectModelTreeToOwner(scene);
+            }
+
+            scene.Name = System.IO.Path.GetFileName(m_fullFilePath);
+            return scene;
+        }
+
+    }   // class UserModelFile
+
+    public class EmbeddedFile
+    {
+        private string m_fullFilePath;
+        private string m_fileContents;
+        private Command m_loadModelsCommand = new Command();
+        private List<Model> m_models = new List<Model>();
+        private List<Component> m_components = new List<Component>();
+
+        public EmbeddedFile(string fullFilePath)
+        {
+            m_fullFilePath = fullFilePath;
+            m_fileContents = FileCache.OpenFile(m_fullFilePath);
+            if (string.IsNullOrEmpty(m_fileContents))
+                return;
+
+            m_loadModelsCommand.subfileName = m_fullFilePath;
+            m_loadModelsCommand.metadata.fileName = m_fullFilePath;
+            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(m_loadModelsCommand);
+            foreach (Command cmd in commands)
+            {
+                switch (cmd.type)
+                {
+                    case Ldraw.CommandType.Model:
+                        // Models need the list of commands because we don't know what we're parsing until
+                        // we stumble upon a model anchor, then we need to treat the list that contains
+                        // the anchor as a model.
+                        m_models.Add(new Model(commands, cmd));
+                        break;
+
+                    case CommandType.Component:
                         m_components.Add(new Component(cmd));
-                        break;
-
-                    case Ldraw.GameEntityType.File:
-                        LdrFile file = new LdrFile(cmd.subfileName);
-                        m_models.AddRange(file.GetModelList());
                         break;
 
                     default:
@@ -46,31 +88,21 @@ namespace Ldraw
             }
         }
 
-        private bool LoadModelFile()
-        {          
-            
-            return true;
-        }
-
-        public List<Node3D> GetNode3DList()
-        {
-            List<Node3D> modelList = new List<Node3D>();
-            foreach (Model model in m_models)
-            {
-                Node3D modelNode = model.GetModelInstance();
-                modelList.Add(modelNode);
-            }
-            return modelList;
-        }
-
-        public List<Model> GetModelList()
-        {
-            return m_models;
-        }
-
-        public List<Component> GetComponentList()
+        public List<Component> GetComponents()
         {
             return m_components;
         }
-    }
+
+        public void ConnectModelTreeToOwner(Node3D sceneRoot)
+        {
+            if (sceneRoot == null)
+            {
+                OmniLogger.Error("Model scene root is null");
+                return;
+            }
+
+            foreach (Model model in m_models)
+                model.ConnectModelToOwner(sceneRoot);
+        }
+    }   // class UserModelFile
 }

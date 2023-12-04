@@ -16,7 +16,7 @@ namespace Ldraw
         public enum ComponentTypes
         {
             invalid,
-            body,
+            decoration,
         }
 
         private static readonly Dictionary<string, ModelTypes> kModelAnchors = new Dictionary<string, ModelTypes>()
@@ -27,8 +27,7 @@ namespace Ldraw
 
         private static readonly Dictionary<string, ComponentTypes> kComponentAnchors = new Dictionary<string, ComponentTypes>()
         {
-            { "body_anchor.dat", ComponentTypes.body },
-            { "component_anchor.dat", ComponentTypes.body }, // This is a fake component just for testing
+            { "mwg_c_decoration_anchor.dat", ComponentTypes.decoration },
         };
 
         public static Command GetModelCommand(string command)
@@ -40,11 +39,11 @@ namespace Ldraw
             cmd.modelType = GetModelTypeFromCommandString(command);
             if (cmd.modelType == ModelTypes.invalid)
             {
-                cmd.type = GameEntityType.Invalid;
+                cmd.type = CommandType.Invalid;
                 return cmd;
             }
 
-            cmd.type = GameEntityType.Model;
+            cmd.type = CommandType.Model;
             return cmd;
         }
 

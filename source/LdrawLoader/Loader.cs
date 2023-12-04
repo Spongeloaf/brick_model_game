@@ -21,16 +21,10 @@ public partial class Loader : Node3D
         _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
         _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
 
-        Node3D modelScene = LoadModel("C:\\dev\\brick_model_game\\models\\imports\\prop_model.mpd");
-        modelScene.Name = "prop_model";
+        //Node3D modelScene = LoadModel("C:\\dev\\brick_model_game\\models\\imports\\prop_model.mpd");
+        //modelScene.Name = "prop_model";
 
-        //List<Node3D> models = LoadModelsFromFile("C:\\dev\\brick_model_game\\models\\imports\\prop.mpd");
-        //Node3D modelScene = new Node3D();
-        //modelScene.Name = "prop";
-        //foreach (Node3D model in models)
-        //{
-        //    modelScene.AddChild(model);
-        //}
+        Node3D modelScene = LoadModelsFromFile("C:\\dev\\brick_model_game\\models\\imports\\prop.mpd");
 
         Error error = SaveNodeAsScene(modelScene);
         if (error != Error.Ok)
@@ -47,21 +41,23 @@ public partial class Loader : Node3D
         return meshManager.GetMeshInstance();
     }
 
-    private List<Node3D> LoadModelsFromFile(string modelfile)
+    // Returns a Node3D with each model in the file as a child
+    private Node3D LoadModelsFromFile(string modelfile)
     {
-        LdrFile file = new LdrFile(modelfile);
-        return file.GetNode3DList();
+        UserModelFile file = new UserModelFile(modelfile);
+        return file.GetModels();
     }
 
     private Node3D LoadModel(string modelfile)
     {
-        Command command = new Command();
-        command.metadata.fileName = modelfile;
-        command.subfileName = modelfile;
-        command.type = GameEntityType.Model;
-        command.modelType = ModelTree.ModelTypes.prop;
-        Model model = new Model(command);
-        return model.GetModelInstance();
+        //Command command = new Command();
+        //command.metadata.fileName = modelfile;
+        //command.subfileName = modelfile;
+        //command.type = CommandType.Model;
+        //command.modelType = ModelTree.ModelTypes.prop;
+        //Model model = new Model(command);
+        //return model.GetModelInstance();
+        return null;
     }
 
     public Error SaveNodeAsScene(Node3D node)

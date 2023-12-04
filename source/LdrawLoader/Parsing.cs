@@ -51,7 +51,7 @@ namespace Ldraw
         Unknown,
     }
 
-    public enum GameEntityType
+    public enum CommandType
     {
         Invalid,
         Model,
@@ -59,7 +59,7 @@ namespace Ldraw
         Part,
         Triangle,
         Quad,
-        File,
+        SubFile,
     }
 
     internal enum LdrCommandType
@@ -96,7 +96,7 @@ namespace Ldraw
         public ModelTree.ModelTypes modelType = ModelTree.ModelTypes.invalid;
         public ModelTree.ComponentTypes componentType = ModelTree.ComponentTypes.invalid;
         public string commandString;
-        public GameEntityType type;
+        public CommandType type;
         public Transform3D transform = Transform3D.Identity;
         public Vector3[] vertices;
         public int[] triangles;
@@ -120,7 +120,7 @@ namespace Ldraw
             {
                 List<Command> result = new List<Command>();
                 string contents = FileCache.OpenFile(parentCommand.subfileName);
-                return GetCommandsFromString(parentCommand, contents);
+                return ParseSerializedData(parentCommand, contents);
             }
             catch (System.Exception e)
             {
@@ -129,7 +129,7 @@ namespace Ldraw
             }
         }
 
-        public static List<Command> GetCommandsFromString(in Command parentCommand, string serializedData)
+        private static List<Command> ParseSerializedData(in Command parentCommand, string serializedData)
         {
             ParseEmbeddedFiles(parentCommand.subfileName, serializedData);
             LdrMetadata workingMetaData = parentCommand.metadata;
@@ -153,9 +153,13 @@ namespace Ldraw
                     Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
                     line = regex.Replace(line, " ").Trim();
 
+                    Command cmd = new Command();
                     if (line.StartsWith(Constants.kEmbeddedFileStart))
                     {
                         readingEmbeddedFile = true;
+                        cmd.type = CommandType.SubFile;
+                        cmd.subfileName = GetEmbeddedFileNameFromCommandString(parentCommand.subfileName, line);
+                        commands.Add(cmd);
                         continue;
                     }
 
@@ -165,7 +169,6 @@ namespace Ldraw
                         continue;
                     }
 
-                    Command cmd = new Command();
                     if (readingEmbeddedFile)
                     {
                         continue;
@@ -236,44 +239,6 @@ namespace Ldraw
                 new Vector3(param[3], param[4], param[5]),
                 new Vector3(param[6], param[7], param[8])
             };
-        }
-
-        // This function assumes there are no embedded files in the serialized file.
-        private static void GetModelsFromSerializedFile(List<Model> results, string fileName, string serializedFileContents)
-        {
-            LdrMetadata metadata = new LdrMetadata();
-            metadata.fileName = fileName;
-            metadata.modelName = "unknown";
-            string line;
-            StringReader reader = new StringReader(serializedFileContents);
-            while ((line = reader.ReadLine()) != null)
-            {
-                if (String.IsNullOrEmpty(line))
-                    continue;
-
-                if (line.StartsWith(Constants.kName))
-                {
-                    metadata.modelName = line.Replace(Constants.kName, "").Trim();
-                    continue;
-                }
-
-                Command modelCommand = ModelTree.GetModelCommand(line);
-                if (modelCommand.modelType == ModelTree.ModelTypes.invalid)
-                    continue;
-
-                modelCommand.metadata = metadata;
-                modelCommand.subfileName = fileName;
-                modelCommand.commandString = "1 0 0 0 0 1 0 0 0 1 0 0 0 1 " + fileName;
-                results.Add(new Model(modelCommand));
-            }
-
-        }
-
-        private static bool IsModelCommand(string line)
-        {
-
-
-            return false;
         }
 
         // Separates an LDraw file into a dictionary of files. The dictionary contains at least one entry,
@@ -366,10 +331,10 @@ namespace Ldraw
                     return ParseSubfileCommand(tokens, ref metadata, ref cmd);
 
                 case LdrCommandType.triangle:
-                    cmd.type = GameEntityType.Triangle;
+                    cmd.type = CommandType.Triangle;
                     break;
                 case LdrCommandType.quad:
-                    cmd.type = GameEntityType.Quad;
+                    cmd.type = CommandType.Quad;
                     break;
 
                 case LdrCommandType.line:
@@ -391,7 +356,7 @@ namespace Ldraw
 
             if (tokens[1] == Constants.kEmbeddedFileStart)
             {
-                cmd.type = GameEntityType.File;
+                cmd.type = CommandType.SubFile;
                 cmd.subfileName = GetEmbeddedFileNameFromCommandString(metadata.fileName, cmd.commandString);
                 return true;
             }
@@ -461,7 +426,7 @@ namespace Ldraw
             if (IsLdrOrMpdFile(cmd.subfileName))
             {
                 cmd.subfileName = GetEmbeddedFileNameFromCommandString(metadata.fileName, cmd.subfileName);
-                cmd.type = GameEntityType.File;
+                cmd.type = CommandType.SubFile;
                 return true;
             }
 
@@ -469,7 +434,7 @@ namespace Ldraw
             if (modelType != ModelTree.ModelTypes.invalid)
             {
                 cmd.modelType = modelType;
-                cmd.type = GameEntityType.Model;
+                cmd.type = CommandType.Model;
                 cmd.subfileName = metadata.fileName;
                 return true;
             }
@@ -478,12 +443,12 @@ namespace Ldraw
             if (componentType != ModelTree.ComponentTypes.invalid)
             {
                 cmd.componentType = componentType;
-                cmd.type = GameEntityType.Component;
+                cmd.type = CommandType.Component;
                 cmd.subfileName = metadata.fileName;
                 return true;
             }
 
-            cmd.type = GameEntityType.Part;
+            cmd.type = CommandType.Part;
             return true;
         }
 

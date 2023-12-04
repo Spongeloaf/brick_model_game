@@ -17,21 +17,21 @@ namespace Ldraw
             if (ModelTree.IsCommandStringAnAnchor(parentCommand.commandString))
                 return;
 
-            List<Command> subCommands = Ldraw.Parsing.GetCommandsFromFile(in parentCommand);
-            foreach (Command subCmd in subCommands)
+            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(in parentCommand);
+            foreach (Command cmd in commands)
             {
-                switch (subCmd.type)
+                switch (cmd.type)
                 {
-                    case GameEntityType.Part:
-                        AddPrimitiveToMesh(meshManager, in subCmd);
+                    case CommandType.Part:
+                        AddPrimitiveToMesh(meshManager, in cmd);
                         break;
 
-                    case GameEntityType.Triangle:
-                        meshManager.AddTriangle(in subCmd);
+                    case CommandType.Triangle:
+                        meshManager.AddTriangle(in cmd);
                         break;
 
-                    case GameEntityType.Quad:
-                        meshManager.AddQuad(in subCmd);
+                    case CommandType.Quad:
+                        meshManager.AddQuad(in cmd);
                         break;
 
                     default:
