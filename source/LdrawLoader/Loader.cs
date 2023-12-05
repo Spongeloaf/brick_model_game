@@ -24,7 +24,7 @@ public partial class Loader : Node3D
         //Node3D modelScene = LoadModel("C:\\dev\\brick_model_game\\models\\imports\\prop_model.mpd");
         //modelScene.Name = "prop_model";
 
-        Node3D modelScene = LoadModelsFromFile("C:\\dev\\brick_model_game\\models\\imports\\prop.mpd");
+        Node3D modelScene = LoadModelsFromFile("C:\\dev\\brick_model_game\\models\\imports\\prop_components.mpd");
 
         Error error = SaveNodeAsScene(modelScene);
         if (error != Error.Ok)

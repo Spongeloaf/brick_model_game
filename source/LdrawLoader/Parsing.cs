@@ -154,6 +154,7 @@ namespace Ldraw
                     line = regex.Replace(line, " ").Trim();
 
                     Command cmd = new Command();
+                    cmd.metadata = workingMetaData;
                     if (line.StartsWith(Constants.kEmbeddedFileStart))
                     {
                         readingEmbeddedFile = true;

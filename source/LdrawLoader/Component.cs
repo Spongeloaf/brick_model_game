@@ -12,22 +12,26 @@ namespace Ldraw
         public Transform3D m_transform3D = new Transform3D();
         public MeshManager m_meshManager = new MeshManager();
 
-        public Component(Command parentCommand)
+        public Component(in Command parentCommand, List<Command> commands)
         {
             m_modelName = parentCommand.metadata.modelName;
             m_fileName = parentCommand.subfileName;
             m_transform3D = parentCommand.transform;
 
-            List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(parentCommand);
+            TODO: // THe transforms are being double staacked. 
+            // The transform is being applied to the component, but also to the mesh data as well.
+            // This causes the mesh data to be double transformed.
+
+            // However, the mesh data still needs local transforms applied to it, to allow each
+            // part in a componenet to be propoerly positioned relative to each other.
+
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
                 {
-                    case Ldraw.CommandType.Component:
-                        // This prevents infinite recursion because components look for other
-                        // component anchors when reading files.
-                        if (cmd.componentType != parentCommand.componentType)
-                            m_childComponents.Add(new Component(cmd));
+                    case Ldraw.CommandType.SubFile:
+                        EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata, cmd.transform);
+                        m_childComponents.AddRange(embeddedFile.GetComponents());
                         break;
 
                     case CommandType.Part:

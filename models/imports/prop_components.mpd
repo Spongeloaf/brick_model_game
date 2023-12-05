@@ -1,0 +1,26 @@
+0 FILE prop.ldr
+0 A thing
+0 Name: prop.ldr
+0 Author: 
+1 2 40 -24 20 1 0 0 0 1 0 0 0 1 3001.dat
+1 1 40 -24 -20 1 0 0 0 1 0 0 0 1 716.dat
+1 74 0 -24 40 1 0 0 0 1 0 0 0 1 component.ldr
+1 0 40 0 20 1 0 0 0 1 0 0 0 1 mwg_m_prop_anchor.dat
+1 4 0 -48 20 1 0 0 0 1 0 0 0 1 subcomponent.ldr
+0 NOFILE
+0 FILE component.ldr
+0 
+0 Name: component.ldr
+0 Author: 
+1 74 0 -24 0 1 0 0 0 1 0 0 0 1 17485.dat
+1 0 0 0 0 1 0 0 0 1 0 0 0 1 mwg_c_decoration_anchor.dat
+1 4 -10 -32 -10 1 0 0 0 1 0 0 0 1 3957b.dat
+0 NOFILE
+0 FILE subcomponent.ldr
+0 
+0 Name: subcomponent.ldr
+0 Author: 
+1 74 0 -24 0 1 0 0 0 1 0 0 0 1 17485.dat
+1 0 0 0 0 1 0 0 0 1 0 0 0 1 mwg_c_decoration_anchor.dat
+1 4 0 -40 0 1 0 0 0 1 0 0 0 1 6255.dat
+0 NOFILE

@@ -12,12 +12,12 @@ namespace Ldraw
         private readonly MeshManager m_meshManager = new MeshManager();
         private ModelTree.ModelTypes m_modelType = ModelTree.ModelTypes.invalid;
 
-        public Model(List<Command> commands, in Command modelCommand)
+        public Model(in Command parentCommand, List<Command> commands)
         {
-            m_modelName = modelCommand.subfileName;
-            m_fileName = modelCommand.metadata.fileName;
+            m_modelName = parentCommand.subfileName;
+            m_fileName = parentCommand.metadata.fileName;
 
-            if (modelCommand.modelType == ModelTree.ModelTypes.invalid)
+            if (parentCommand.modelType == ModelTree.ModelTypes.invalid)
             {
                 OmniLogger.Error("Model type is invalid");
                 return;
@@ -28,7 +28,8 @@ namespace Ldraw
                 switch (cmd.type)
                 {
                     case Ldraw.CommandType.SubFile:
-                        GetComponentsFromFile(in cmd);
+                        EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata, cmd.transform);
+                        m_components.AddRange(embeddedFile.GetComponents());
                         break;
 
                     case CommandType.Part:
@@ -44,12 +45,6 @@ namespace Ldraw
                         break;
                 }
             }
-        }
-
-        private void GetComponentsFromFile(in Command cmd)
-        {
-            EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName);
-            m_components.AddRange(embeddedFile.GetComponents());
         }
 
         public void ConnectModelToOwner(Node3D sceneRoot)

@@ -21,31 +21,14 @@ namespace Ldraw
 
         private static readonly Dictionary<string, ModelTypes> kModelAnchors = new Dictionary<string, ModelTypes>()
         {
-            { "prop_anchor.dat", ModelTypes.prop },
-            { "minifig_anchor.dat", ModelTypes.minifig },
+            { "mwg_m_prop_anchor.dat", ModelTypes.prop },
+            { "mwg_m_minifig_anchor.dat", ModelTypes.minifig },
         };
 
         private static readonly Dictionary<string, ComponentTypes> kComponentAnchors = new Dictionary<string, ComponentTypes>()
         {
             { "mwg_c_decoration_anchor.dat", ComponentTypes.decoration },
         };
-
-        public static Command GetModelCommand(string command)
-        {
-            Command cmd = new Command();
-            if (string.IsNullOrEmpty(command))
-                return cmd;
-
-            cmd.modelType = GetModelTypeFromCommandString(command);
-            if (cmd.modelType == ModelTypes.invalid)
-            {
-                cmd.type = CommandType.Invalid;
-                return cmd;
-            }
-
-            cmd.type = CommandType.Model;
-            return cmd;
-        }
 
         public static ModelTypes GetModelTypeFromCommandString(string command)
         {

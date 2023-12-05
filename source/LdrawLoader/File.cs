@@ -1,5 +1,6 @@
 ﻿using Godot;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Ldraw
 {
@@ -25,7 +26,7 @@ namespace Ldraw
                 switch (cmd.type)
                 {
                     case Ldraw.CommandType.SubFile:
-                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName));
+                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata, Transform3D.Identity));
                         break;
 
                     default:
@@ -56,15 +57,18 @@ namespace Ldraw
         private List<Model> m_models = new List<Model>();
         private List<Component> m_components = new List<Component>();
 
-        public EmbeddedFile(string fullFilePath)
+        public EmbeddedFile(string fullFilePath, LdrMetadata metadata, Transform3D tfm)
         {
+            TODO: // figure out  what to do with the TFM.
+
             m_fullFilePath = fullFilePath;
             m_fileContents = FileCache.OpenFile(m_fullFilePath);
             if (string.IsNullOrEmpty(m_fileContents))
                 return;
 
             m_loadModelsCommand.subfileName = m_fullFilePath;
-            m_loadModelsCommand.metadata.fileName = m_fullFilePath;
+            m_loadModelsCommand.metadata = metadata;
+            m_loadModelsCommand.transform = tfm;
             List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(m_loadModelsCommand);
             foreach (Command cmd in commands)
             {
@@ -74,11 +78,11 @@ namespace Ldraw
                         // Models need the list of commands because we don't know what we're parsing until
                         // we stumble upon a model anchor, then we need to treat the list that contains
                         // the anchor as a model.
-                        m_models.Add(new Model(commands, cmd));
+                        m_models.Add(new Model(cmd, commands));
                         break;
 
                     case CommandType.Component:
-                        m_components.Add(new Component(cmd));
+                        m_components.Add(new Component(cmd, commands));
                         break;
 
                     default:
