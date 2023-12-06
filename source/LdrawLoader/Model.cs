@@ -8,16 +8,22 @@ namespace Ldraw
     {
         private readonly string m_modelName;
         private readonly string m_fileName;
-        private readonly List<Component> m_components = new List<Component>();
+        private readonly List<Model> m_children = new List<Model>();
         private readonly MeshManager m_meshManager = new MeshManager();
+        
         private ModelTree.ModelTypes m_modelType = ModelTree.ModelTypes.invalid;
+        private ModelTree.ComponentTypes m_componentType = ModelTree.ComponentTypes.invalid;
+        private Transform3D m_transform3D = Transform3D.Identity;
 
         public Model(in Command parentCommand, List<Command> commands)
         {
             m_modelName = parentCommand.subfileName;
             m_fileName = parentCommand.metadata.fileName;
+            m_modelType = parentCommand.modelType;
+            m_componentType = parentCommand.componentType;
 
-            if (parentCommand.modelType == ModelTree.ModelTypes.invalid)
+            if (parentCommand.modelType == ModelTree.ModelTypes.invalid &&
+                parentCommand.componentType == ModelTree.ComponentTypes.invalid)
             {
                 OmniLogger.Error("Model type is invalid");
                 return;
@@ -27,18 +33,20 @@ namespace Ldraw
             {
                 switch (cmd.type)
                 {
-                    case Ldraw.CommandType.SubFile:
-                        EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata, cmd.transform);
-                        m_components.AddRange(embeddedFile.GetComponents());
+                    case CommandType.Subfile:
+                        EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata);
+                        Model newModel = embeddedFile.GetModel();
+                        if (newModel == null)
+                            continue;
+
+                        newModel.m_transform3D = cmd.transform;
+                        m_children.Add(newModel);
                         break;
 
                     case CommandType.Part:
+                    case CommandType.Triangle:
+                    case CommandType.Quad:
                         Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
-                        break;
-
-                    case CommandType.Model:
-                        Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
-                        m_modelType = cmd.modelType;
                         break;
 
                     default:
@@ -55,6 +63,17 @@ namespace Ldraw
                 return;
             }
 
+            if (m_modelType == ModelTree.ModelTypes.invalid 
+                && m_componentType == ModelTree.ComponentTypes.invalid)
+                return;
+
+            if (m_modelType != ModelTree.ModelTypes.invalid &&
+                m_componentType != ModelTree.ComponentTypes.invalid)
+            {
+                OmniLogger.Error("Model and component types cannot both be invalid!");
+                return;
+            }
+
             Node3D model = new Node3D();
             sceneRoot.AddChild(model);
             model.Owner = sceneRoot;
@@ -66,11 +85,33 @@ namespace Ldraw
             model.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
 
-            if (m_components == null || m_components.Count == 0)
+            if (m_children == null || m_children.Count == 0)
                 return;
 
-            foreach (Component component in m_components)
-                component.ConnectComponent(model, sceneRoot);
+            foreach (Model child in m_children)
+                child.ConnectChild(model, sceneRoot);
+        }
+
+        protected void ConnectChild(Node3D parent, Node3D sceneRoot)
+        {
+            if (sceneRoot == null || parent == null)
+            {
+                OmniLogger.Error("Model scene root or parent is null");
+                return;
+            }
+
+            Node3D thisComponent = new Node3D();
+            parent.AddChild(thisComponent);
+            thisComponent.Owner = sceneRoot;
+            thisComponent.Name = m_modelName;
+            thisComponent.Transform = m_transform3D;
+
+            MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
+            thisComponent.AddChild(meshInstance);
+            meshInstance.Owner = sceneRoot;
+
+            foreach (Model component in m_children)
+                component.ConnectChild(thisComponent, sceneRoot);
         }
     }
 }

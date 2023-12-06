@@ -25,8 +25,8 @@ namespace Ldraw
             {
                 switch (cmd.type)
                 {
-                    case Ldraw.CommandType.SubFile:
-                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata, Transform3D.Identity));
+                    case Ldraw.CommandType.Subfile:
+                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata));
                         break;
 
                     default:
@@ -54,13 +54,10 @@ namespace Ldraw
         private string m_fullFilePath;
         private string m_fileContents;
         private Command m_loadModelsCommand = new Command();
-        private List<Model> m_models = new List<Model>();
-        private List<Component> m_components = new List<Component>();
+        private Model m_model = null;
 
-        public EmbeddedFile(string fullFilePath, LdrMetadata metadata, Transform3D tfm)
+        public EmbeddedFile(string fullFilePath, LdrMetadata metadata)
         {
-            TODO: // figure out  what to do with the TFM.
-
             m_fullFilePath = fullFilePath;
             m_fileContents = FileCache.OpenFile(m_fullFilePath);
             if (string.IsNullOrEmpty(m_fileContents))
@@ -68,7 +65,7 @@ namespace Ldraw
 
             m_loadModelsCommand.subfileName = m_fullFilePath;
             m_loadModelsCommand.metadata = metadata;
-            m_loadModelsCommand.transform = tfm;
+
             List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(m_loadModelsCommand);
             foreach (Command cmd in commands)
             {
@@ -78,23 +75,18 @@ namespace Ldraw
                         // Models need the list of commands because we don't know what we're parsing until
                         // we stumble upon a model anchor, then we need to treat the list that contains
                         // the anchor as a model.
-                        m_models.Add(new Model(cmd, commands));
-                        break;
-
-                    case CommandType.Component:
-                        m_components.Add(new Component(cmd, commands));
-                        break;
+                        m_model =new Model(cmd, commands);
+                        return;
 
                     default:
-                        OmniLogger.Info("Ldraw models should only contain components as direct children, not primitives or parts.");
                         break;
                 }
             }
         }
 
-        public List<Component> GetComponents()
+        public Model GetModel()
         {
-            return m_components;
+            return m_model;
         }
 
         public void ConnectModelTreeToOwner(Node3D sceneRoot)
@@ -105,8 +97,10 @@ namespace Ldraw
                 return;
             }
 
-            foreach (Model model in m_models)
-                model.ConnectModelToOwner(sceneRoot);
+            if (m_model == null)
+                return;
+
+            m_model.ConnectModelToOwner(sceneRoot);
         }
-    }   // class UserModelFile
+    }   // class EmbeddedFile
 }

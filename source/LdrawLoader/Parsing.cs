@@ -59,7 +59,7 @@ namespace Ldraw
         Part,
         Triangle,
         Quad,
-        SubFile,
+        Subfile,
     }
 
     internal enum LdrCommandType
@@ -158,7 +158,7 @@ namespace Ldraw
                     if (line.StartsWith(Constants.kEmbeddedFileStart))
                     {
                         readingEmbeddedFile = true;
-                        cmd.type = CommandType.SubFile;
+                        cmd.type = CommandType.Subfile;
                         cmd.subfileName = GetEmbeddedFileNameFromCommandString(parentCommand.subfileName, line);
                         commands.Add(cmd);
                         continue;
@@ -357,7 +357,7 @@ namespace Ldraw
 
             if (tokens[1] == Constants.kEmbeddedFileStart)
             {
-                cmd.type = CommandType.SubFile;
+                cmd.type = CommandType.Subfile;
                 cmd.subfileName = GetEmbeddedFileNameFromCommandString(metadata.fileName, cmd.commandString);
                 return true;
             }
@@ -427,7 +427,7 @@ namespace Ldraw
             if (IsLdrOrMpdFile(cmd.subfileName))
             {
                 cmd.subfileName = GetEmbeddedFileNameFromCommandString(metadata.fileName, cmd.subfileName);
-                cmd.type = CommandType.SubFile;
+                cmd.type = CommandType.Subfile;
                 return true;
             }
 
@@ -444,7 +444,7 @@ namespace Ldraw
             if (componentType != ModelTree.ComponentTypes.invalid)
             {
                 cmd.componentType = componentType;
-                cmd.type = CommandType.Component;
+                cmd.type = CommandType.Model;
                 cmd.subfileName = metadata.fileName;
                 return true;
             }
