@@ -96,6 +96,12 @@ namespace Ldraw
 
         public static void CacheFileContents(string fileName, string contents)
         {
+            if (string.IsNullOrEmpty(contents))
+            {
+                OmniLogger.Error($"File {fileName} is empty");
+                return;
+            }
+
             if (m_fileCache.ContainsKey(fileName))
             {
                 OmniLogger.Error($"File {fileName} already exists in the Ldraw file cache!");

@@ -116,6 +116,10 @@ namespace Ldraw
                 fileName.EndsWith(Constants.kMpdExtension, StringComparison.OrdinalIgnoreCase))
                 return true;
 
+            // User files may have submodel refs that do not have extensions
+            if (!fileName.Contains("."))
+                return true;
+
             return false;
         }
 

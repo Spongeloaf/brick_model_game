@@ -90,7 +90,8 @@ namespace Ldraw
                     if (args.Length <= 1 || args[1] != "!COLOUR")
                         continue;
 
-                    string path = m_materialsPath + args[2] + ".tres";
+                    string matName = $"ldr_{args[4]}_{args[2]}";
+                    string path = m_materialsPath + matName + ".tres";
                     if (File.Exists(ProjectSettings.GlobalizePath(path)))
                     {
                         BaseMaterial3D mat = (BaseMaterial3D)ResourceLoader.Load(path);
@@ -99,18 +100,18 @@ namespace Ldraw
                     }
                     else
                     {
-                        CreateColor(args, path);
+                        CreateColor(args, path, matName);
                     }
                 }
             }
 
         }
-        private static void CreateColor(string[] args, string path)
+        private static void CreateColor(string[] args, string path, string name)
         {
             Color color = new Color(args[6]);
             int alphaIndex = Array.IndexOf(args, "ALPHA");
             BaseMaterial3D mat = alphaIndex > 0 ? _DefaultTransparentMaterial : _DefaultOpaqueMaterial;
-            mat.ResourceName = args[2];
+            mat.ResourceName = name;
             mat.AlbedoColor = alphaIndex > 0 ? new Color(color.R, color.G, color.B, int.Parse(args[alphaIndex + 1]) / 256f)
                 : color;
 

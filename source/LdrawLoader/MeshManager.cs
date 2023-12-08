@@ -128,13 +128,13 @@ namespace Ldraw
             m_surfaceTool.GenerateTangents();
             m_ArrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, m_surfaceTool.CommitToArrays());
             
-            int surfaceIndex = m_ArrayMesh.GetSurfaceCount();
+            int surfaceIndex = m_ArrayMesh.GetSurfaceCount() - 1;
             SetSurfaceColor(surfaceIndex, surface.faces[0].color);
 
             m_surfaceTool.Clear();
         }
 
-        private void SetSurfaceColor(in LdrColor color, in int surfaceIndex)
+        private void SetSurfaceColor(in int surfaceIndex, in LdrColor color)
         {
             Material material = MaterialManager.GetColoredMaterial(color);
             m_ArrayMesh.SurfaceSetMaterial(surfaceIndex, material);
