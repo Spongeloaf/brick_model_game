@@ -1,7 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3 uid="uid://ca2tw1k2uco87"]
-
-[resource]
-resource_name = "Blue"
-specular_mode = 1
-albedo_color = Color(0.117647, 0.352941, 0.658824, 1)
-normal_scale = 0.16

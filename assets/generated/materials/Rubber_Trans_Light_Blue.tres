@@ -1,6 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Rubber_Trans_Light_Blue"
-transparency = 1
-albedo_color = Color(0.682353, 0.913725, 0.937255, 0.5)

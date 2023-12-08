@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Metallic_Dark_Grey"
-albedo_color = Color(0.243137, 0.235294, 0.223529, 1)

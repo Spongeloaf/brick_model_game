@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://dspbh63ebwj0w"]
-
-[node name="Node3D" type="Node3D"]
-
-[node name="[prop a]_ldr" type="Node3D" parent="."]
-
-[node name="[prop b]_ldr" type="Node3D" parent="."]
-
-[node name="[body body name]_ldr" type="Node3D" parent="."]

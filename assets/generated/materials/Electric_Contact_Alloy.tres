@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Electric_Contact_Alloy"
-albedo_color = Color(0.815686, 0.815686, 0.815686, 1)

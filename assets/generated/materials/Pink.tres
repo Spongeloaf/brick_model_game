@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Pink"
-albedo_color = Color(0.964706, 0.662745, 0.733333, 1)

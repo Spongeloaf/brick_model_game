@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Rubber_Medium_Blue"
-albedo_color = Color(0.45098, 0.588235, 0.784314, 1)

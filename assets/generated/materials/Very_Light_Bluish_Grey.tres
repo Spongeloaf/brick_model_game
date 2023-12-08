@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Very_Light_Bluish_Grey"
-albedo_color = Color(0.784314, 0.784314, 0.784314, 1)

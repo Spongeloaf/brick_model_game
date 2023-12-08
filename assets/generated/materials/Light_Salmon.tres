@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Light_Salmon"
-albedo_color = Color(0.976471, 0.717647, 0.647059, 1)

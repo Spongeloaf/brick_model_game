@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Metallic_Silver"
-albedo_color = Color(0.462745, 0.462745, 0.462745, 1)

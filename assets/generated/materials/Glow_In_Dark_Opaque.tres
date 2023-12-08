@@ -1,6 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Glow_In_Dark_Opaque"
-transparency = 1
-albedo_color = Color(0.878431, 1, 0.690196, 0.9375)

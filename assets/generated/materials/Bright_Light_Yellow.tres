@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Bright_Light_Yellow"
-albedo_color = Color(1, 0.92549, 0.423529, 1)

@@ -1,9 +1,0 @@
-[gd_scene format=3]
-
-[node name="prop" type="Node3D"]
-
-[node name="@Node3D@5" type="Node3D" parent="."]
-
-[node name="@Node3D@6" type="Node3D" parent="."]
-
-[node name="@Node3D@7" type="Node3D" parent="."]

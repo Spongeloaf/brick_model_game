@@ -1,6 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Opal_Trans_Clear"
-transparency = 1
-albedo_color = Color(0.988235, 0.988235, 0.988235, 0.9375)

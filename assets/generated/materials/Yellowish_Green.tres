@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Yellowish_Green"
-albedo_color = Color(0.886275, 0.976471, 0.603922, 1)

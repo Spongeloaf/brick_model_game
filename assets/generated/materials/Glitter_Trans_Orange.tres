@@ -1,6 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Glitter_Trans_Orange"
-transparency = 1
-albedo_color = Color(0.941176, 0.560784, 0.109804, 0.5)

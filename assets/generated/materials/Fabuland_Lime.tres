@@ -1,5 +1,0 @@
-[gd_resource type="StandardMaterial3D" format=3]
-
-[resource]
-resource_name = "Fabuland_Lime"
-albedo_color = Color(0.470588, 0.988235, 0.470588, 1)
