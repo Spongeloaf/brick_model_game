@@ -10,6 +10,7 @@ namespace Ldraw
         private string m_fileContents;
         private Command m_loadModelsCommand = new Command();
         private List<EmbeddedFile> m_embeddedFiles = new List<EmbeddedFile>();
+        private Model m_model = null;
 
         public UserModelFile(string fullFilePath)
         {
@@ -29,6 +30,10 @@ namespace Ldraw
                         m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata));
                         break;
 
+                    case Ldraw.CommandType.Model:
+                        // A file could have a model that is not in an embedded subfile.
+                        m_model = new Model(cmd, commands);
+                        break;
                     default:
                         break;
                 }
@@ -42,6 +47,9 @@ namespace Ldraw
             {
                 efile.ConnectModelTreeToOwner(scene);
             }
+
+            if (m_model != null)
+                m_model.ConnectModelToOwner(scene);
 
             scene.Name = System.IO.Path.GetFileName(m_fullFilePath);
             return scene;

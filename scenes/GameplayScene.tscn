@@ -63,7 +63,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.422942, 1.86821, 1.80495)
 mass = 50.0
 
 [node name="PawnController10" parent="GameManager" node_paths=PackedStringArray("m_statCard") instance=ExtResource("4_ghkh3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.71202, 1.86821, 4.10318)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.949511, 1.86821, 2.29073)
 mass = 50.0
 angular_damp = 0.0
 m_statCard = NodePath("../PawnController2/StatCard")

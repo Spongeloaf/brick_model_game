@@ -7,7 +7,6 @@ namespace Ldraw
     public class Model
     {
         private readonly string m_modelName;
-        private readonly string m_fileName;
         private readonly List<Model> m_children = new List<Model>();
         private readonly MeshManager m_meshManager = new MeshManager();
         
@@ -17,8 +16,11 @@ namespace Ldraw
 
         public Model(in Command parentCommand, List<Command> commands)
         {
+            // Models need the list of commands because we don't know what we're parsing until
+            // we stumble upon a model anchor, then we need to treat the list that contains
+            // the anchor as a model.
+
             m_modelName = parentCommand.subfileName;
-            m_fileName = parentCommand.metadata.fileName;
             m_modelType = parentCommand.modelType;
             m_componentType = parentCommand.componentType;
 
@@ -100,11 +102,12 @@ namespace Ldraw
                 return;
             }
 
+            Vector3 childPosition = m_transform3D.Origin * m_meshManager.m_ScaleToGameCoords.Basis * m_meshManager.m_RotateToGameOrientation.Basis;
             Node3D thisComponent = new Node3D();
             parent.AddChild(thisComponent);
             thisComponent.Owner = sceneRoot;
             thisComponent.Name = m_modelName;
-            thisComponent.Transform = m_transform3D;
+            thisComponent.Transform = thisComponent.Transform.TranslatedLocal(childPosition);
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             thisComponent.AddChild(meshInstance);

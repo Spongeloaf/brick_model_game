@@ -6,10 +6,13 @@ using System.Text.RegularExpressions;
 
 namespace Ldraw
 {
+    using LdrColor = System.Int32;
+
     public static class Constants
     {
         public static readonly int kMainColorCode = 16;
         public static readonly int kMagentaColorCode = 5;
+        public static readonly int kDefaultColor = kMagentaColorCode; // Chosen to stand out if the color fails to parse
         public static readonly string kLdrExtension = "ldr";
         public static readonly string kMpdExtension = "mpd";
         public static readonly string kDatExtension = "dat";
@@ -81,10 +84,11 @@ namespace Ldraw
     {
         public LdrMetadata() { }
         public VertexWinding winding = VertexWinding.Unknown;
-        public int mainColor = Constants.kMagentaColorCode;
+        public LdrColor mainColor = Constants.kDefaultColor;
         public string modelName;
         public string fileName;
-        public bool invertNext = false;
+        public bool bfcInvertNext = false;
+        public bool bfcInvertedFile = false;
     }
 
     public struct Command
@@ -101,6 +105,7 @@ namespace Ldraw
         public Vector3[] vertices;
         public int[] triangles;
         public string subfileName;
+        public LdrColor color;
     }
 
     public static class Parsing
@@ -318,9 +323,9 @@ namespace Ldraw
             cmd.metadata = metadata;
             cmd.transform = parentTransform;
             cmd.commandString = commandString;
+            
             if (tokens.Length < 2)
                 return false;
-
 
             LdrCommandType type = GetCommandType(int.Parse(tokens[0]));
             switch (type)
@@ -329,12 +334,15 @@ namespace Ldraw
                     return ParseMetaCommand(tokens, ref metadata, ref cmd);
 
                 case LdrCommandType.subfile:
+                    cmd.color = GetSubfileColor(tokens, ref metadata);
                     return ParseSubfileCommand(tokens, ref metadata, ref cmd);
 
                 case LdrCommandType.triangle:
+                    cmd.color = GetSubfileColor(tokens, ref metadata);
                     cmd.type = CommandType.Triangle;
                     break;
                 case LdrCommandType.quad:
+                    cmd.color = GetSubfileColor(tokens, ref metadata);
                     cmd.type = CommandType.Quad;
                     break;
 
@@ -365,50 +373,56 @@ namespace Ldraw
             return false;
         }
 
-        private static void ParseBfcCommand(string[] tokens, ref LdrMetadata metadata)
+        private static void ParseBfcCommand(string[] _tokens, ref LdrMetadata metadata)
         {
             // Reference: https://www.ldraw.org/article/415.html
 
             // Following the advic here: https://forums.ldraw.org/thread-23274.html
             // I have purposefully chosen to disable all BFC. If we need the performance
             // later on, we can do a deep dive on implementing it properly.
-            metadata.winding = VertexWinding.Unknown;
-            return;
+            //metadata.winding = VertexWinding.Unknown;
+            //return;
 
+            // Stuff like this almost makes me wonder how much CPU time and memory I'm
+            // wasting out of sheer laziness.......
+            List<string> tokens = new List<string>(_tokens);
 
-            //// Winding is implied CCW if not accompanied by explicit CCW or CW token
-            //if (tokens.Contains(kCertify))
-            //{
-            //    metadata.winding = VertexWinding.CCW;
-            //}
+            // Winding is implied CCW if not accompanied by explicit CCW or CW token
+            if (tokens.Contains(Constants.kCertify))
+            {
+                metadata.winding = VertexWinding.CCW;
+            }
 
-            //// However, we can also assume the file is certified if it contains any BFC statement
-            //// that eEXCEPT for "0 BFC NOCERTIFY".
+            // However, we can also assume the file is certified if it contains any BFC statement
+            // that eEXCEPT for "0 BFC NOCERTIFY".
 
-            //if (tokens.Contains(kCW))
-            //{
-            //    metadata.winding = VertexWinding.CW;
-            //}
+            if (tokens.Contains(Constants.kCW))
+            {
+                metadata.winding = VertexWinding.CW;
+            }
 
-            //if (tokens.Contains(kCCW))
-            //{
-            //    metadata.winding = VertexWinding.CCW;
-            //}
+            if (tokens.Contains(Constants.kCCW))
+            {
+                metadata.winding = VertexWinding.CCW;
+            }
 
-            //// There is a potential bug here, where we don't bother to check a NOCERTIFY or CERTIFY
-            //// BFC command is the first BFC command in the file, as ordained by the spec. However, any
-            //// file exhibiting such behavior is malformed, and undefined behavior is expected in this
-            //// case.
-            ////
-            //// I'm currently imagining future me, reading this with a sigh, and then fixing it.
-            //// Sorry future me.
-            //if (tokens.Contains(kNoCertify))
-            //{
-            //    metadata.winding = VertexWinding.Unknown;
-            //}
+            // There is a potential bug here, where we don't bother to check a NOCERTIFY or CERTIFY
+            // BFC command is the first BFC command in the file, as ordained by the spec. However, any
+            // file exhibiting such behavior is malformed, and undefined behavior is expected in this
+            // case.
+            //
+            // I'm currently imagining future me, reading this with a sigh, and then fixing it.
+            // Sorry future me.
+            if (tokens.Contains(Constants.kNoCertify))
+            {
+                metadata.winding = VertexWinding.Unknown;
+            }
 
-            //if (tokens.Contains(kInvertNext))
-            //    metadata.invertNext = true;
+            if (metadata.bfcInvertedFile)
+                metadata.winding = GetInvertedWinding(metadata.winding);
+
+            if (tokens.Contains(Constants.kInvertNext))
+                metadata.bfcInvertNext = true;
         }
 
         private static bool ParseSubfileCommand(string[] tokens, ref LdrMetadata metadata, ref Command cmd)
@@ -423,7 +437,7 @@ namespace Ldraw
             Transform3D childTfm = GetCommandTransform(tokens);
             cmd.transform = cmd.transform * childTfm;
             cmd.subfileName = GetSubileName(tokens);
-
+            
             if (IsLdrOrMpdFile(cmd.subfileName))
             {
                 cmd.subfileName = GetEmbeddedFileNameFromCommandString(metadata.fileName, cmd.subfileName);
@@ -449,8 +463,39 @@ namespace Ldraw
                 return true;
             }
 
+            if (metadata.bfcInvertNext)
+            {
+                cmd.metadata.bfcInvertedFile = true;
+                metadata.bfcInvertNext = false;
+            }
+
+            metadata.mainColor = cmd.color;
+            cmd.metadata.mainColor = cmd.color;
             cmd.type = CommandType.Part;
             return true;
+        }
+
+        private static LdrColor GetSubfileColor(string[] tokens, ref LdrMetadata metadata)
+        {
+            if (tokens.Length <= Constants.kSubFileColour)
+            {
+                OmniLogger.Error("Subfile command has too few tokens");
+                return Constants.kDefaultColor;
+            }
+
+            LdrColor color = Constants.kDefaultColor;
+            if (!LdrColor.TryParse(tokens[Constants.kSubFileColour], out color))
+            {
+                OmniLogger.Error("Failed to parse color from subfile, with value: " + tokens[Constants.kSubFileColour]);
+                return Constants.kDefaultColor;
+            }
+
+            if (color == Constants.kMainColorCode)
+            {
+                return metadata.mainColor;
+            }
+
+            return color;
         }
 
         private static string GetSubileName(string[] tokens)
@@ -500,6 +545,16 @@ namespace Ldraw
                 return LdrCommandType.invalid;
 
             return (LdrCommandType)value;
+        }
+
+        public static VertexWinding GetInvertedWinding(VertexWinding winding)
+        {
+            if (winding == VertexWinding.CCW)
+                return VertexWinding.CW;
+            else if (winding == VertexWinding.CW)
+                return VertexWinding.CCW;
+            else
+                return VertexWinding.Unknown;
         }
     }   // public static class Parsing
 }

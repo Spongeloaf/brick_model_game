@@ -1,6 +1,5 @@
 ﻿using Godot;
 using Ldraw;
-using System.Collections.Generic;
 
 public partial class Loader : Node3D
 {
@@ -17,19 +16,21 @@ public partial class Loader : Node3D
 
     public override void _Ready()
     {
-        _ColorConfigPath = _BasePartsPath + "LDConfig.ldr";
-        _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
-        _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
-
-        //Node3D modelScene = LoadModel("C:\\dev\\brick_model_game\\models\\imports\\prop_model.mpd");
-        //modelScene.Name = "prop_model";
-
+        ConfigureEnvironment();
         Node3D modelScene = LoadModelsFromFile("C:\\dev\\brick_model_game\\models\\imports\\prop_components.mpd");
 
         Error error = SaveNodeAsScene(modelScene);
         if (error != Error.Ok)
             GD.PrintErr("Error saving scene: " + error.ToString());
         GetTree().Quit();
+    }
+
+    private void ConfigureEnvironment()
+    {
+        _ColorConfigPath = _BasePartsPath + "LDConfig.ldr";
+        _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
+        _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
+        MaterialManager.Configure(_ColorConfigPath, _DefaultOpaqueMaterial, _DefaultTransparentMaterial);
     }
 
     private Node3D GetPartMesh(string partFile)
@@ -48,17 +49,6 @@ public partial class Loader : Node3D
         return file.GetModels();
     }
 
-    private Node3D LoadModel(string modelfile)
-    {
-        //Command command = new Command();
-        //command.metadata.fileName = modelfile;
-        //command.subfileName = modelfile;
-        //command.type = CommandType.Model;
-        //command.modelType = ModelTree.ModelTypes.prop;
-        //Model model = new Model(command);
-        //return model.GetModelInstance();
-        return null;
-    }
 
     public Error SaveNodeAsScene(Node3D node)
     {
@@ -67,24 +57,6 @@ public partial class Loader : Node3D
 
         PackedScene scene = new PackedScene();
         scene.Pack(node);
-
-        //string path = "";
-        //if (OS.HasFeature("editor"))
-        //{
-
-        //  // Running from an editor binary.
-        //  // `path` will contain the absolute path to `hello.txt` located in the project root.
-        //  path = ProjectSettings.GlobalizePath(_ScenesPath + node.Name + ".tscn");
-        //}
-        //else
-        //{
-        //  // Running from an exported project.
-        //  // `path` will contain the absolute path to `hello.txt` next to the executable.
-        //  // This is *not* identical to using `ProjectSettings.globalize_path()` with
-        //  //a `res://` path, but is close enough in spirit.
-        //  path = OS.GetExecutablePath().GetBaseDir().PathJoin(node.Name + ".tscn");
-        //}
-
         string path = "C:\\dev\\brick_model_game\\assets\\generated\\models\\" + node.Name + ".tscn";
         return ResourceSaver.Save(scene, path);
     }
