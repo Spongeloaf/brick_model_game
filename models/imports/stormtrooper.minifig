@@ -1,0 +1,92 @@
+{
+    "Templates": {
+        "Stormtrooper": {
+            "BODY": {
+                "Angle": 0,
+                "Color": 15,
+                "Id": "973psk.dat"
+            },
+            "BODY2": {
+                "Angle": 0,
+                "Color": 0,
+                "Id": "3815b.dat"
+            },
+            "BODY3": {
+                "Angle": 0,
+                "Color": 7,
+                "Id": ""
+            },
+            "HATS": {
+                "Angle": 0,
+                "Color": 15,
+                "Id": "30408p01.dat"
+            },
+            "HATS2": {
+                "Angle": 0,
+                "Color": 0,
+                "Id": ""
+            },
+            "HEAD": {
+                "Angle": 0,
+                "Color": 14,
+                "Id": "3626bp01.dat"
+            },
+            "LARM": {
+                "Angle": 0,
+                "Color": 15,
+                "Id": "3818.dat"
+            },
+            "LHAND": {
+                "Angle": 0,
+                "Color": 0,
+                "Id": "3820.dat"
+            },
+            "LHANDA": {
+                "Angle": 0,
+                "Color": 7,
+                "Id": ""
+            },
+            "LLEG": {
+                "Angle": 0,
+                "Color": 15,
+                "Id": "3816b.dat"
+            },
+            "LLEGA": {
+                "Angle": 0,
+                "Color": 7,
+                "Id": ""
+            },
+            "NECK": {
+                "Angle": 0,
+                "Color": 7,
+                "Id": ""
+            },
+            "RARM": {
+                "Angle": 0,
+                "Color": 15,
+                "Id": "3819.dat"
+            },
+            "RHAND": {
+                "Angle": 0,
+                "Color": 0,
+                "Id": "3820.dat"
+            },
+            "RHANDA": {
+                "Angle": 0,
+                "Color": 7,
+                "Id": ""
+            },
+            "RLEG": {
+                "Angle": 0,
+                "Color": 15,
+                "Id": "3817b.dat"
+            },
+            "RLEGA": {
+                "Angle": 0,
+                "Color": 7,
+                "Id": ""
+            }
+        }
+    },
+    "Version": 1
+}
