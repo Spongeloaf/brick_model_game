@@ -22,18 +22,29 @@ namespace Ldraw
             m_loadModelsCommand.subfileName = m_fullFilePath;
             m_loadModelsCommand.metadata.fileName = m_fullFilePath;
             List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(m_loadModelsCommand);
+            
+            // We return after the first subfile because the .mpd file format assumes that the first
+            // FILE command is the "main" file, and all other embedded files should be children of that file.
+            // This implies that embedded files not instanced in the "main" model are orphaned, and never
+            // loaded.
+
+            // We also abort after loading the first model because in the .ldr format, there should only be
+            // one "main" model, and any children of that model should be embedded subfiles or other .ldr files.
+
+            // This is really the primary difference between .ldr and .mpd files: .ldr files store everything in
+            // the main file, whereas .mpd files store every submodel in their own embedded files.
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
                 {
                     case Ldraw.CommandType.Subfile:
                         m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata));
-                        break;
+                        return;
 
                     case Ldraw.CommandType.Model:
                         // A file could have a model that is not in an embedded subfile.
                         m_model = new Model(cmd, commands);
-                        break;
+                        return;
                     default:
                         break;
                 }

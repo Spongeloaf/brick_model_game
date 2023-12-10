@@ -1,7 +1,7 @@
-0 FILE mwg_minifig_head_anchor.dat
-0 Description: Minifig head including any helmets, hair etc.
-0 Name: minifig head
-0 Author: Spongeloaf
+0 FILE base_anchor.part
+0 Description: base_anchor.part
+0 Name: 
+0 Author: 
 0 BFC CERTIFY CCW
 1 16 10.0000 72.0000 30.0000 1.0000 0.0000 0.0000 0.0000 1.0000 0.0000 0.0000 0.0000 1.0000 _handle.part_erased_Accessory2_erased0_erased_erased_erased_erased_erased_erased0_erased_erased_erased
 1 16 -104.0000 10.0000 -30.0000 0.0000 -1.0000 0.0000 1.0000 0.0000 0.0000 0.0000 0.0000 -1.0000 _handle.part_erased_Accessory2_erased0_erased_erased_erased_erased_erased_erased0_erased_erased_erased_edited

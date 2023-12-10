@@ -14,6 +14,8 @@ namespace Ldraw
         private Dictionary<string, int> m_billOfMaterials = new Dictionary<string, int>();
         private SurfaceTool m_surfaceTool = new SurfaceTool();
         private ArrayMesh m_ArrayMesh = new ArrayMesh();
+        private Vector3 m_offset = Vector3.Zero;
+
         public readonly Transform3D m_ScaleToGameCoords;
         public readonly Transform3D m_RotateToGameOrientation;
         public Mesh m_mesh = new Mesh();
@@ -44,6 +46,11 @@ namespace Ldraw
             m_RotateToGameOrientation = Transform3D.Identity;
             m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Left, Mathf.Pi);
             m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(0.01f, 0.01f, 0.01f));
+        }
+
+        public void SetOffset(in Vector3 offset)
+        {
+            m_offset = ScaleToGameCoords(offset);
         }
 
         public void AddTriangle(in Command cmd)
@@ -84,7 +91,7 @@ namespace Ldraw
             for (int i = 0; i < inputVerts.Length; i++)
             {
                 FaceData faceData = new FaceData();
-                faceData.vertex = m_RotateToGameOrientation * m_ScaleToGameCoords * tfm * inputVerts[i];
+                faceData.vertex = (m_RotateToGameOrientation * m_ScaleToGameCoords * tfm * inputVerts[i]) - m_offset;
                 faceData.normal = normal;
                 faceData.color = color;
                 surface.faces.Add(faceData);
@@ -213,7 +220,7 @@ namespace Ldraw
             for (int i = 0; i < indexes.Length; i++)
             {
                 FaceData faceData = new FaceData();
-                faceData.vertex = m_RotateToGameOrientation * m_ScaleToGameCoords * cmd.transform * v[indexes[i]];
+                faceData.vertex = (m_RotateToGameOrientation * m_ScaleToGameCoords * cmd.transform * v[indexes[i]]) - m_offset;
                 faceData.normal = normal;
                 faceData.color = cmd.color;
                 surface.faces.Add(faceData);
@@ -248,6 +255,11 @@ namespace Ldraw
             Vector3 u = verts[1] - verts[0];
             Vector3 v = verts[2] - verts[0];
             return (winding == VertexWinding.CW ? 1 : -1) * u.Cross(v).Normalized();
+        }
+
+        public Vector3 ScaleToGameCoords(in Vector3 scale)
+        {
+            return scale * m_ScaleToGameCoords.Basis * m_RotateToGameOrientation.Basis;
         }
     }
 }

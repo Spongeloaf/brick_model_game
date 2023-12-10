@@ -1,8 +1,17 @@
+0 FILE brick.ldr
 0 
 0 Name: New Model.ldr
 0 Author: 
-1 7 70 0 10 1 0 0 0 1 0 0 0 1 mwg_m_prop_anchor.dat
-1 7 -10 -8 0 1 0 0 0 1 0 0 0 1 25269.dat
-1 7 0 -8 60 1 0 0 0 1 0 0 0 1 39739.dat
-1 7 50 -8 60 1 0 0 0 1 0 0 0 1 98138.dat
-1 7 30 -8 -20 1 0 0 0 1 0 0 0 1 3070a.dat
+1 7 61 -4 -141 1 0 0 0 1 0 0 0 1 mwg_prop_anchor.dat
+1 7 10 -24 -52 1 0 0 0 1 0 0 0 1 3005.dat
+1 7 61 -24 -141 1 0 0 0 1 0 0 0 1 4588.dat
+1 7 22 -24 -13 1 0 0 0 1 0 0 0 1 sub.ldr
+0 NOFILE
+0 FILE sub.ldr
+0 
+0 Name: sub.ldr
+0 Author: 
+1 7 -12 -24 -20 0 0 -1 0 1 0 1 0 0 38585.dat
+1 7 -12 1 -40 1 0 0 0 1 0 0 0 1 mwg_prop_anchor.dat
+1 7 -12 -26 -40 1 0 0 0 1 0 0 0 1 6188.dat
+0 NOFILE

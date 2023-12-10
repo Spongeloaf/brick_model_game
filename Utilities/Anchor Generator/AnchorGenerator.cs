@@ -7,7 +7,7 @@ using System.Globalization;
 public partial class AnchorGenerator : Node
 {
     private List<AnchorDefinition> m_anchors = new List<AnchorDefinition>();
-    private readonly string m_outputResourcePath = "res://models/customParts/out";
+    private readonly string m_outputResourcePath = "res://models/ldraw/parts/";
     private readonly string m_csvResourcePath = "res://models/customParts/anchor_list.csv";
     private readonly string m_anchorTemplateResourcePath = "res://models/customParts/anchor_template.txt";
 

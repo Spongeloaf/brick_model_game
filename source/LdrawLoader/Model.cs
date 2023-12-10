@@ -11,7 +11,7 @@ namespace Ldraw
         private readonly MeshManager m_meshManager = new MeshManager();
         
         private ModelTypes m_modelType = ModelTypes.invalid;
-        private Transform3D m_transform3D = Transform3D.Identity;
+        private Transform3D m_ModelTfm = Transform3D.Identity;
 
         public Model(in Command parentCommand, List<Command> commands)
         {
@@ -19,6 +19,7 @@ namespace Ldraw
             // we stumble upon a model anchor, then we need to treat the list that contains
             // the anchor as a model.
 
+            m_meshManager.SetOffset(parentCommand.transform.Origin);
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
 
@@ -32,19 +33,29 @@ namespace Ldraw
             {
                 switch (cmd.type)
                 {
+                    case CommandType.Model:
+                        m_ModelTfm.Origin += cmd.transform.Origin;
+                        break;
+
                     case CommandType.Subfile:
                         EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata);
                         Model newModel = embeddedFile.GetModel();
                         if (newModel == null)
                             continue;
 
-                        newModel.m_transform3D = cmd.transform;
+                        newModel.m_ModelTfm = cmd.transform;
                         m_children.Add(newModel);
                         break;
 
-                    case CommandType.Part:
                     case CommandType.Triangle:
+                        m_meshManager.AddTriangle(in cmd);
+                        break;
+
                     case CommandType.Quad:
+                        m_meshManager.AddQuad(in cmd);
+                        break;
+
+                    case CommandType.Part:
                         Primitive.AddPrimitiveToMesh(m_meshManager, in cmd);
                         break;
 
@@ -65,16 +76,11 @@ namespace Ldraw
             if (m_modelType == ModelTypes.invalid)
                 return;
 
-            if (m_modelType != ModelTypes.invalid)
-            {
-                OmniLogger.Error("Model and component types cannot both be invalid!");
-                return;
-            }
-
             Node3D model = new Node3D();
             sceneRoot.AddChild(model);
             model.Owner = sceneRoot;
             model.Name = m_modelName;
+            model.Position = m_meshManager.ScaleToGameCoords(m_ModelTfm.Origin);
             if (m_modelType == ModelTypes.invalid)
                 return;
 
@@ -97,7 +103,7 @@ namespace Ldraw
                 return;
             }
 
-            Vector3 childPosition = m_transform3D.Origin * m_meshManager.m_ScaleToGameCoords.Basis * m_meshManager.m_RotateToGameOrientation.Basis;
+            Vector3 childPosition = m_meshManager.ScaleToGameCoords(m_ModelTfm.Origin);
             Node3D thisComponent = new Node3D();
             parent.AddChild(thisComponent);
             thisComponent.Owner = sceneRoot;

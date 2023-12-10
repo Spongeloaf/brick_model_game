@@ -109,6 +109,16 @@ namespace Ldraw
 
     public static class Parsing
     {
+        private static readonly Transform3D m_ScaleToGameCoords;
+        private static readonly Transform3D m_RotateToGameOrientation;
+        static Parsing()
+        {
+            m_ScaleToGameCoords = Transform3D.Identity;
+            m_RotateToGameOrientation = Transform3D.Identity;
+            m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Left, Mathf.Pi);
+            m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(0.01f, 0.01f, 0.01f));
+        }
+
         public static bool IsLdrOrMpdFile(string fileName)
         {
             if (fileName.EndsWith(Constants.kLdrExtension, StringComparison.OrdinalIgnoreCase) ||
@@ -515,7 +525,6 @@ namespace Ldraw
 
         private static Transform3D GetCommandTransform(string[] tokens)
         {
-            // TODO: Do I need to check for BFC INVERTNEXT here?
             float[] param = new float[12];
             for (int i = 0; i < param.Length; i++)
             {
@@ -550,5 +559,16 @@ namespace Ldraw
             else
                 return VertexWinding.Unknown;
         }
+
+        public static Vector3 ScaleVectorToGameCoords(in Vector3 toScale)
+        {
+            return m_ScaleToGameCoords.Basis * m_RotateToGameOrientation.Basis * toScale;
+        }
+
+        public static Transform3D ScaleTransformToGameCoords(in Transform3D tfm)
+        {
+            return m_ScaleToGameCoords * m_RotateToGameOrientation * tfm;
+        }
+
     }   // public static class Parsing
 }
