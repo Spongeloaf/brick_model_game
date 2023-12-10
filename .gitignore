@@ -22,3 +22,6 @@ mono_crash.*.json
 # Runtime-generated assets
 assets/generated/materials/*.*
 assets/generated/models/*.*
+
+# Ldraw lib
+models/ldraw/
