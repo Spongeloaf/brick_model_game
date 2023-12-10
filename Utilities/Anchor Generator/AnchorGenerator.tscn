@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpg67irmd2s5y"]
+
+[ext_resource type="Script" path="res://Utilities/Anchor Generator/AnchorGenerator.cs" id="1_3ohx0"]
+
+[node name="AnchorGenerator" type="Node"]
+script = ExtResource("1_3ohx0")

@@ -1,0 +1,10 @@
+name,description
+invalid,"Any model that fails to parse will auotmatically be assigned this value"
+prop,A decorative item
+minifig,A game character that a player can control
+minifig_body,The torso + hipjoints of a minifig
+minifig_arm_L,"Left arm of a minifig, including hand"
+minifig_arm_R,"Right arm of a minifig, including hand"
+minifig_head,"Minifig head including any helmets, hair etc."
+minifig_leg_L,Left leg of a minifig
+minifig_leg_R,RIght lieg of a minifig

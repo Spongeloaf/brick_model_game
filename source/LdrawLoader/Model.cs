@@ -10,8 +10,7 @@ namespace Ldraw
         private readonly List<Model> m_children = new List<Model>();
         private readonly MeshManager m_meshManager = new MeshManager();
         
-        private ModelTree.ModelTypes m_modelType = ModelTree.ModelTypes.invalid;
-        private ModelTree.ComponentTypes m_componentType = ModelTree.ComponentTypes.invalid;
+        private ModelTypes m_modelType = ModelTypes.invalid;
         private Transform3D m_transform3D = Transform3D.Identity;
 
         public Model(in Command parentCommand, List<Command> commands)
@@ -22,10 +21,8 @@ namespace Ldraw
 
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
-            m_componentType = parentCommand.componentType;
 
-            if (parentCommand.modelType == ModelTree.ModelTypes.invalid &&
-                parentCommand.componentType == ModelTree.ComponentTypes.invalid)
+            if (parentCommand.modelType == ModelTypes.invalid)
             {
                 OmniLogger.Error("Model type is invalid");
                 return;
@@ -65,12 +62,10 @@ namespace Ldraw
                 return;
             }
 
-            if (m_modelType == ModelTree.ModelTypes.invalid 
-                && m_componentType == ModelTree.ComponentTypes.invalid)
+            if (m_modelType == ModelTypes.invalid)
                 return;
 
-            if (m_modelType != ModelTree.ModelTypes.invalid &&
-                m_componentType != ModelTree.ComponentTypes.invalid)
+            if (m_modelType != ModelTypes.invalid)
             {
                 OmniLogger.Error("Model and component types cannot both be invalid!");
                 return;
@@ -80,7 +75,7 @@ namespace Ldraw
             sceneRoot.AddChild(model);
             model.Owner = sceneRoot;
             model.Name = m_modelName;
-            if (m_modelType == ModelTree.ModelTypes.invalid)
+            if (m_modelType == ModelTypes.invalid)
                 return;
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();

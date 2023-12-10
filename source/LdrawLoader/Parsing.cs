@@ -97,8 +97,7 @@ namespace Ldraw
 
         // This metadada can be inherited from the parent command, or read from a previous line.
         public LdrMetadata metadata = new LdrMetadata();
-        public ModelTree.ModelTypes modelType = ModelTree.ModelTypes.invalid;
-        public ModelTree.ComponentTypes componentType = ModelTree.ComponentTypes.invalid;
+        public ModelTypes modelType = ModelTypes.invalid;
         public string commandString;
         public CommandType type;
         public Transform3D transform = Transform3D.Identity;
@@ -449,19 +448,10 @@ namespace Ldraw
                 return true;
             }
 
-            ModelTree.ModelTypes modelType = ModelTree.GetModelTypeFromCommandString(cmd.commandString);
-            if (modelType != ModelTree.ModelTypes.invalid)
+            ModelTypes modelType = ModelTree.GetModelTypeFromCommandString(cmd.commandString);
+            if (modelType != ModelTypes.invalid)
             {
                 cmd.modelType = modelType;
-                cmd.type = CommandType.Model;
-                cmd.subfileName = metadata.fileName;
-                return true;
-            }
-
-            ModelTree.ComponentTypes componentType = ModelTree.GetComponentTypeFromCommandString(cmd.commandString);
-            if (componentType != ModelTree.ComponentTypes.invalid)
-            {
-                cmd.componentType = componentType;
                 cmd.type = CommandType.Model;
                 cmd.subfileName = metadata.fileName;
                 return true;

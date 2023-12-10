@@ -12,8 +12,8 @@ namespace Ldraw
         private static BaseMaterial3D _DefaultOpaqueMaterial;
         private static BaseMaterial3D _DefaultTransparentMaterial;
         private static string m_colorConfigPath = "";
-        private static Dictionary<string, Material> m_customColors;
-        private static Dictionary<int, Material> m_officialColors;
+        private static Dictionary<string, Material> m_customColors = new();
+        private static Dictionary<int, Material> m_officialColors = new();
         private static string m_materialsPath = "res://assets/generated/materials/";
 
         public static void Configure(string colorConfigPath, BaseMaterial3D defaultOpaqueMaterial, BaseMaterial3D defaultTransMaterial)

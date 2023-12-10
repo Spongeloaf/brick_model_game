@@ -27,6 +27,13 @@
       "commandLineArgs": "--path . --verbose res://source/LdrawLoader/LdrLoader.tscn",
       "workingDirectory": ".",
       "nativeDebugging": true
+    },
+    "AnchorGenerator": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Godot_v4.1.1-stable_mono_win64\\Godot_v4.1.1-stable_mono_win64.exe",
+      "commandLineArgs": "--path . --verbose \"res://Utilities/Anchor Generator/AnchorGenerator.tscn\"",
+      "workingDirectory": ".",
+      "nativeDebugging": true
     }
   }
 }
