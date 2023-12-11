@@ -16,8 +16,6 @@ namespace Ldraw
         private ArrayMesh m_ArrayMesh = new ArrayMesh();
         private Vector3 m_offset = Vector3.Zero;
 
-        public readonly Transform3D m_ScaleToGameCoords;
-        public readonly Transform3D m_RotateToGameOrientation;
         public Mesh m_mesh = new Mesh();
 
         // The Godot surface tool uses a normel per vertex, rather than per face.
@@ -40,13 +38,6 @@ namespace Ldraw
             public LdrColor color = 0;
         }
 
-        public MeshManager()
-        {
-            m_ScaleToGameCoords = Transform3D.Identity;
-            m_RotateToGameOrientation = Transform3D.Identity;
-            m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Left, Mathf.Pi);
-            m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(0.01f, 0.01f, 0.01f));
-        }
 
         public void SetOffset(in Vector3 offset)
         {
@@ -91,6 +82,8 @@ namespace Ldraw
             for (int i = 0; i < inputVerts.Length; i++)
             {
                 FaceData faceData = new FaceData();
+                // TODO: Moved to parsing, finish the job!
+                // Remember: The transforms SHOULD NOT be scaled!
                 faceData.vertex = (m_RotateToGameOrientation * m_ScaleToGameCoords * tfm * inputVerts[i]) - m_offset;
                 faceData.normal = normal;
                 faceData.color = color;
@@ -255,17 +248,6 @@ namespace Ldraw
             Vector3 u = verts[1] - verts[0];
             Vector3 v = verts[2] - verts[0];
             return (winding == VertexWinding.CW ? 1 : -1) * u.Cross(v).Normalized();
-        }
-
-        public Vector3 ScaleVector3ToGameCoords(in Vector3 vec)
-        {
-            return vec * m_ScaleToGameCoords.Basis * m_RotateToGameOrientation.Basis;
-        }
-
-        public Transform3D ScaleTransformToGameCoords(Transform3D tfm)
-        {
-            tfm.Origin = ScaleVector3ToGameCoords(tfm.Origin);
-            return tfm;
         }
     }
 }

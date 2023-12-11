@@ -22,7 +22,7 @@ namespace Ldraw
             // The offset ensures that the mesh is always orginized around the anchor position.
             // Remember that the parent command that spawned this model was the anchor, so this
             // transform is it's position within the submodel.
-            m_parentTfm = m_meshManager.ScaleTransformToGameCoords(parentCommand.transform);
+            m_parentTfm = Parsing.ScaleTransformToGameCoords(parentCommand.transform);
             m_meshManager.SetOffset(m_parentTfm.Origin);
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
@@ -38,7 +38,7 @@ namespace Ldraw
                 switch (cmd.type)
                 {
                     case CommandType.Model:
-                        m_modelTfm = m_meshManager.ScaleTransformToGameCoords(cmd.transform);
+                        m_modelTfm = Parsing.ScaleTransformToGameCoords(cmd.transform);
                         break;
 
                     case CommandType.Subfile:
