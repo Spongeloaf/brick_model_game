@@ -3,7 +3,7 @@ using Ldraw;
 
 public partial class Loader : Node3D
 {
-    [Export] public string _BasePartsPath = "C:\\dev\\ldraw\\";
+    [Export] public string _BasePartsPath = "res://models/ldraw/";
     [Export] private string _ModelsPath = "res://models/imports/";
     [Export] private string _MaterialsPath = "res://assets/generated/materials/";
     [Export] private string _MeshesPath = "res://assets/generated/meshes/";
@@ -27,7 +27,7 @@ public partial class Loader : Node3D
 
     private void ConfigureEnvironment()
     {
-        _ColorConfigPath = _BasePartsPath + "LDConfig.ldr";
+        _ColorConfigPath = ProjectSettings.GlobalizePath(_BasePartsPath) + "LDConfig.ldr";
         _DefaultOpaqueMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultOpaque.tres");
         _DefaultTransparentMaterial = ResourceLoader.Load<BaseMaterial3D>("res://assets/materials/importDefaults/DefaultTransparent.tres");
         MaterialManager.Configure(_ColorConfigPath, _DefaultOpaqueMaterial, _DefaultTransparentMaterial);
@@ -48,7 +48,6 @@ public partial class Loader : Node3D
         UserModelFile file = new UserModelFile(modelfile);
         return file.GetModels();
     }
-
 
     public Error SaveNodeAsScene(Node3D node)
     {

@@ -50,7 +50,7 @@ namespace Ldraw
 
         public void SetOffset(in Vector3 offset)
         {
-            m_offset = ScaleToGameCoords(offset);
+            m_offset = offset;
         }
 
         public void AddTriangle(in Command cmd)
@@ -257,9 +257,15 @@ namespace Ldraw
             return (winding == VertexWinding.CW ? 1 : -1) * u.Cross(v).Normalized();
         }
 
-        public Vector3 ScaleToGameCoords(in Vector3 scale)
+        public Vector3 ScaleVector3ToGameCoords(in Vector3 vec)
         {
-            return scale * m_ScaleToGameCoords.Basis * m_RotateToGameOrientation.Basis;
+            return vec * m_ScaleToGameCoords.Basis * m_RotateToGameOrientation.Basis;
+        }
+
+        public Transform3D ScaleTransformToGameCoords(Transform3D tfm)
+        {
+            tfm.Origin = ScaleVector3ToGameCoords(tfm.Origin);
+            return tfm;
         }
     }
 }

@@ -11,15 +11,19 @@ namespace Ldraw
         private readonly MeshManager m_meshManager = new MeshManager();
         
         private ModelTypes m_modelType = ModelTypes.invalid;
-        private Transform3D m_ModelTfm = Transform3D.Identity;
-
+        private Transform3D m_modelTfm = Transform3D.Identity;
+        private Transform3D m_parentTfm = Transform3D.Identity;
         public Model(in Command parentCommand, List<Command> commands)
         {
             // Models need the list of commands because we don't know what we're parsing until
             // we stumble upon a model anchor, then we need to treat the list that contains
             // the anchor as a model.
 
-            m_meshManager.SetOffset(parentCommand.transform.Origin);
+            // The offset ensures that the mesh is always orginized around the anchor position.
+            // Remember that the parent command that spawned this model was the anchor, so this
+            // transform is it's position within the submodel.
+            m_parentTfm = m_meshManager.ScaleTransformToGameCoords(parentCommand.transform);
+            m_meshManager.SetOffset(m_parentTfm.Origin);
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
 
@@ -34,7 +38,7 @@ namespace Ldraw
                 switch (cmd.type)
                 {
                     case CommandType.Model:
-                        m_ModelTfm.Origin += cmd.transform.Origin;
+                        m_modelTfm = m_meshManager.ScaleTransformToGameCoords(cmd.transform);
                         break;
 
                     case CommandType.Subfile:
@@ -43,7 +47,6 @@ namespace Ldraw
                         if (newModel == null)
                             continue;
 
-                        newModel.m_ModelTfm = cmd.transform;
                         m_children.Add(newModel);
                         break;
 
@@ -80,7 +83,6 @@ namespace Ldraw
             sceneRoot.AddChild(model);
             model.Owner = sceneRoot;
             model.Name = m_modelName;
-            model.Position = m_meshManager.ScaleToGameCoords(m_ModelTfm.Origin);
             if (m_modelType == ModelTypes.invalid)
                 return;
 
@@ -103,12 +105,11 @@ namespace Ldraw
                 return;
             }
 
-            Vector3 childPosition = m_meshManager.ScaleToGameCoords(m_ModelTfm.Origin);
             Node3D thisComponent = new Node3D();
             parent.AddChild(thisComponent);
             thisComponent.Owner = sceneRoot;
             thisComponent.Name = m_modelName;
-            thisComponent.Transform = thisComponent.Transform.TranslatedLocal(childPosition);
+            thisComponent.Transform = m_modelTfm * m_parentTfm.Inverse();
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             thisComponent.AddChild(meshInstance);
