@@ -9,10 +9,8 @@ namespace Ldraw
         private readonly string m_modelName;
         private readonly List<Model> m_children = new List<Model>();
         private readonly MeshManager m_meshManager = new MeshManager();
-        
+
         private ModelTypes m_modelType = ModelTypes.invalid;
-        private Transform3D m_modelTfm = Transform3D.Identity;
-        private Transform3D m_parentTfm = Transform3D.Identity;
         public Model(in Command parentCommand, List<Command> commands)
         {
             // Models need the list of commands because we don't know what we're parsing until
@@ -22,8 +20,7 @@ namespace Ldraw
             // The offset ensures that the mesh is always orginized around the anchor position.
             // Remember that the parent command that spawned this model was the anchor, so this
             // transform is it's position within the submodel.
-            m_parentTfm = Parsing.ScaleTransformToGameCoords(parentCommand.transform);
-            m_meshManager.SetOffset(m_parentTfm.Origin);
+            m_meshManager.SetOffset(parentCommand.transform.Origin);
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
 
@@ -37,10 +34,6 @@ namespace Ldraw
             {
                 switch (cmd.type)
                 {
-                    case CommandType.Model:
-                        m_modelTfm = Parsing.ScaleTransformToGameCoords(cmd.transform);
-                        break;
-
                     case CommandType.Subfile:
                         EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata);
                         Model newModel = embeddedFile.GetModel();
@@ -109,7 +102,6 @@ namespace Ldraw
             parent.AddChild(thisComponent);
             thisComponent.Owner = sceneRoot;
             thisComponent.Name = m_modelName;
-            thisComponent.Transform = m_modelTfm * m_parentTfm.Inverse();
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             thisComponent.AddChild(meshInstance);

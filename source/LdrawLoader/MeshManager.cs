@@ -82,9 +82,7 @@ namespace Ldraw
             for (int i = 0; i < inputVerts.Length; i++)
             {
                 FaceData faceData = new FaceData();
-                // TODO: Moved to parsing, finish the job!
-                // Remember: The transforms SHOULD NOT be scaled!
-                faceData.vertex = (m_RotateToGameOrientation * m_ScaleToGameCoords * tfm * inputVerts[i]) - m_offset;
+                faceData.vertex = (tfm * inputVerts[i]) - m_offset;
                 faceData.normal = normal;
                 faceData.color = color;
                 surface.faces.Add(faceData);
@@ -118,7 +116,8 @@ namespace Ldraw
                 // Also, if you ever wanted vertex color, set it before
                 // the vertex value as well.
                 m_surfaceTool.SetNormal(face.normal);
-                m_surfaceTool.AddVertex(face.vertex);
+                m_surfaceTool.AddVertex(
+                    Parsing.ScaleVector3ToGameCoordsWithRotation(face.vertex));
             }
 
             foreach (int tri in surface.triangleIndices)
@@ -213,7 +212,7 @@ namespace Ldraw
             for (int i = 0; i < indexes.Length; i++)
             {
                 FaceData faceData = new FaceData();
-                faceData.vertex = (m_RotateToGameOrientation * m_ScaleToGameCoords * cmd.transform * v[indexes[i]]) - m_offset;
+                faceData.vertex = (cmd.transform * v[indexes[i]]) - m_offset;
                 faceData.normal = normal;
                 faceData.color = cmd.color;
                 surface.faces.Add(faceData);
