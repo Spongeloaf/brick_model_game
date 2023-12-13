@@ -117,7 +117,7 @@ namespace Ldraw
                 // the vertex value as well.
                 m_surfaceTool.SetNormal(face.normal);
                 m_surfaceTool.AddVertex(
-                    Parsing.ScaleVector3ToGameCoordsWithRotation(face.vertex));
+                    Parsing.ScaleAndRotateVector3ToGameCoords(face.vertex));
             }
 
             foreach (int tri in surface.triangleIndices)

@@ -565,9 +565,21 @@ namespace Ldraw
             return vec * m_ScaleToGameCoords.Basis;
         }
 
-        public static Vector3 ScaleVector3ToGameCoordsWithRotation(in Vector3 vec)
+        public static Vector3 ScaleAndRotateVector3ToGameCoords(in Vector3 vec)
         {
             return vec * m_ScaleToGameCoords.Basis * m_RotateToGameOrientation.Basis;
+        }
+
+        public static Transform3D ScaleAndRotateTransformToGameCoords(Transform3D tfm)
+        {
+            tfm.Origin = tfm.Origin * m_ScaleToGameCoords * m_RotateToGameOrientation;
+            return tfm;
+        }
+
+        public static Transform3D RotateTransformToGameCoords(Transform3D tfm)
+        {
+            tfm.Origin = tfm.Origin * m_RotateToGameOrientation;
+            return tfm;
         }
     }   // public static class Parsing
 }

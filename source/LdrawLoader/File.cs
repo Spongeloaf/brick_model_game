@@ -38,12 +38,12 @@ namespace Ldraw
                 switch (cmd.type)
                 {
                     case Ldraw.CommandType.Subfile:
-                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata));
+                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata, Transform3D.Identity));
                         return;
 
                     case Ldraw.CommandType.Model:
                         // A file could have a model that is not in an embedded subfile.
-                        m_model = new Model(cmd, commands);
+                        m_model = new Model(cmd, commands, Transform3D.Identity);
                         return;
                     default:
                         break;
@@ -75,7 +75,7 @@ namespace Ldraw
         private Command m_loadModelsCommand = new Command();
         private Model m_model = null;
 
-        public EmbeddedFile(string fullFilePath, LdrMetadata metadata)
+        public EmbeddedFile(string fullFilePath, LdrMetadata metadata, in Transform3D subfileOffset)
         {
             m_fullFilePath = fullFilePath;
             m_fileContents = FileCache.OpenFile(m_fullFilePath);
@@ -94,7 +94,7 @@ namespace Ldraw
                         // Models need the list of commands because we don't know what we're parsing until
                         // we stumble upon a model anchor, then we need to treat the list that contains
                         // the anchor as a model.
-                        m_model =new Model(cmd, commands);
+                        m_model =new Model(cmd, commands, subfileOffset);
                         return;
 
                     default:

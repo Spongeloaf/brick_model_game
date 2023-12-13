@@ -10,8 +10,9 @@ namespace Ldraw
         private readonly List<Model> m_children = new List<Model>();
         private readonly MeshManager m_meshManager = new MeshManager();
 
+        private Transform3D m_modelTransform = Transform3D.Identity;
         private ModelTypes m_modelType = ModelTypes.invalid;
-        public Model(in Command parentCommand, List<Command> commands)
+        public Model(in Command parentCommand, List<Command> commands, in Transform3D subfileOffset)
         {
             // Models need the list of commands because we don't know what we're parsing until
             // we stumble upon a model anchor, then we need to treat the list that contains
@@ -23,7 +24,8 @@ namespace Ldraw
             m_meshManager.SetOffset(parentCommand.transform.Origin);
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
-
+            m_modelTransform = Parsing.ScaleAndRotateTransformToGameCoords(subfileOffset);
+            
             if (parentCommand.modelType == ModelTypes.invalid)
             {
                 OmniLogger.Error("Model type is invalid");
@@ -34,8 +36,15 @@ namespace Ldraw
             {
                 switch (cmd.type)
                 {
+                    case CommandType.Model:
+                        // This command is the anchor. We'll use it to ensure the transform is correct.
+                        Vector3 anchorOffset = Parsing.ScaleAndRotateVector3ToGameCoords(cmd.transform.Origin);
+                        anchorOffset *= cmd.transform.Basis;
+                        m_modelTransform.Origin += anchorOffset;
+                        break;
+
                     case CommandType.Subfile:
-                        EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata);
+                        EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata, cmd.transform);
                         Model newModel = embeddedFile.GetModel();
                         if (newModel == null)
                             continue;
@@ -102,6 +111,7 @@ namespace Ldraw
             parent.AddChild(thisComponent);
             thisComponent.Owner = sceneRoot;
             thisComponent.Name = m_modelName;
+            thisComponent.Transform = m_modelTransform;
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             thisComponent.AddChild(meshInstance);
