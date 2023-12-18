@@ -11,6 +11,7 @@ namespace Ldraw
         private readonly MeshManager m_meshManager = new MeshManager();
 
         private Transform3D m_modelTransform = Transform3D.Identity;
+        private Transform3D m_anchorTransform = Transform3D.Identity;
         private ModelTypes m_modelType = ModelTypes.invalid;
         public Model(in Command parentCommand, List<Command> commands, in Transform3D subfileOffset)
         {
@@ -21,7 +22,7 @@ namespace Ldraw
             // The offset ensures that the mesh is always orginized around the anchor position.
             // Remember that the parent command that spawned this model was the anchor, so this
             // transform is it's position within the submodel.
-            //m_meshManager.SetOffset(parentCommand.transform.Origin);
+            m_meshManager.SetOffset(parentCommand.transform.Origin);
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
             m_modelTransform = subfileOffset;
@@ -38,6 +39,7 @@ namespace Ldraw
                 {
                     case CommandType.Model:
                         // This command is the anchor. We'll use it to ensure the transform is correct.
+                        m_anchorTransform = cmd.transform;
                         break;
 
                     case CommandType.Subfile:
@@ -116,6 +118,7 @@ namespace Ldraw
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             model.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
+            meshInstance.Position = m_anchorTransform.Origin;
 
             foreach (Model component in m_children)
                 component.ConnectChild(model, sceneRoot);

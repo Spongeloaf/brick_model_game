@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Godot;
-using System;
+﻿using Godot;
 
 namespace Ldraw
 {
