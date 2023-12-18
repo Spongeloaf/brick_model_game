@@ -116,8 +116,7 @@ namespace Ldraw
                 // Also, if you ever wanted vertex color, set it before
                 // the vertex value as well.
                 m_surfaceTool.SetNormal(face.normal);
-                m_surfaceTool.AddVertex(
-                    Parsing.ScaleAndRotateVector3ToGameCoords(face.vertex));
+                m_surfaceTool.AddVertex(face.vertex);
             }
 
             foreach (int tri in surface.triangleIndices)

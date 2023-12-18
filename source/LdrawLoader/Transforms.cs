@@ -7,6 +7,22 @@ namespace Ldraw
 {
     public static class Transforms
     {
+        private static readonly Transform3D m_ScaleToGameCoords;
+        private static readonly Transform3D m_RotateToGameOrientation;
+
+        static Transforms()
+        {
+            m_RotateToGameOrientation = Transform3D.Identity;
+            m_ScaleToGameCoords = Transform3D.Identity;
+            m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Left, Mathf.Pi);
+            m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(0.01f, 0.01f, 0.01f));
+        }
+
+        public static Transform3D GetScaleAndRotateToGameCoords()
+        {
+            return m_ScaleToGameCoords * m_RotateToGameOrientation;
+        }
+
         internal static System.Numerics.Vector3 FromGodotVector3(Godot.Vector3 vec)
         {
             return new System.Numerics.Vector3(vec.X, vec.Y, vec.Z);

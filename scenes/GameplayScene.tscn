@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://bvnk83klfry1o"]
+[gd_scene load_steps=8 format=3 uid="uid://bvnk83klfry1o"]
 
 [ext_resource type="PackedScene" uid="uid://cy7bqh5ukf3fo" path="res://assets/maps/TestMap.tscn" id="1_hp010"]
 [ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerController/PlayerController.tscn" id="3_op8u5"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawns/PawnController.tscn" id="4_ghkh3"]
 [ext_resource type="PackedScene" uid="uid://biql3bjd6do3m" path="res://assets/props/physicsBox.tscn" id="5_ckupd"]
 [ext_resource type="PackedScene" uid="uid://c31qfd63ijars" path="res://models/blends/gangster.glb" id="6_gerkq"]
+[ext_resource type="PackedScene" uid="uid://bqpaiq5ip3fpp" path="res://assets/generated/models/brick_ldr.tscn" id="7_v1bo6"]
 
 [node name="sceneRoot" type="Node3D"]
 
@@ -303,3 +304,6 @@ m_statCard = NodePath("../PawnController2/StatCard")
 
 [node name="gangster" parent="." instance=ExtResource("6_gerkq")]
 transform = Transform3D(-18.1154, 0, 8.47545, 0, 20, 0, -8.47545, 0, -18.1154, 2.39383, 1.57356, -4.19557)
+
+[node name="Some Game Scene" parent="." instance=ExtResource("7_v1bo6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6006, 1.57356, -1.83938)

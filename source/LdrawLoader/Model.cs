@@ -21,10 +21,10 @@ namespace Ldraw
             // The offset ensures that the mesh is always orginized around the anchor position.
             // Remember that the parent command that spawned this model was the anchor, so this
             // transform is it's position within the submodel.
-            m_meshManager.SetOffset(parentCommand.transform.Origin);
+            //m_meshManager.SetOffset(parentCommand.transform.Origin);
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
-            m_modelTransform = Parsing.ScaleAndRotateTransformToGameCoords(subfileOffset);
+            m_modelTransform = subfileOffset;
             
             if (parentCommand.modelType == ModelTypes.invalid)
             {
@@ -38,9 +38,6 @@ namespace Ldraw
                 {
                     case CommandType.Model:
                         // This command is the anchor. We'll use it to ensure the transform is correct.
-                        Vector3 anchorOffset = Parsing.ScaleAndRotateVector3ToGameCoords(cmd.transform.Origin);
-                        anchorOffset *= cmd.transform.Basis;
-                        m_modelTransform.Origin += anchorOffset;
                         break;
 
                     case CommandType.Subfile:
@@ -70,6 +67,15 @@ namespace Ldraw
             }
         }
 
+        public static Node3D CreateNode3D(Node3D parent, Node3D sceeneRoot, string name)
+        {
+            Node3D node = new Node3D();
+            parent.AddChild(node);
+            node.Owner = sceeneRoot;
+            node.Name = name;
+            return node;
+        }
+
         public void ConnectModelToOwner(Node3D sceneRoot)
         {
             if (sceneRoot == null)
@@ -81,22 +87,19 @@ namespace Ldraw
             if (m_modelType == ModelTypes.invalid)
                 return;
 
-            Node3D model = new Node3D();
-            sceneRoot.AddChild(model);
-            model.Owner = sceneRoot;
-            model.Name = m_modelName;
-            if (m_modelType == ModelTypes.invalid)
-                return;
+            Node3D model = CreateNode3D(sceneRoot, sceneRoot, m_modelName);
+            Node3D transformer = CreateNode3D(model, sceneRoot, "transformer");
+            transformer.Transform = Transforms.GetScaleAndRotateToGameCoords();
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
-            model.AddChild(meshInstance);
+            transformer.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
 
             if (m_children == null || m_children.Count == 0)
                 return;
 
             foreach (Model child in m_children)
-                child.ConnectChild(model, sceneRoot);
+                child.ConnectChild(transformer, sceneRoot);
         }
 
         protected void ConnectChild(Node3D parent, Node3D sceneRoot)
@@ -107,18 +110,15 @@ namespace Ldraw
                 return;
             }
 
-            Node3D thisComponent = new Node3D();
-            parent.AddChild(thisComponent);
-            thisComponent.Owner = sceneRoot;
-            thisComponent.Name = m_modelName;
-            thisComponent.Transform = m_modelTransform;
+            Node3D model = CreateNode3D(parent, sceneRoot, m_modelName);
+            model.Transform = m_modelTransform;
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
-            thisComponent.AddChild(meshInstance);
+            model.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
 
             foreach (Model component in m_children)
-                component.ConnectChild(thisComponent, sceneRoot);
+                component.ConnectChild(model, sceneRoot);
         }
     }
 }

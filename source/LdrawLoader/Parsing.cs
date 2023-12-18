@@ -109,16 +109,6 @@ namespace Ldraw
 
     public static class Parsing
     {
-        private static readonly Transform3D m_ScaleToGameCoords;
-        private static readonly Transform3D m_RotateToGameOrientation;
-        static Parsing()
-        {
-            m_ScaleToGameCoords = Transform3D.Identity;
-            m_RotateToGameOrientation = Transform3D.Identity;
-            m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Left, Mathf.Pi);
-            m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(0.01f, 0.01f, 0.01f));
-        }
-
         public static bool IsLdrOrMpdFile(string fileName)
         {
             if (fileName.EndsWith(Constants.kLdrExtension, StringComparison.OrdinalIgnoreCase) ||
@@ -558,28 +548,6 @@ namespace Ldraw
                 return VertexWinding.CCW;
             else
                 return VertexWinding.Unknown;
-        }
-
-        public static Vector3 ScaleVector3ToGameCoords(in Vector3 vec)
-        {
-            return vec * m_ScaleToGameCoords.Basis;
-        }
-
-        public static Vector3 ScaleAndRotateVector3ToGameCoords(in Vector3 vec)
-        {
-            return vec * m_ScaleToGameCoords.Basis * m_RotateToGameOrientation.Basis;
-        }
-
-        public static Transform3D ScaleAndRotateTransformToGameCoords(Transform3D tfm)
-        {
-            tfm.Origin = tfm.Origin * m_ScaleToGameCoords * m_RotateToGameOrientation;
-            return tfm;
-        }
-
-        public static Transform3D RotateTransformToGameCoords(Transform3D tfm)
-        {
-            tfm.Origin = tfm.Origin * m_RotateToGameOrientation;
-            return tfm;
         }
     }   // public static class Parsing
 }
