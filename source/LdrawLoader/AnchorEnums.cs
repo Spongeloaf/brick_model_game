@@ -5,6 +5,11 @@ public enum ModelTypes
 {
 invalid,
 prop,
+turret_base,
+turret_elevated_weapon,
+weapon_ranged,
+projectile,
+projectile_spawn,
 minifig,
 minifig_body,
 minifig_arm_L,

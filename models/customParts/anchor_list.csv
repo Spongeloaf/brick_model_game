@@ -1,6 +1,11 @@
 name,description
 invalid,"Any model that fails to parse will auotmatically be assigned this value"
 prop,A decorative item
+turret_base,A mounting point for a free-rotating turret
+turret_elevated_weapon,Anchor that allows elevating a mounted weapon, must be a child of a turret_base
+weapon_ranged,A ranged weapon that can be moutned or carried. Needs a child projectile.
+projectile,A projectile fired from a ranged weapon
+projectile_spawn,The point on a ranged weapon where projectiles are created upon firing
 minifig,A game character that a player can control
 minifig_body,The torso + hipjoints of a minifig
 minifig_arm_L,"Left arm of a minifig, including hand"

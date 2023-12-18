@@ -96,6 +96,7 @@ namespace Ldraw
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             transformer.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
+            meshInstance.Position = m_anchorTransform.Origin;
 
             if (m_children == null || m_children.Count == 0)
                 return;

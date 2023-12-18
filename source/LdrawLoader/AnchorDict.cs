@@ -7,6 +7,11 @@ public static class Anchors
 public static readonly Dictionary<string, ModelTypes> kModelAnchors = new()
 {
 { "mwg_prop_anchor.dat", ModelTypes.prop },
+{ "mwg_turret_base_anchor.dat", ModelTypes.turret_base },
+{ "mwg_turret_elevated_weapon_anchor.dat", ModelTypes.turret_elevated_weapon },
+{ "mwg_weapon_ranged_anchor.dat", ModelTypes.weapon_ranged },
+{ "mwg_projectile_anchor.dat", ModelTypes.projectile },
+{ "mwg_projectile_spawn_anchor.dat", ModelTypes.projectile_spawn },
 { "mwg_minifig_anchor.dat", ModelTypes.minifig },
 { "mwg_minifig_body_anchor.dat", ModelTypes.minifig_body },
 { "mwg_minifig_arm_L_anchor.dat", ModelTypes.minifig_arm_L },
