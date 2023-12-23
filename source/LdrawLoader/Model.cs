@@ -69,6 +69,11 @@ namespace Ldraw
             if (model == null)
                 return;
 
+            // this isn't working and I'm too tired to fix it. need some sleep.
+            throw new System.NotImplementedException();
+
+            // Use our offset because this mesh will be combined with ours.
+            model.m_meshManager.SetOffset(m_anchorTransform.Origin);
             m_meshManager.AddSurfaces(model.m_meshManager);
         }
 
