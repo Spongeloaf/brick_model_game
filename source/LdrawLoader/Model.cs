@@ -10,10 +10,10 @@ namespace Ldraw
         private readonly List<Model> m_children = new List<Model>();
         private readonly MeshManager m_meshManager = new MeshManager();
 
-        private Transform3D m_modelTransform = Transform3D.Identity;
+        private Transform3D m_subfileTransform = Transform3D.Identity;
         private Transform3D m_anchorTransform = Transform3D.Identity;
         private ModelTypes m_modelType = ModelTypes.invalid;
-        public Model(in Command parentCommand, List<Command> commands, in Transform3D subfileOffset)
+        public Model(in Command parentCommand, List<Command> commands, in Transform3D subfileTransform)
         {
             // Models need the list of commands because we don't know what we're parsing until
             // we stumble upon a model anchor, then we need to treat the list that contains
@@ -22,10 +22,12 @@ namespace Ldraw
             // The offset ensures that the mesh is always orginized around the anchor position.
             // Remember that the parent command that spawned this model was the anchor, so this
             // transform is it's position within the submodel.
-            m_meshManager.SetOffset(parentCommand.transform.Origin);
+            m_anchorTransform = parentCommand.transform;
+            m_subfileTransform = subfileTransform;
+            m_meshManager.SetOffset(m_anchorTransform.Origin);
+
             m_modelName = parentCommand.subfileName;
             m_modelType = parentCommand.modelType;
-            m_modelTransform = subfileOffset;
             
             if (parentCommand.modelType == ModelTypes.invalid)
             {
@@ -37,11 +39,6 @@ namespace Ldraw
             {
                 switch (cmd.type)
                 {
-                    case CommandType.Model:
-                        // This command is the anchor. We'll use it to ensure the transform is correct.
-                        m_anchorTransform = cmd.transform;
-                        break;
-
                     case CommandType.Subfile:
                         EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata, cmd.transform);
                         Model newModel = embeddedFile.GetModel();
@@ -78,7 +75,7 @@ namespace Ldraw
             return node;
         }
 
-        public void ConnectModelToOwner(Node3D sceneRoot)
+        public void CreateModel(Node3D sceneRoot)
         {
             if (sceneRoot == null)
             {
@@ -90,22 +87,26 @@ namespace Ldraw
                 return;
 
             Node3D model = CreateNode3D(sceneRoot, sceneRoot, m_modelName);
-            Node3D transformer = CreateNode3D(model, sceneRoot, "transformer");
+
+            // TODO: Make the transformer have a local position offset so the
+            // model is centered around the anchor.
+            Node3D transformer = CreateNode3D(model, sceneRoot, "gamespaceAdapter");
             transformer.Transform = Transforms.GetScaleAndRotateToGameCoords();
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             transformer.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
-            meshInstance.Position = m_anchorTransform.Origin;
+
+            Transform3D offset = m_anchorTransform;
 
             if (m_children == null || m_children.Count == 0)
                 return;
 
             foreach (Model child in m_children)
-                child.ConnectChild(transformer, sceneRoot);
+                child.ConnectChild(meshInstance, sceneRoot, offset);
         }
 
-        protected void ConnectChild(Node3D parent, Node3D sceneRoot)
+        protected void ConnectChild(Node3D parent, Node3D sceneRoot, Transform3D parentAnchorPosition)
         {
             if (sceneRoot == null || parent == null)
             {
@@ -113,16 +114,15 @@ namespace Ldraw
                 return;
             }
 
-            Node3D model = CreateNode3D(parent, sceneRoot, m_modelName);
-            model.Transform = m_modelTransform;
-
+            Transform3D childOrigin = m_subfileTransform * m_anchorTransform;
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
-            model.AddChild(meshInstance);
+            parent.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
-            meshInstance.Position = m_anchorTransform.Origin;
+            meshInstance.Transform = m_subfileTransform;
+            meshInstance.Position = childOrigin.Origin - parentAnchorPosition.Origin;
 
             foreach (Model component in m_children)
-                component.ConnectChild(model, sceneRoot);
+                component.ConnectChild(meshInstance, sceneRoot, meshInstance.Transform);
         }
     }
 }

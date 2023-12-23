@@ -60,7 +60,7 @@ namespace Ldraw
             }
 
             if (m_model != null)
-                m_model.ConnectModelToOwner(scene);
+                m_model.CreateModel(scene);
 
             scene.Name = System.IO.Path.GetFileName(m_fullFilePath);
             return scene;
@@ -119,7 +119,7 @@ namespace Ldraw
             if (m_model == null)
                 return;
 
-            m_model.ConnectModelToOwner(sceneRoot);
+            m_model.CreateModel(sceneRoot);
         }
     }   // class EmbeddedFile
 }
