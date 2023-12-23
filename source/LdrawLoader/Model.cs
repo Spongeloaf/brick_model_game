@@ -8,12 +8,14 @@ namespace Ldraw
     {
         private readonly string m_modelName;
         private readonly List<Model> m_children = new List<Model>();
-        private readonly MeshManager m_meshManager = new MeshManager();
+        protected readonly MeshManager m_meshManager = new MeshManager();
 
         private Transform3D m_subfileTransform = Transform3D.Identity;
         private Transform3D m_anchorTransform = Transform3D.Identity;
         private ModelTypes m_modelType = ModelTypes.invalid;
-        public Model(in Command parentCommand, List<Command> commands, in Transform3D subfileTransform)
+        
+        
+        public Model(List<Command> commands, in Transform3D subfileTransform)
         {
             // Models need the list of commands because we don't know what we're parsing until
             // we stumble upon a model anchor, then we need to treat the list that contains
@@ -22,30 +24,26 @@ namespace Ldraw
             // The offset ensures that the mesh is always orginized around the anchor position.
             // Remember that the parent command that spawned this model was the anchor, so this
             // transform is it's position within the submodel.
-            m_anchorTransform = parentCommand.transform;
-            m_subfileTransform = subfileTransform;
-            m_meshManager.SetOffset(m_anchorTransform.Origin);
-
-            m_modelName = parentCommand.subfileName;
-            m_modelType = parentCommand.modelType;
-            
-            if (parentCommand.modelType == ModelTypes.invalid)
-            {
-                OmniLogger.Error("Model type is invalid");
-                return;
-            }
 
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
                 {
+                    case CommandType.Model:
+                        m_anchorTransform = cmd.transform;
+                        m_subfileTransform = subfileTransform;
+                        m_meshManager.SetOffset(m_anchorTransform.Origin);
+                        m_modelName = cmd.subfileName;
+                        m_modelType = cmd.modelType;
+                        break;
+
                     case CommandType.Subfile:
                         EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata, cmd.transform);
                         Model newModel = embeddedFile.GetModel();
-                        if (newModel == null)
-                            continue;
-
-                        m_children.Add(newModel);
+                        if (newModel.m_modelType == ModelTypes.invalid)
+                            CombineModelWithThisOne(newModel);
+                        else
+                            m_children.Add(newModel);
                         break;
 
                     case CommandType.Triangle:
@@ -64,6 +62,14 @@ namespace Ldraw
                         break;
                 }
             }
+        }
+
+        private void CombineModelWithThisOne(Model model)
+        {
+            if (model == null)
+                return;
+
+            m_meshManager.AddSurfaces(model.m_meshManager);
         }
 
         public static Node3D CreateNode3D(Node3D parent, Node3D sceeneRoot, string name)

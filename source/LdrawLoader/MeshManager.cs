@@ -21,16 +21,16 @@ namespace Ldraw
         // The Godot surface tool uses a normel per vertex, rather than per face.
         // However, we don't care (yet?) about per-vertex normals, so just use the
         // whole face normal for each vertex and call it a day.
-        private Dictionary<LdrColor, Surface> m_surfaces = new();
+        protected Dictionary<LdrColor, Surface> m_surfaces = new();
         
-        private class Surface
+        protected class Surface
         {
             public Surface() {}
             public List<FaceData> faces = new();
             public List<int> triangleIndices = new();
         }
         
-        private struct FaceData
+        protected struct FaceData
         {
             public FaceData() {}
             public Vector3 vertex = Vector3.Zero;
@@ -82,7 +82,7 @@ namespace Ldraw
             for (int i = 0; i < inputVerts.Length; i++)
             {
                 FaceData faceData = new FaceData();
-                faceData.vertex = (tfm * inputVerts[i]) - m_offset;
+                faceData.vertex = (tfm * inputVerts[i]);
                 faceData.normal = normal;
                 faceData.color = color;
                 surface.faces.Add(faceData);
@@ -116,7 +116,7 @@ namespace Ldraw
                 // Also, if you ever wanted vertex color, set it before
                 // the vertex value as well.
                 m_surfaceTool.SetNormal(face.normal);
-                m_surfaceTool.AddVertex(face.vertex);
+                m_surfaceTool.AddVertex(face.vertex - m_offset);
             }
 
             foreach (int tri in surface.triangleIndices)
@@ -211,7 +211,7 @@ namespace Ldraw
             for (int i = 0; i < indexes.Length; i++)
             {
                 FaceData faceData = new FaceData();
-                faceData.vertex = (cmd.transform * v[indexes[i]]) - m_offset;
+                faceData.vertex = (cmd.transform * v[indexes[i]]);
                 faceData.normal = normal;
                 faceData.color = cmd.color;
                 surface.faces.Add(faceData);
@@ -246,6 +246,16 @@ namespace Ldraw
             Vector3 u = verts[1] - verts[0];
             Vector3 v = verts[2] - verts[0];
             return (winding == VertexWinding.CW ? 1 : -1) * u.Cross(v).Normalized();
+        }
+
+        public void AddSurfaces(MeshManager otherMesh)
+        {
+            foreach (KeyValuePair<LdrColor, Surface> surface in otherMesh.m_surfaces)
+            {
+                Surface workingSurface = GetSurface(surface.Key);
+                workingSurface.faces.AddRange(surface.Value.faces);
+                workingSurface.triangleIndices.AddRange(surface.Value.triangleIndices);
+            }
         }
     }
 }

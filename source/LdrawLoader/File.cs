@@ -9,20 +9,19 @@ namespace Ldraw
         private string m_fullFilePath;
         private string m_fileContents;
         private Command m_loadModelsCommand = new Command();
-        private List<EmbeddedFile> m_embeddedFiles = new List<EmbeddedFile>();
-        private Model m_model = null;
+        private List<Model> m_embeddedModels = new List<Model>();
 
         public UserModelFile(string fullFilePath)
         {
             m_fullFilePath = fullFilePath;
             m_fileContents = FileCache.OpenFile(m_fullFilePath);
             if (string.IsNullOrEmpty(m_fileContents))
-                return; 
+                return;
 
             m_loadModelsCommand.subfileName = m_fullFilePath;
             m_loadModelsCommand.metadata.fileName = m_fullFilePath;
             List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(m_loadModelsCommand);
-            
+
             // We return after the first subfile because the .mpd file format assumes that the first
             // FILE command is the "main" file, and all other embedded files should be children of that file.
             // This implies that embedded files not instanced in the "main" model are orphaned, and never
@@ -38,13 +37,14 @@ namespace Ldraw
                 switch (cmd.type)
                 {
                     case Ldraw.CommandType.Subfile:
-                        m_embeddedFiles.Add(new EmbeddedFile(cmd.subfileName, cmd.metadata, Transform3D.Identity));
+                        var file = new EmbeddedFile(cmd.subfileName, cmd.metadata, Transform3D.Identity);
+                        m_embeddedModels.Add(file.GetModel());
                         return;
 
                     case Ldraw.CommandType.Model:
-                        // A file could have a model that is not in an embedded subfile.
-                        m_model = new Model(cmd, commands, Transform3D.Identity);
+                        m_embeddedModels.Add(new Model(commands, Transform3D.Identity));
                         return;
+
                     default:
                         break;
                 }
@@ -54,13 +54,10 @@ namespace Ldraw
         public Node3D GetModels()
         {
             Node3D scene = new Node3D();
-            foreach (EmbeddedFile efile in m_embeddedFiles)
+            foreach (Model model in m_embeddedModels)
             {
-                efile.ConnectModelTreeToOwner(scene);
+                model.CreateModel(scene);
             }
-
-            if (m_model != null)
-                m_model.CreateModel(scene);
 
             scene.Name = System.IO.Path.GetFileName(m_fullFilePath);
             return scene;
@@ -84,23 +81,8 @@ namespace Ldraw
 
             m_loadModelsCommand.subfileName = m_fullFilePath;
             m_loadModelsCommand.metadata = metadata;
-
             List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(m_loadModelsCommand);
-            foreach (Command cmd in commands)
-            {
-                switch (cmd.type)
-                {
-                    case Ldraw.CommandType.Model:
-                        // Models need the list of commands because we don't know what we're parsing until
-                        // we stumble upon a model anchor, then we need to treat the list that contains
-                        // the anchor as a model.
-                        m_model =new Model(cmd, commands, subfileOffset);
-                        return;
-
-                    default:
-                        break;
-                }
-            }
+            m_model = new Model(commands, subfileOffset);
         }
 
         public Model GetModel()
