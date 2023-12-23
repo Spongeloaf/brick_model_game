@@ -88,15 +88,14 @@ namespace Ldraw
 
             Node3D model = CreateNode3D(sceneRoot, sceneRoot, m_modelName);
 
-            // TODO: Make the transformer have a local position offset so the
-            // model is centered around the anchor.
+            // The transformer allows us to scale and rotate the model to the game's coordinate system,
+            // while leaving all the children's local transforms in the origianl LDR coordinate space.
             Node3D transformer = CreateNode3D(model, sceneRoot, "gamespaceAdapter");
             transformer.Transform = Transforms.GetScaleAndRotateToGameCoords();
 
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             transformer.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
-
             Transform3D offset = m_anchorTransform;
 
             if (m_children == null || m_children.Count == 0)
@@ -114,6 +113,24 @@ namespace Ldraw
                 return;
             }
 
+            // The transform stuff here is a bit fucky, so bear with me.
+            //
+            // We always want the models origin point (and by extension, the center
+            // of rotation) to be where the user puts the anchor.
+            //
+            // Basically, the LDRAW models all have their own origin point that is not
+            // related in any way whatsoever to our anchor point. The user could make 
+            // a model with the anchor at 0,0,0, or 9001,420,69, but if the parts are
+            // in the same positions relative to the anchor, it should look exactly the
+            // same in both cases.
+            //
+            // To achieve this, we need to compose a position for the child node made
+            // by taking the anchor point in submodel space, mutated by the subfile
+            // transform.
+            // 
+            // Please be very careful when messing with the transforms. A slight change
+            // couod break everything badly. But icould also break only complex cases,
+            // and you may not notice on simple models.
             Transform3D childOrigin = m_subfileTransform * m_anchorTransform;
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             parent.AddChild(meshInstance);
@@ -122,7 +139,7 @@ namespace Ldraw
             meshInstance.Position = childOrigin.Origin - parentAnchorPosition.Origin;
 
             foreach (Model component in m_children)
-                component.ConnectChild(meshInstance, sceneRoot, meshInstance.Transform);
+                component.ConnectChild(meshInstance, sceneRoot, m_anchorTransform);
         }
     }
 }
