@@ -21,28 +21,26 @@ namespace Ldraw
             // we stumble upon a model anchor, then we need to treat the list that contains
             // the anchor as a model.
 
-            // The offset ensures that the mesh is always orginized around the anchor position.
-            // Remember that the parent command that spawned this model was the anchor, so this
-            // transform is it's position within the submodel.
-
+            m_subfileTransform = subfileTransform;
             foreach (Command cmd in commands)
             {
                 switch (cmd.type)
                 {
                     case CommandType.Model:
                         m_anchorTransform = cmd.transform;
-                        m_subfileTransform = subfileTransform;
-                        m_meshManager.SetOffset(m_anchorTransform.Origin);
                         m_modelName = cmd.subfileName;
                         m_modelType = cmd.modelType;
+
+                        // The offset ensures that the mesh is always orginized around the anchor position.
+                        // Remember that the parent command that spawned this model was the anchor, so this
+                        // transform is it's position within the submodel.
+                        m_meshManager.SetOffset(m_anchorTransform.Origin);
                         break;
 
                     case CommandType.Subfile:
                         EmbeddedFile embeddedFile = new EmbeddedFile(cmd.subfileName, cmd.metadata, cmd.transform);
                         Model newModel = embeddedFile.GetModel();
-                        if (newModel.m_modelType == ModelTypes.invalid)
-                            CombineModelWithThisOne(newModel);
-                        else
+                        if (newModel != null)
                             m_children.Add(newModel);
                         break;
 
@@ -62,19 +60,6 @@ namespace Ldraw
                         break;
                 }
             }
-        }
-
-        private void CombineModelWithThisOne(Model model)
-        {
-            if (model == null)
-                return;
-
-            // this isn't working and I'm too tired to fix it. need some sleep.
-            throw new System.NotImplementedException();
-
-            // Use our offset because this mesh will be combined with ours.
-            model.m_meshManager.SetOffset(m_anchorTransform.Origin);
-            m_meshManager.AddSurfaces(model.m_meshManager);
         }
 
         public static Node3D CreateNode3D(Node3D parent, Node3D sceeneRoot, string name)
