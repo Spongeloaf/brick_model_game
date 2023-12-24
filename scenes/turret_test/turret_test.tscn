@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://t36x40ejuwpr"]
+
+[ext_resource type="PackedScene" uid="uid://cy7bqh5ukf3fo" path="res://assets/maps/TestMap.tscn" id="1_pwh2t"]
+
+[node name="turret_test" type="Node3D"]
+
+[node name="NavigationRegion3D" parent="." instance=ExtResource("1_pwh2t")]
