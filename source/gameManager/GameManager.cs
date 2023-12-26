@@ -1,8 +1,12 @@
 using Godot;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using GameManagerStates;
+using BrickModelGame.source.pawns;
+
+public interface IGameManager
+{
+    public void DoUpdate(InputActions inputs);
+}
+
 
 internal enum GameState
 {
@@ -11,7 +15,8 @@ internal enum GameState
   attack,
 }
 
-public partial class GameManager : Node3D
+
+public partial class GameManager : Node3D, IGameManager
 {
   private PawnController m_SelectedPawn;
   private World3D m_world;
@@ -30,7 +35,7 @@ public partial class GameManager : Node3D
     m_PathPainter = GetNode<ScreenDecorator>("ScreenDecorator");
   }
 
-  public void DoUpdate(InputActions inputs)
+  void IGameManager.DoUpdate(InputActions inputs)
   {
     if (m_Executor != null)
     {

@@ -1,5 +1,5 @@
 using Godot;
-using System.Collections.Generic;
+using BrickModelGame.source.pawns;
 
 public enum PawnAction
 {

@@ -1,3 +1,4 @@
+using BrickModelGame.source.libs;
 using Godot;
 using Godot.Collections;
 using System;
@@ -6,16 +7,14 @@ using System.Collections.Generic;
 public partial class PlayerController : Node
 {
   private float screenRayDepth = 100f;
-  private GameManager m_gameManager;
+  private IGameManager m_gameManager;
   private Camera3D m_camera;
 
   // Called when the node enters the scene tree for the first time.
   public override void _Ready()
   {
     // We're expecting that the manager is a sibling
-    m_gameManager = GetNode<GameManager>("../GameManager");
-    if (m_gameManager == null)
-      GD.PrintErr("GameManager not found!");
+    m_gameManager = TreeUtils.FindGameManager(this);
 
     m_camera = GetNode<Camera3D>("Camera3D");
     if (m_camera == null)

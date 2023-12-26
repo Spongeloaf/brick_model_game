@@ -34,6 +34,13 @@
       "commandLineArgs": "--path . --verbose \"res://Utilities/Anchor Generator/AnchorGenerator.tscn\"",
       "workingDirectory": ".",
       "nativeDebugging": true
+    },
+    "AimTest": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\Godot_v4.1.1-stable_mono_win64\\Godot_v4.1.1-stable_mono_win64.exe",
+      "commandLineArgs": "--path . --verbose \"res://scenes/turret_test/turret_test.tscn\"",
+      "workingDirectory": ".",
+      "nativeDebugging": true
     }
   }
 }

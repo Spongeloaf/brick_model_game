@@ -1,10 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using GameManagerStates;
 using Godot;
+using BrickModelGame.source.pawns;
 
 public static class PawnUtils
 {

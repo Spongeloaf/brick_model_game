@@ -2,6 +2,7 @@ using GameManagerStates;
 using Godot;
 using System;
 using System.Linq;
+using BrickModelGame.source.pawns;
 
 public class PlannerAttack : IActionPlanner
 {
