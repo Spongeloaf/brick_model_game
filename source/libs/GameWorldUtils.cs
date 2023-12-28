@@ -3,6 +3,7 @@ using System;
 using Godot.Collections;
 using System.Linq;
 using GameManagerStates;
+using BrickModelGame.source.CodeResources;
 
 public struct RaycastHit3D
 {
@@ -94,5 +95,45 @@ public static class GameWorldUtils
 
         ulong travelTimeInSeconds = (ulong)(Math.GetPathLength(plan.path) / plan.actor.m_statCard.moveSpeed);
         return travelTimeInSeconds * 1000;
+    }
+
+    // Given a parent and child nodes, the child ir rotated, relative to the parent, to face the target.
+    // Rotation is restricted to the supplied axis in parent-local space.
+    //
+    // Example: Imagine a tank turret. If you call Node3d.LookAt() on the turret, it will rotate on 
+    // all three axes to face the target, which would look stupid. However, use this function and pass
+    // in Vector3.Up, and it will rotate the turret on it's local y axis, which will look correct even
+    // if the tank is parked on an incline, or flipped on its roof.
+    // 
+    // Call this function again on a node that elevates the tank's gun, and pass in Vector3.Right, and
+    // now the gun will elevate to face the target as best it can. This should produce a realistic looking
+    // result, as though a human hamd manually aimed the turret to compensate for the incline.
+    //
+    // !!WARNING!! This function does not currently support angular restrictions. It assumes the child
+    // node is free to rotate to any point on its axis, which fine for turret bases but not so much for
+    // gun elevation nodes.
+    // TODO: Fix that
+    //
+    // How do I fix that? I think we could pass in two values: A positive and negative angle limit. Then
+    // comapre those to the forward vector of the parent frame. This would allow for asymetric limits!
+    public static void LookAtOnAxis(in Vector3 globalTarget, in Vector3 localAxis, in Node3D parentObject, Node3D childToAim)
+    {
+        Vector3 localTarget = parentObject.ToLocal(globalTarget);
+        Transform3D localUpTfm = parentObject.Transform.TranslatedLocal(Vector3.Up);
+        Vector3 planeNormal = localUpTfm.Origin.Normalized();
+        Plane rotationPlane = new Plane(planeNormal, parentObject.Position);
+        Vector3 projectedPoint = rotationPlane.Project(localTarget);
+
+        if (CustomProjectSettings.GetDebugTurretAiming())
+        {
+            DebugDraw3D.DrawLine(parentObject.GlobalPosition, parentObject.ToGlobal(rotationPlane.GetCenter() + rotationPlane.Normal * 5), Colors.Green);
+            DebugDraw3D.DrawSphere(parentObject.ToGlobal(localTarget), 0.25f, Colors.Red);
+            DebugDraw3D.DrawSphere(parentObject.ToGlobal(projectedPoint), 0.25f, Colors.Green);
+        }
+
+        float angleRadians = Mathf.Atan2(projectedPoint.X, projectedPoint.Z);
+        OmniLogger.Info("Angle: " + angleRadians);
+        childToAim.Rotation = Vector3.Zero;
+        childToAim.RotateObjectLocal(Vector3.Up, angleRadians);
     }
 } // GameWorldUtils

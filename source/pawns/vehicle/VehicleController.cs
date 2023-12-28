@@ -12,7 +12,7 @@ namespace BrickModelGame.source.pawns
 
         public override void _Ready()
         {
-            m_turrets = TreeUtils.FindDirecChildren<ITurret>(this);
+            m_turrets = TreeUtils.FindDirectChildren<ITurret>(this);
         }
 
         public void DoDirectAction(InputActions actions)

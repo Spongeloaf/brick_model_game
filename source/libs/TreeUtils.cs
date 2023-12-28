@@ -34,7 +34,7 @@ namespace BrickModelGame.source.libs
             }
         }
 
-        public static List<T> FindDirecChildren<T>(Node node) where T : class
+        public static List<T> FindDirectChildren<T>(Node node) where T : class
         {
             List<T> results = new List<T>();
             foreach (Node child in node.GetChildren())
