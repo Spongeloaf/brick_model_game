@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [brick_model_game]
 
-debug_turret_aiming=false
+debug_turret_aiming=true
 
 [dotnet]
 

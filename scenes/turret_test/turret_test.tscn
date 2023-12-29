@@ -10,9 +10,16 @@
 [node name="NavigationRegion3D" parent="." instance=ExtResource("1_pwh2t")]
 
 [node name="PlayerController" parent="." instance=ExtResource("3_11fn7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.50556, 5.75293, 10.8412)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -9.81153, 5.75293, -12.8742)
 
 [node name="RnDGamemanager" parent="." instance=ExtResource("3_obr3k")]
 
 [node name="vehicle_controller" parent="RnDGamemanager" instance=ExtResource("2_yyn5s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.3882, 3.65758, 0.0542192)
+transform = Transform3D(0.852786, 0.522261, 0, -0.522261, 0.852786, 0, 0, 0, 1, -6.23872, 3.4953, -2.93609)
+freeze = true
+
+[node name="vehicle_controller2" parent="RnDGamemanager" instance=ExtResource("2_yyn5s")]
+transform = Transform3D(-0.371254, 0, -0.928531, 0, 1, 0, 0.928531, 0, -0.371254, -11.2535, 1.79509, 4.77744)
+
+[node name="vehicle_controller3" parent="RnDGamemanager" instance=ExtResource("2_yyn5s")]
+transform = Transform3D(-5.96046e-08, 1, 0, 0.00647509, 3.20142e-10, 0.999979, 0.999979, 5.96046e-08, -0.00647509, -12.4226, 4.14927, -5.36692)

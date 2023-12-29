@@ -4,6 +4,7 @@ using Godot.Collections;
 using System.Linq;
 using GameManagerStates;
 using BrickModelGame.source.CodeResources;
+using System.Reflection.Metadata.Ecma335;
 
 public struct RaycastHit3D
 {
@@ -57,6 +58,7 @@ public static class GameWorldUtils
         return hit;
     }
 
+
     public static RaycastHit3D DoRaycastInDirection(World3D world, Vector3 from, Vector3 direction,
                                          float length = Mathf.Inf, Rid[] excludes = null, uint collision_mask = 4294967295)
     {
@@ -77,6 +79,7 @@ public static class GameWorldUtils
         return hit;
     }
 
+
     public static RaycastHit3D DoRaycastPointToPoint(World3D world, Vector3 from, Vector3 to,
                                          float limit = Mathf.Inf, Array<Rid> excludes = null, uint collision_mask = 4294967295)
     {
@@ -84,6 +87,7 @@ public static class GameWorldUtils
         Dictionary result = world.DirectSpaceState.IntersectRay(query);
         return ConstructRaycastHit3D(result);
     }
+
 
     public static ulong CalculateMoveTimeInMsec(in ActionPlan plan)
     {
@@ -97,6 +101,7 @@ public static class GameWorldUtils
         return travelTimeInSeconds * 1000;
     }
 
+
     // Given a parent and child nodes, the child ir rotated, relative to the parent, to face the target.
     // Rotation is restricted to the supplied axis in parent-local space.
     //
@@ -105,9 +110,12 @@ public static class GameWorldUtils
     // in Vector3.Up, and it will rotate the turret on it's local y axis, which will look correct even
     // if the tank is parked on an incline, or flipped on its roof.
     // 
-    // Call this function again on a node that elevates the tank's gun, and pass in Vector3.Right, and
-    // now the gun will elevate to face the target as best it can. This should produce a realistic looking
-    // result, as though a human hamd manually aimed the turret to compensate for the incline.
+    // Call this function again on a node that elevates the tank's gun (assuming that gun is a child of
+    // the turret), and pass in Vector3.Right, and now the gun will elevate to face the target as best
+    // it can.
+    //
+    // This should produce a realistic looking result, as though a human manually aimed the turret to
+    // compensate for the incline.
     //
     // !!WARNING!! This function does not currently support angular restrictions. It assumes the child
     // node is free to rotate to any point on its axis, which fine for turret bases but not so much for
@@ -116,24 +124,31 @@ public static class GameWorldUtils
     //
     // How do I fix that? I think we could pass in two values: A positive and negative angle limit. Then
     // comapre those to the forward vector of the parent frame. This would allow for asymetric limits!
-    public static void LookAtOnAxis(in Vector3 globalTarget, in Vector3 localAxis, in Node3D parentObject, Node3D childToAim)
+    // Also, that would allow different constraints for each axis the turret rotates on.
+    //
+    // Final warning: This has not been tested with turrets where the gimbals of the turret pan base and
+    // the turret elevation base are not perpendicular to each other. No clue how that will look.
+    public static void FaceTargetOnAxis(in Vector3 globalTarget, in Vector3 localAxis, in Node3D parentObject, Node3D childToAim, Color debugColor)
     {
         Vector3 localTarget = parentObject.ToLocal(globalTarget);
         Transform3D localUpTfm = parentObject.Transform.TranslatedLocal(localAxis);
-        Vector3 planeNormal = localUpTfm.Origin.Normalized();
-        Plane rotationPlane = new Plane(planeNormal, parentObject.Position);
-        Vector3 projectedPoint = rotationPlane.Project(localTarget);
+        Transform3D localForwardTfm = parentObject.Transform.TranslatedLocal(Vector3.Back);
+        Vector3 planeNormal = localUpTfm.Origin - parentObject.Transform.Origin;
+        Vector3 localForward = localForwardTfm.Origin - parentObject.Transform.Origin;
+        Plane turretPlane = new Plane(planeNormal, parentObject.Position);
+        Vector3 projectedPoint = turretPlane.Project(localTarget);
+
 
         if (CustomProjectSettings.GetDebugTurretAiming())
         {
-            DebugDraw3D.DrawLine(parentObject.GlobalPosition, parentObject.ToGlobal(rotationPlane.GetCenter() + rotationPlane.Normal * 5), Colors.Green);
-            DebugDraw3D.DrawSphere(parentObject.ToGlobal(localTarget), 0.25f, Colors.Red);
-            DebugDraw3D.DrawSphere(parentObject.ToGlobal(projectedPoint), 0.25f, Colors.Green);
+            DebugDraw3D.DrawLine(parentObject.GlobalPosition, parentObject.ToGlobal(turretPlane.GetCenter() + turretPlane.Normal * 5), debugColor);
+            DebugDraw3D.DrawBox(parentObject.ToGlobal(localTarget), new Vector3(0.25f, 0.25f, 0.25f), Colors.White);
+            DebugDraw3D.DrawSphere(parentObject.ToGlobal(projectedPoint), 0.3f, debugColor);
         }
 
-        float angleRadians = Mathf.Atan2(projectedPoint.X, projectedPoint.Z);
-        OmniLogger.Info("Angle: " + angleRadians);
+        float angleRadians = localForward.SignedAngleTo(projectedPoint, localAxis);
         childToAim.Rotation = Vector3.Zero;
         childToAim.RotateObjectLocal(localAxis, angleRadians);
     }
+
 } // GameWorldUtils
