@@ -14,7 +14,7 @@ navigation_mesh = SubResource("NavigationMesh_yd111")
 use_edge_connections = false
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.998819, 0.0194639, 0.0445193, -0.0467522, 0.634491, 0.771515, -0.0132304, -0.772685, 0.634652, -0.531392, 8.38026, -2.80088)
+transform = Transform3D(0.998819, 0.0194639, 0.0445193, -0.0467522, 0.634491, 0.771515, -0.0132304, -0.772685, 0.634652, 0.336089, 24.1796, 6.85887)
 layers = 0
 shadow_enabled = true
 

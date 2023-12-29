@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://bvkc0u6vo0c0h"]
+
+[ext_resource type="PackedScene" uid="uid://cy7bqh5ukf3fo" path="res://assets/maps/TestMap.tscn" id="1_sdnya"]
+[ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerController/PlayerController.tscn" id="2_rpg2x"]
+[ext_resource type="PackedScene" uid="uid://dxyuj6mvnbqp8" path="res://source/DevTools/RnDGamemanager.tscn" id="3_4av6a"]
+[ext_resource type="PackedScene" uid="uid://bdms3ggwx2ak6" path="res://scenes/turret_test/vehicle_single_gimbal.tscn" id="4_xllpv"]
+
+[node name="turret_test" type="Node3D"]
+
+[node name="NavigationRegion3D" parent="." instance=ExtResource("1_sdnya")]
+
+[node name="PlayerController" parent="." instance=ExtResource("2_rpg2x")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -9.81153, 5.75293, -12.8742)
+
+[node name="RnDGamemanager" parent="." instance=ExtResource("3_4av6a")]
+
+[node name="VehicleController" parent="RnDGamemanager" instance=ExtResource("4_xllpv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.0733, 1.76208, 0)

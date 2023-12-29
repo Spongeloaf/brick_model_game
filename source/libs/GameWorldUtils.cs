@@ -103,7 +103,10 @@ public static class GameWorldUtils
 
 
     // Given a parent and child nodes, the child ir rotated, relative to the parent, to face the target.
-    // Rotation is restricted to the supplied axis in parent-local space.
+    // Rotation is restricted to the supplied axis in parent-local space. Returns true if the target is
+    // within the firing arc of the turret.
+    //
+    // Otherwise, the turret is not rotated, and false is returned.
     //
     // Example: Imagine a tank turret. If you call Node3d.LookAt() on the turret, it will rotate on 
     // all three axes to face the target, which would look stupid. However, use this function and pass
@@ -128,10 +131,10 @@ public static class GameWorldUtils
     //
     // Final warning: This has not been tested with turrets where the gimbals of the turret pan base and
     // the turret elevation base are not perpendicular to each other. No clue how that will look.
-    public static void FaceTargetOnAxis(in Vector3 globalTarget, in Vector3 localAxis, in Node3D parentObject, Node3D childToAim, Color debugColor)
+    public static bool FaceTargetOnAxis(in Vector3 globalTarget, in Node3D parentObject, Gimbal gimbal, Color debugColor)
     {
         Vector3 localTarget = parentObject.ToLocal(globalTarget);
-        Transform3D localUpTfm = parentObject.Transform.TranslatedLocal(localAxis);
+        Transform3D localUpTfm = parentObject.Transform.TranslatedLocal(gimbal.gimbalAxis);
         Transform3D localForwardTfm = parentObject.Transform.TranslatedLocal(Vector3.Back);
         Vector3 planeNormal = localUpTfm.Origin - parentObject.Transform.Origin;
         Vector3 localForward = localForwardTfm.Origin - parentObject.Transform.Origin;
@@ -146,9 +149,40 @@ public static class GameWorldUtils
             DebugDraw3D.DrawSphere(parentObject.ToGlobal(projectedPoint), 0.3f, debugColor);
         }
 
-        float angleRadians = localForward.SignedAngleTo(projectedPoint, localAxis);
-        childToAim.Rotation = Vector3.Zero;
-        childToAim.RotateObjectLocal(localAxis, angleRadians);
+        float angleRadians = localForward.SignedAngleTo(projectedPoint, gimbal.gimbalAxis);
+        float angleDegrees = Mathf.RadToDeg(angleRadians);
+        OmniLogger.Info($"Angle: {angleDegrees}");
+
+        bool result = true;
+        if (IsGunConstrained(gimbal))
+        {
+            // Counter clockwise is positive, clockwise is negative
+            float cwConstraint = - gimbal.rotationLimitCWDegrees;
+            if (angleDegrees > gimbal.rotationLimitCCWDegrees)
+            {
+                result = false;
+                angleRadians = Mathf.DegToRad(gimbal.rotationLimitCCWDegrees);
+            }
+            else if (angleDegrees < cwConstraint)
+            {
+                result = false;
+                angleRadians = Mathf.DegToRad(cwConstraint);
+            }
+        }
+
+        gimbal.Rotation = Vector3.Zero;
+        gimbal.RotateObjectLocal(gimbal.gimbalAxis, angleRadians);
+        return result;
+    }
+
+    public static bool IsGunConstrained(Gimbal gimbal)
+    {
+        // This check prevents turrets from having less traverse than any non-turreted weapon on a vehicle.
+        if (gimbal.rotationLimitCCWDegrees > Globals.minimumGimbalAngleRadians ||
+            gimbal.rotationLimitCWDegrees > Globals.minimumGimbalAngleRadians)
+            return true;
+
+        return false;
     }
 
 } // GameWorldUtils

@@ -6,18 +6,17 @@ using BrickModelGame.source.pawns.components.weapons;
 
 namespace BrickModelGame.source.pawns.components.turrets
 {
-
     // A component of a turret that roates on one axis.
     // If a turret can both pan and tilt, it should have two of these, where one is a child of the other.
     [GlobalClass, Icon("res://source/pawn/pawn.svg")]
     public partial class TurretBase : Node3D
     {
-        bool targetChanged = false; 
-        Vector3 m_globalSpaceTarget;
-        Gimbal m_gimbal;    // child object that actually rotates the turret components
-        Vector3 m_gimbalAxis = Vector3.Up;
         List<TurretBase> m_childTUrrets = new List<TurretBase>();
         Color m_debugColor = Colors.White;
+        Vector3 m_globalSpaceTarget;
+        bool targetChanged = false; 
+        Gimbal m_gimbal;    // child object that actually rotates the turret components
+
 
         public override void _Ready()
         {
@@ -29,10 +28,6 @@ namespace BrickModelGame.source.pawns.components.turrets
             }
 
             m_childTUrrets = TreeUtils.FindDirectChildren<TurretBase>(m_gimbal);
-
-            // Cached for performance. We never expect this to change at run time.
-            m_gimbalAxis = m_gimbal.gimbalAxis;
-
             float random = SkillCheck.GetRandomInt(0, 1000) * 0.001f;
             m_debugColor = Color.FromHsv(random, 1.0f, 1.0f);
         }
@@ -52,7 +47,7 @@ namespace BrickModelGame.source.pawns.components.turrets
             //    int i = 0;
             //}
 
-            GameWorldUtils.FaceTargetOnAxis(m_globalSpaceTarget, m_gimbalAxis, this, m_gimbal, m_debugColor);
+            GameWorldUtils.FaceTargetOnAxis(m_globalSpaceTarget, this, m_gimbal, m_debugColor);
             targetChanged = false;
         }
 
