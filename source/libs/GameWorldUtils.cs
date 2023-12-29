@@ -119,7 +119,7 @@ public static class GameWorldUtils
     public static void LookAtOnAxis(in Vector3 globalTarget, in Vector3 localAxis, in Node3D parentObject, Node3D childToAim)
     {
         Vector3 localTarget = parentObject.ToLocal(globalTarget);
-        Transform3D localUpTfm = parentObject.Transform.TranslatedLocal(Vector3.Up);
+        Transform3D localUpTfm = parentObject.Transform.TranslatedLocal(localAxis);
         Vector3 planeNormal = localUpTfm.Origin.Normalized();
         Plane rotationPlane = new Plane(planeNormal, parentObject.Position);
         Vector3 projectedPoint = rotationPlane.Project(localTarget);
@@ -134,6 +134,6 @@ public static class GameWorldUtils
         float angleRadians = Mathf.Atan2(projectedPoint.X, projectedPoint.Z);
         OmniLogger.Info("Angle: " + angleRadians);
         childToAim.Rotation = Vector3.Zero;
-        childToAim.RotateObjectLocal(Vector3.Up, angleRadians);
+        childToAim.RotateObjectLocal(localAxis, angleRadians);
     }
 } // GameWorldUtils

@@ -20,8 +20,14 @@ namespace BrickModelGame.source.pawns.components.turrets
 
         public override void _Ready()
         {
-            m_childTUrrets = TreeUtils.FindDirectChildren<TurretBase>(this);
             m_gimbal = GetNode<Gimbal>("Gimbal");
+            if (m_gimbal == null)
+            {
+                OmniLogger.Error("Failed to find gimbal!");
+                throw new System.Exception("Failed to find gimbal!");
+            }
+
+            m_childTUrrets = TreeUtils.FindDirectChildren<TurretBase>(m_gimbal);
 
             // Cached for performance. We never expect this to change at run time.
             m_gimbalAxis = m_gimbal.gimbalAxis;
@@ -32,7 +38,12 @@ namespace BrickModelGame.source.pawns.components.turrets
             if (!targetChanged)
                 return;
 
-            GameWorldUtils.LookAtOnAxis(m_globalSpaceTarget, Vector3.Up, this, m_gimbal);
+            if (m_gimbalAxis.X > 0.5)
+            {
+                int i = 0;
+            }
+
+            GameWorldUtils.LookAtOnAxis(m_globalSpaceTarget, m_gimbalAxis, this, m_gimbal);
             targetChanged = false;
         }
 
@@ -46,7 +57,7 @@ namespace BrickModelGame.source.pawns.components.turrets
 
 
             m_globalSpaceTarget = target;
-            bool targetChanged = true;
+            targetChanged = true;
             foreach (TurretBase turret in m_childTUrrets)
                 turret.TrySetTarget(target);
 
