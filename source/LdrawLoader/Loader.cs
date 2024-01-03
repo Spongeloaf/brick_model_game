@@ -17,7 +17,7 @@ public partial class Loader : Node3D
     public override void _Ready()
     {
         ConfigureEnvironment();
-        Node3D modelScene = LoadModelsFromFile("C:\\dev\\brick_model_game\\models\\imports\\turret.ldr");
+        Node3D modelScene = LoadModelsFromFile("C:\\dev\\brick_model_game\\models\\imports\\brick.ldr");
 
         Error error = SaveNodeAsScene(modelScene);
         if (error != Error.Ok)

@@ -18,12 +18,14 @@ namespace GameManagerStates
       impactPoint = Vector3.Inf;
       shotOrigin = Vector3.Inf;
       skillCheck = new SkillCheck.Parameters();
+      actionIndex = 0;
     }
 
     public bool canPerform;                   // Attacker has LoS, is in melee range, has an action available, has ammo, etc.
     public Vector3 impactPoint;               // Position to aim at. If the target is partly obstructed, this will be centered on the exposed area.
     public Vector3 shotOrigin;                // Position from which the projectile will spawn (if the attack uses a projectile)
     public SkillCheck.Parameters skillCheck;  // Skill check values
+    public int actionIndex;                   // Used to look up the weapon in the pawn's weapon list, action in the action list, etc.
   }
 
   public class ActionPlan

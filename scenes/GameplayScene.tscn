@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://bvnk83klfry1o"]
+[gd_scene load_steps=7 format=3 uid="uid://bvnk83klfry1o"]
 
 [ext_resource type="PackedScene" uid="uid://cy7bqh5ukf3fo" path="res://assets/maps/TestMap.tscn" id="1_hp010"]
 [ext_resource type="PackedScene" uid="uid://bmvbhherkj57y" path="res://source/playerController/PlayerController.tscn" id="3_op8u5"]
 [ext_resource type="PackedScene" uid="uid://ots1kf62gn0k" path="res://source/gameManager/GameManager.tscn" id="4_4b0aq"]
 [ext_resource type="PackedScene" uid="uid://g2yhawrsxocj" path="res://source/pawns/PawnController.tscn" id="4_ghkh3"]
 [ext_resource type="PackedScene" uid="uid://biql3bjd6do3m" path="res://assets/props/physicsBox.tscn" id="5_ckupd"]
+[ext_resource type="PackedScene" uid="uid://du3sqp56eyk7o" path="res://scenes/turret_test/vehicle_tree_template.tscn" id="6_qhsef"]
 
 [node name="sceneRoot" type="Node3D"]
 
@@ -299,3 +300,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.191907, 1.86821, -6.00715)
 mass = 50.0
 angular_damp = 0.0
 m_statCard = NodePath("../PawnController2/StatCard")
+
+[node name="PawnController57" parent="GameManager" instance=ExtResource("6_qhsef")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.54148, 2.37335, 0)

@@ -1,7 +1,8 @@
+using BrickModelGame.source.libs;
+using BrickModelGame.source.pawns.components.turrets;
 using Godot;
 using Godot.Collections;
 using System.Collections.Generic;
-
 
 namespace BrickModelGame.source.pawns
 {
@@ -20,7 +21,10 @@ namespace BrickModelGame.source.pawns
         private CollisionShape3D m_collisionShape;
         private List<Node3D> m_targetPoints;
         private AnimationPlayer m_animationPlayer;
-
+        
+        private List<TurretBase> m_turrets;
+        private List<RangedWeapon> m_rangedWeapons; // Contains all ranged weapons that are not mounted on turrets
+        
         // Get the gravity from the project settings to be synced with RigidBody nodes.
         public float gravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
@@ -57,6 +61,9 @@ namespace BrickModelGame.source.pawns
             {
                 m_animationPlayer.Play("idle");
             }
+
+            m_turrets = TreeUtils.FindDirectChildren<TurretBase>(this);
+            m_rangedWeapons = TreeUtils.FindDirectChildren<RangedWeapon>(this);
         }
 
         public override void _PhysicsProcess(double delta)
@@ -119,8 +126,10 @@ namespace BrickModelGame.source.pawns
         public void StartNavigation(in Vector3 target)
         {
             if (m_navAgent == null)
+            {
+                OmniLogger.Error("PawnController.StartNavigation: navAgent is null!");
                 return;
-
+            }
             Vector3 facing = GlobalTransform.Basis.Y;
             float angle = facing.AngleTo(Vector3.Up);
 
@@ -227,7 +236,24 @@ namespace BrickModelGame.source.pawns
 
         public void DoDirectAction(InputActions actions)
         {
-            // nothing to do!
+            if (!actions.cursorPosition.DidCollide())
+                return;
+
+            foreach (TurretBase turret in m_turrets)
+                turret.TrySetTarget(actions.cursorPosition.position);
+        }
+
+        public List<RangedWeapon> GetRangedWeapons()
+        {
+            return m_rangedWeapons;
+        }
+
+        public RangedWeapon GetRangedWeapon(int index)
+        {
+            if (index < 0 || index >= m_rangedWeapons.Count)
+                return null;
+
+            return m_rangedWeapons[index];
         }
     }
 }   // namespace BrickModelGame.source.pawns

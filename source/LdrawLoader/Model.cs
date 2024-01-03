@@ -83,15 +83,10 @@ namespace Ldraw
                 return;
 
             Node3D model = CreateNode3D(sceneRoot, sceneRoot, m_modelName);
-
-            // The transformer allows us to scale and rotate the model to the game's coordinate system,
-            // while leaving all the children's local transforms in the origianl LDR coordinate space.
-            Node3D transformer = CreateNode3D(model, sceneRoot, "gamespaceAdapter");
-            transformer.Transform = Transforms.GetScaleAndRotateToGameCoords();
-
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
-            transformer.AddChild(meshInstance);
+            model.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
+            meshInstance.Transform *= Transforms.GetScaleAndRotateToGameCoords();
             Transform3D offset = m_anchorTransform;
 
             if (m_children == null || m_children.Count == 0)
@@ -125,13 +120,14 @@ namespace Ldraw
             // transform.
             // 
             // Please be very careful when messing with the transforms. A slight change
-            // couod break everything badly. But icould also break only complex cases,
+            // could break everything badly. But icould also break only complex cases,
             // and you may not notice on simple models.
             Transform3D childOrigin = m_subfileTransform * m_anchorTransform;
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
             parent.AddChild(meshInstance);
             meshInstance.Owner = sceneRoot;
             meshInstance.Transform = m_subfileTransform;
+            meshInstance.Transform *= Transforms.GetScaleAndRotateToGameCoords();
             meshInstance.Position = childOrigin.Origin - parentAnchorPosition.Origin;
 
             foreach (Model component in m_children)

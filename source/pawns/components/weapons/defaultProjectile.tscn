@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://chh8l7unihr40"]
+
+[ext_resource type="Script" path="res://source/pawns/components/weapons/Projectile.cs" id="1_17dei"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s8b6v"]
+albedo_color = Color(0.639216, 0, 1, 1)
+emission_enabled = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cfbjb"]
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.7
+radial_segments = 6
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_0eroe"]
+radius = 0.0566636
+height = 0.710402
+
+[node name="basicProjectile" type="Area3D"]
+script = ExtResource("1_17dei")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_s8b6v")
+mesh = SubResource("CylinderMesh_cfbjb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_0eroe")
