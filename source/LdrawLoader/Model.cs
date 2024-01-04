@@ -93,7 +93,7 @@ namespace Ldraw
                 return;
 
             foreach (Model child in m_children)
-                child.ConnectChild(meshInstance, sceneRoot, offset);
+                child.ConnectChild(model, sceneRoot, offset);
         }
 
         protected void ConnectChild(Node3D parent, Node3D sceneRoot, Transform3D parentAnchorPosition)
@@ -115,23 +115,32 @@ namespace Ldraw
             // in the same positions relative to the anchor, it should look exactly the
             // same in both cases.
             //
-            // To achieve this, we need to compose a position for the child node made
+            // We use a simple Node3D to hold the mesh like a container, and build the
+            // model tree out of those containers. The mesh objects are children of the
+            // containers, and their transform converts them from LDraw coords to Godot
+            // coords.
+            //
+            // To achieve this, we need to compose a position for the container node made
             // by taking the anchor point in submodel space, mutated by the subfile
             // transform.
             // 
             // Please be very careful when messing with the transforms. A slight change
-            // could break everything badly. But icould also break only complex cases,
+            // could break everything badly. But I could also break only complex cases,
             // and you may not notice on simple models.
-            Transform3D childOrigin = m_subfileTransform * m_anchorTransform;
             MeshInstance3D meshInstance = m_meshManager.GetMeshInstance();
-            parent.AddChild(meshInstance);
-            meshInstance.Owner = sceneRoot;
-            meshInstance.Transform = m_subfileTransform;
             meshInstance.Transform *= Transforms.GetScaleAndRotateToGameCoords();
-            meshInstance.Position = childOrigin.Origin - parentAnchorPosition.Origin;
+            
+            Node3D container = CreateNode3D(parent, sceneRoot, "container");
+            container.AddChild(meshInstance);
+            meshInstance.Owner = sceneRoot;
+            
+            Transform3D offset = m_subfileTransform * m_anchorTransform;
+            Vector3 containerOrigin = offset.Origin - parentAnchorPosition.Origin;
+            container.Transform = m_subfileTransform;
+            container.Position = containerOrigin * Transforms.GetScaleAndRotateToGameCoords();
 
             foreach (Model component in m_children)
-                component.ConnectChild(meshInstance, sceneRoot, m_anchorTransform);
+                component.ConnectChild(container, sceneRoot, m_anchorTransform);
         }
     }
 }

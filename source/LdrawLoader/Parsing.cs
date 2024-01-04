@@ -523,6 +523,8 @@ namespace Ldraw
                     OmniLogger.Error("Failed to parse transform from subfile, with value: " + tokens[argNum]);
             }
 
+            // TODO: WHy not make a godot tfm directly? WHen I wrote this initially,
+            // I didn't know how TFMs worked. Now I could probably do it better.
             System.Numerics.Matrix4x4 mat4x4 = new System.Numerics.Matrix4x4(
                 param[3], param[6], param[9], 0,
                 param[4], param[7], param[10], 0,

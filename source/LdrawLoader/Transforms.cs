@@ -6,22 +6,46 @@ namespace Ldraw
     {
         private static readonly Transform3D m_ScaleToGameCoords;
         private static readonly Transform3D m_RotateToGameOrientation;
+        private static readonly Transform3D m_RotateContainerTransforms;
+
 
         static Transforms()
         {
             m_RotateToGameOrientation = Transform3D.Identity;
             m_ScaleToGameCoords = Transform3D.Identity;
+            m_RotateContainerTransforms = Transform3D.Identity;
 
             // Ldraw's coord space is the same orientation as Godot's, except that the Y axis is inverted.
             // The scale is 100:1, Ldr to Godot. This resolves to 1m in Godot = 4studs.
             // That makes a minifig about 1.5m tall, which works out very nicely.
-            m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Left, Mathf.Pi);
+            m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Forward, Mathf.Pi);
             m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(0.01f, 0.01f, 0.01f));
+
+            Basis flipped = new();
+            flipped.X = new Vector3(flipped.X.X, flipped.X.Y, - flipped.X.Z);
+            flipped.Y = new Vector3(flipped.Y.X, flipped.Y.Y, flipped.Y.Z);
+            flipped.Z = new Vector3(- flipped.Z.X, flipped.Z.Y, flipped.Z.Z);
+            m_RotateContainerTransforms.Basis = flipped;
         }
 
         public static Transform3D GetScaleAndRotateToGameCoords()
         {
             return m_ScaleToGameCoords * m_RotateToGameOrientation;
+        }
+
+        public static Transform3D GetRotateToGameCoords()
+        {
+            return m_RotateToGameOrientation;
+        }
+
+        public static Transform3D GetRotationCorrection(Transform3D tfm)
+        {
+            Basis flipped = tfm.Basis;
+            flipped.X = new Vector3(flipped.X.X, flipped.X.Y, - flipped.X.Z);
+            flipped.Y = new Vector3(flipped.Y.X, flipped.Y.Y, flipped.Y.Z);
+            flipped.Z = new Vector3(- flipped.Z.X, flipped.Z.Y, flipped.Z.Z);
+            tfm.Basis = flipped;  
+            return tfm;
         }
 
         internal static System.Numerics.Vector3 FromGodotVector3(Godot.Vector3 vec)
