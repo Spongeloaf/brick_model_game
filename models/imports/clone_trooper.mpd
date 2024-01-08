@@ -3,12 +3,12 @@
 0 Name: New Model.ldr
 0 Author: 
 1 15 0 -68.795 -2.515 1 0 0 0 1 0 0 0 1 head.ldr
-1 16 0 -40 0 1 0 0 0 1 0 0 0 1 torso.ldr
-1 16 10.5 0 -1 1 0 0 0 1 0 0 0 1 leg L.ldr
-1 16 -10.5 0 -1 1 0 0 0 1 0 0 0 1 leg_R.ldr
-1 16 19.796 -30.1995 -9.9411 1 0 0 0 1 0 0 0 1 arm left.ldr
-1 16 -19.796 -30.1995 -9.9411 1 0 0 0 1 0 0 0 1 arm right.ldr
-1 0 0 0 0 1 0 0 0 1 0 0 0 1 mwg_minifig_anchor.dat
+1 15 0 -40 0 1 0 0 0 1 0 0 0 1 torso.ldr
+1 15 10.5 0 -1 1 0 0 0 1 0 0 0 1 leg L.ldr
+1 15 -10.5 0 -1 1 0 0 0 1 0 0 0 1 leg_R.ldr
+1 15 19.796 -30.1995 -9.9411 1 0 0 0 1 0 0 0 1 arm left.ldr
+1 15 -19.796 -30.1995 -9.9411 1 0 0 0 1 0 0 0 1 arm right.ldr
+1 15 0 0 0 1 0 0 0 1 0 0 0 1 mwg_minifig_anchor.dat
 
 0 NOFILE
 0 FILE arm left.ldr
@@ -31,9 +31,9 @@
 0 
 0 Name: torso.ldr
 0 Author: 
-1 15 0 -32 0 1 0 0 0 1 0 0 0 1 973psk.dat
 1 0 0 0 0 1 0 0 0 1 0 0 0 1 3815.dat
 1 7 0 0 0 1 0 0 0 1 0 0 0 1 mwg_minifig_body_anchor.dat
+1 15 0 -32 0 1 0 0 0 1 0 0 0 1 973prk.dat
 0 NOFILE
 0 FILE head.ldr
 0 

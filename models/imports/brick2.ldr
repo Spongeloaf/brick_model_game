@@ -1,0 +1,14 @@
+0 FILE New Model.ldr
+0 
+0 Name: New Model.ldr
+0 Author: 
+1 4 0 -24 -20 1 0 0 0 1 0 0 0 1 716.dat
+1 16 0 -24 -20 0.5 -0 -0.866025 -0.433013 0.866025 -0.25 0.75 0.5 0.433013 child.ldr
+1 0 0 0 0 1 0 0 0 1 0 0 0 1 mwg_prop_anchor.dat
+0 NOFILE
+0 FILE child.ldr
+0 
+0 Name: child.ldr
+0 Author: 
+1 2 0 -24 0 1 0 0 0 1 0 0 0 1 716.dat
+0 NOFILE

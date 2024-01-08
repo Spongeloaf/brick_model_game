@@ -38,12 +38,15 @@ namespace Ldraw
             return m_RotateToGameOrientation;
         }
 
-        public static Transform3D GetRotationCorrection(Transform3D tfm)
+        public static Transform3D GetCorrectedRotation(Transform3D tfm)
         {
+            // Compensates for the fact that in LDraw space, Y+ is down vs
+            // Godot, in which Y+ is up. This would cause rotation mirroring
+            // in almost all cases.
             Basis flipped = tfm.Basis;
             flipped.X = new Vector3(flipped.X.X, flipped.X.Y, - flipped.X.Z);
-            flipped.Y = new Vector3(flipped.Y.X, flipped.Y.Y, flipped.Y.Z);
-            flipped.Z = new Vector3(- flipped.Z.X, flipped.Z.Y, flipped.Z.Z);
+            flipped.Y = new Vector3(flipped.Y.X, flipped.Y.Y, -flipped.Y.Z);
+            flipped.Z = new Vector3(- flipped.Z.X, -flipped.Z.Y, flipped.Z.Z);
             tfm.Basis = flipped;  
             return tfm;
         }

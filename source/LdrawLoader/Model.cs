@@ -31,9 +31,9 @@ namespace Ldraw
                         m_modelName = cmd.subfileName;
                         m_modelType = cmd.modelType;
 
-                        // The offset ensures that the mesh is always orginized around the anchor position.
+                        // The offset ensures that the mesh is always organized around the anchor position.
                         // Remember that the parent command that spawned this model was the anchor, so this
-                        // transform is it's position within the submodel.
+                        // transform is its position within the submodel.
                         m_meshManager.SetOffset(m_anchorTransform.Origin);
                         break;
 
@@ -138,6 +138,7 @@ namespace Ldraw
             Vector3 containerOrigin = offset.Origin - parentAnchorPosition.Origin;
             container.Transform = m_subfileTransform;
             container.Position = containerOrigin * Transforms.GetScaleAndRotateToGameCoords();
+            container.Transform = Transforms.GetCorrectedRotation(container.Transform);
 
             foreach (Model component in m_children)
                 component.ConnectChild(container, sceneRoot, m_anchorTransform);
