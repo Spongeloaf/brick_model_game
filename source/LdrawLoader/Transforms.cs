@@ -7,6 +7,7 @@ namespace Ldraw
         private static readonly Transform3D m_ScaleToGameCoords;
         private static readonly Transform3D m_RotateToGameOrientation;
         private static readonly Transform3D m_RotateContainerTransforms;
+        public const float kLdrToGodotScale = 0.01f;
 
 
         static Transforms()
@@ -19,7 +20,7 @@ namespace Ldraw
             // The scale is 100:1, Ldr to Godot. This resolves to 1m in Godot = 4studs.
             // That makes a minifig about 1.5m tall, which works out very nicely.
             m_RotateToGameOrientation.Basis = m_RotateToGameOrientation.Basis.Rotated(Vector3.Forward, Mathf.Pi);
-            m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(0.01f, 0.01f, 0.01f));
+            m_ScaleToGameCoords.Basis = m_ScaleToGameCoords.Basis.Scaled(new Vector3(kLdrToGodotScale, kLdrToGodotScale, kLdrToGodotScale));
 
             Basis flipped = new();
             flipped.X = new Vector3(flipped.X.X, flipped.X.Y, - flipped.X.Z);

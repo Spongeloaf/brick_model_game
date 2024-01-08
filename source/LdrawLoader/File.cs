@@ -9,7 +9,7 @@ namespace Ldraw
         private string m_fullFilePath;
         private string m_fileContents;
         private Command m_loadModelsCommand = new Command();
-        private List<Model> m_embeddedModels = new List<Model>();
+        private List<LdrawModel> m_embeddedModels = new List<LdrawModel>();
 
         public UserModelFile(string fullFilePath)
         {
@@ -42,7 +42,7 @@ namespace Ldraw
                         return;
 
                     case Ldraw.CommandType.Model:
-                        m_embeddedModels.Add(new Model(commands, Transform3D.Identity));
+                        m_embeddedModels.Add(new LdrawModel(commands, Transform3D.Identity));
                         return;
 
                     default:
@@ -54,7 +54,7 @@ namespace Ldraw
         public Node3D GetModels()
         {
             Node3D scene = new Node3D();
-            foreach (Model model in m_embeddedModels)
+            foreach (LdrawModel model in m_embeddedModels)
             {
                 model.CreateModel(scene);
             }
@@ -70,7 +70,7 @@ namespace Ldraw
         private string m_fullFilePath;
         private string m_fileContents;
         private Command m_loadModelsCommand = new Command();
-        private Model m_model = null;
+        private LdrawModel _mLdrawModel = null;
 
         public EmbeddedFile(string fullFilePath, LdrMetadata metadata, in Transform3D subfileOffset)
         {
@@ -82,12 +82,12 @@ namespace Ldraw
             m_loadModelsCommand.subfileName = m_fullFilePath;
             m_loadModelsCommand.metadata = metadata;
             List<Command> commands = Ldraw.Parsing.GetCommandsFromFile(m_loadModelsCommand);
-            m_model = new Model(commands, subfileOffset);
+            _mLdrawModel = new LdrawModel(commands, subfileOffset);
         }
 
-        public Model GetModel()
+        public LdrawModel GetModel()
         {
-            return m_model;
+            return _mLdrawModel;
         }
 
         public void ConnectModelTreeToOwner(Node3D sceneRoot)
@@ -98,10 +98,10 @@ namespace Ldraw
                 return;
             }
 
-            if (m_model == null)
+            if (_mLdrawModel == null)
                 return;
 
-            m_model.CreateModel(sceneRoot);
+            _mLdrawModel.CreateModel(sceneRoot);
         }
     }   // class EmbeddedFile
 }
